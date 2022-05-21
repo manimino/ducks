@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from src.matchindex import HashBox
+from matchindex.matchindex import HashBox
 
 from pympler import asizeof
 

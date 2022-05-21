@@ -1,25 +1,4 @@
-from dataclasses import dataclass
 from typing import Iterable, Optional, List, Any, Dict
-
-
-class MissingIndexError(Exception):
-    """Raised when querying a field we don't have an index for"""
-    pass
-
-
-class MissingValueError(Exception):
-    """Raised when adding an object that is missing a field we need to index"""
-    pass
-
-
-class MissingObjectError(Exception):
-    """Raised when removing or updating an object we don't have."""
-    pass
-
-
-def get_attribs(cls):
-    """Helper function to grab the attributes of a class"""
-    return list(cls.__annotations__.keys())
 
 
 class MatchIndex:
@@ -63,7 +42,7 @@ class MatchIndex:
         else:
             return self.indices[field].get(value, set())
 
-    def find(self, having: Optional[Dict[str, Any]] = None, excluding: Optional[Dict[str, Any]] = None) -> List:
+    def find(self, match: Optional[Dict[str, Any]] = None, exclude: Optional[Dict[str, Any]] = None) -> List:
         """
         Perform lookup based on given values.
 
@@ -72,18 +51,18 @@ class MatchIndex:
         """
         # check that we have an index for all desired lookups
         required_indices = set()
-        if having:
-            required_indices.update(having.keys())
-        if excluding:
-            required_indices.update(excluding.keys())
+        if match:
+            required_indices.update(match.keys())
+        if exclude:
+            required_indices.update(exclude.keys())
         missing_indices = required_indices.difference(self.indices)
         if missing_indices:
             raise MissingIndexError
 
         hits = None
-        if having:
+        if match:
             # result is the intersection of all query items
-            for field, value in having.items():
+            for field, value in match.items():
                 field_hits = self._matches_for(field, value)
                 if hits is None:
                     hits = field_hits
@@ -94,8 +73,8 @@ class MatchIndex:
         else:
             hits = set(self.objs.keys())
 
-        if excluding:
-            for field, value in excluding.items():
+        if exclude:
+            for field, value in exclude.items():
                 field_hits = self._matches_for(field, value)
                 hits = set.difference(hits, field_hits)
 
@@ -136,51 +115,21 @@ class MatchIndex:
                 idx[new_value].add(ptr)
 
 
-# Test usage
-
-@dataclass
-class Pokemon:
-    name: str
-    type1: str
-    type2: str
-
-    def __repr__(self):
-        if self.type2 is None:
-            return f"{self.name}: {self.type1}"
-        return f"{self.name}: {self.type1}/{self.type2}"
+def get_attributes(cls) -> List[str]:
+    """Helper function to grab the attributes of a class"""
+    return list(cls.__annotations__.keys())
 
 
-def main():
-    zapdos = Pokemon('Zapdos', 'Electric', 'Flying')
-    pikachu_1 = Pokemon('Pikachu', 'Electric', None)
-    pikachu_2 = Pokemon('Pikachu', 'Electric', None)
-    eevee = Pokemon('Eevee', 'Normal', None)
+class MissingIndexError(Exception):
+    """Raised when querying a field we don't have an index for"""
+    pass
 
-    mi = MatchIndex(get_attribs(Pokemon))
-    mi.add(zapdos)
-    mi.add(pikachu_1)
-    mi.add(pikachu_2)
-    mi.add(eevee)
 
-    result = mi.find(having={'name': 'Pikachu'})  # Finds two Pikachus
-    print('2 Pikachus:', result)
+class MissingValueError(Exception):
+    """Raised when adding an object that is missing a field we need to index"""
+    pass
 
-    mi.remove(pikachu_2)
-    result = mi.find(having={'name': 'Pikachu'})  # Finds one Pikachu
-    print('1 Pikachu:', result)
 
-    result = mi.find(having=None, excluding={'type2': None})  # Finds Zapdos
-    print('Zapdos:', result)
-
-    result = mi.find({'type1': ['Electric', 'Normal']})  # Finds everything
-    print('everything', result)
-
-    mi.update(eevee, {'name': 'Jolteon', 'type1': 'Electric', 'type2': None})
-    result = mi.find({'name': 'Eevee'})    # No results
-    print('empty:', result)
-
-    result = mi.find({'name': 'Jolteon'})  # Finds Jolteon
-    print('Jolteon', result)
-
-if __name__ == '__main__':
-    main()
+class MissingObjectError(Exception):
+    """Raised when removing or updating an object we don't have."""
+    pass

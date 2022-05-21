@@ -1,13 +1,12 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='matchindex',
-    version='0.1',
+    version='0.1.2',
     license='MIT',
     author="Theo Walker",
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
+    packages=['matchindex'],
     url='https://github.com/manimino/matchindex',
-    keywords='hashbox',
+    keywords='matchindex',
     install_requires=[],
 )
