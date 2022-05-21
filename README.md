@@ -1,24 +1,25 @@
-# HashBox
+# MatchIndex
 
-Put your Python objects in the HashBox. 
+Put your Python objects in a MatchIndex. 
 
-Query on their attributes in O(1). 
+Find objects by their attributes in O(1). 
 
 Supports O(1) removal and update.
 
-`pip install hashbox`
+`pip install matchindex`
 
-### Basic Usage
+### Example Usage
+
+Find all objects where obj.shape is 'circle' or 'square' and obj.color is not 'red'.
+
 ```
-box = HashBox(['shape', 'color'])
-for item in items:
-    box.add(item)
-box.find(having={'shape': 'circle'}, excluding: {'color': 'red'})
+mi = MatchIndex(['shape', 'color'])
+for obj in objects:
+    mi.add(obj)
+mi.find(match={'shape': ['circle', 'square']}, exclude={'color': 'red'})
 ```
 
-That returns all the items where item.shape is 'circle' and item.color is not 'red'.
-
-### Full example
+### Larger Example
 
 Define a dataclass:
 ```
@@ -29,51 +30,54 @@ class Pokemon:
     type2: Optional[str]
 ```
 
-Make some objects, put them in the HashBox:
+Make some objects, put them in the MatchIndex:
 ```
-from hashbox import HashBox
+from matchindex import MatchIndex, get_attribs
 
 zapdos = Pokemon('Zapdos', 'Electric', 'Flying')
 pikachu_1 = Pokemon('Pikachu', 'Electric', None)
 pikachu_2 = Pokemon('Pikachu', 'Electric', None)
 eevee = Pokemon('Eevee', 'Normal', None)
 
-box = HashBox(get_attribs(Pokemon))
-box.add(zapdos)
-box.add(pikachu_1)
-box.add(pikachu_2)
-box.add(eevee)
+mi = MatchIndex(get_attribs(Pokemon))
+mi.add(zapdos)
+mi.add(pikachu_1)
+mi.add(pikachu_2)
+mi.add(eevee)
 ```
 
 Find matching objects:
 ```
-box.find(having={'name': 'Pikachu'})              # Finds two Pikachus
-box.find(having=None, excluding={'type2': None})  # Finds Zapdos
+mi.find(having={'name': 'Pikachu'})              # Finds two Pikachus
+mi.find(having=None, excluding={'type2': None})  # Finds Zapdos
 ```
 
 Update an object:
 ```
 # What?! Eevee is evolving!
-box.update(eevee, {'name': 'Jolteon', 'type1': 'Electric', 'type2': None})
-box.find({'name': 'Eevee'})    # No results
-box.find({'name': 'Jolteon'})  # Finds Jolteon
+mi.update(eevee, {'name': 'Jolteon', 'type1': 'Electric', 'type2': None})
+mi.find({'name': 'Eevee'})    # No results
+mi.find({'name': 'Jolteon'})  # Finds Jolteon
 ```
 
 Delete an object:
 ```
-box.delete(pikachu1)
-box.find(having={'name': 'Pikachu'})  # Finds one Pikachu
+mi.delete(pikachu1)
+mi.find(having={'name': 'Pikachu'})  # Finds the one remaining Pikachu
 ```
 
-### Performance Numbers
+### Performance
 
-HashBox is faster than O(n) search once you have about 1000 items.
+Finding items in a MatchIndex is faster than doing a linear scan once you have about 1000 items.
 
-Each index costs 100 ~ 300 bytes per item per index, depending on density.
-So indexing 10 different attributes of 1 million items = 10*1M*100 = 1GB.
+RAM cost is about 100 bytes per item per index.
 
-### Alternatives
+So, indexing 10 different attributes of 1 million items = (10 indexes * 1M items * 100 bytes) = about 1GB.
 
-Hashbox does exact-value lookups only.
+### Scope Declaration
+
+MatchIndex does exact-value lookups only. 
 
 If you need range queries, string matching, and so on, consider heavier solutions like sqlite or pandas.
+
+It is not concurrent / thread-safe.

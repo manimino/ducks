@@ -1,4 +1,3 @@
-from collections import deque
 from dataclasses import dataclass
 from typing import Iterable, Optional, List, Any, Dict
 
@@ -22,7 +21,8 @@ def get_attribs(cls):
     """Helper function to grab the attributes of a class"""
     return list(cls.__annotations__.keys())
 
-class HashBox:
+
+class MatchIndex:
     def __init__(self, fields: Iterable[str]):
         # the objects themselves are stored in a dict of {pointer: obj}
         self.objs = dict()
@@ -51,6 +51,18 @@ class HashBox:
             raise MissingIndexError
         return self.indices[field].keys()
 
+    def _matches_for(self, field: str, value: Any):
+        """Get matches during a find(). Helper function to handle union-on-list logic."""
+        if type(value) is list:
+            # take the union of all matches
+            matches = set()
+            for v in value:
+                v_matches = self.indices[field].get(v, set())
+                matches = set.union(matches, v_matches)
+            return matches
+        else:
+            return self.indices[field].get(value, set())
+
     def find(self, having: Optional[Dict[str, Any]] = None, excluding: Optional[Dict[str, Any]] = None) -> List:
         """
         Perform lookup based on given values.
@@ -72,9 +84,11 @@ class HashBox:
         if having:
             # result is the intersection of all query items
             for field, value in having.items():
-                field_hits = self.indices[field][value]
+                field_hits = self._matches_for(field, value)
                 if hits is None:
                     hits = field_hits
+                if not field_hits:
+                    break
                 else:
                     hits = set.intersection(hits, field_hits)
         else:
@@ -82,7 +96,7 @@ class HashBox:
 
         if excluding:
             for field, value in excluding.items():
-                field_hits = self.indices[field][value]
+                field_hits = self._matches_for(field, value)
                 hits = set.difference(hits, field_hits)
 
         return [self.objs[ptr] for ptr in hits]
@@ -129,37 +143,44 @@ class Pokemon:
     name: str
     type1: str
     type2: str
-    hp: int
-    hp_max: int
 
     def __repr__(self):
         if self.type2 is None:
-            return f"{self.name}, {self.type1}, HP:{self.hp}/{self.hp_max}"
-        return f"{self.name}, {self.type1}/{self.type2}, HP:{self.hp}/{self.hp_max}"
+            return f"{self.name}: {self.type1}"
+        return f"{self.name}: {self.type1}/{self.type2}"
 
 
 def main():
-    pokemon = [
-        Pokemon(name='Jigglypuff', type1='Normal', type2=None, hp=150, hp_max=150),
-        Pokemon(name='Bulbasaur', type1='Grass', type2=None, hp=100, hp_max=100),
-        Pokemon(name='Ivysaur', type1='Grass', type2=None, hp=200, hp_max=200),
-        Pokemon(name='Venusaur', type1='Grass', type2=None, hp=300, hp_max=300),
-        Pokemon(name='Zapdos', type1='Flying', type2='Electric', hp=1000, hp_max=1000),
-        Pokemon(name='Pikachu', type1='Electric', type2=None, hp=1000, hp_max=1000),
-    ]
-    attribs = Pokemon.__annotations__.keys()
-    box = IndexedObjects(attribs)
-    for p in pokemon:
-        box.add(p)
-    box.remove(pokemon[1])
-    box.update(pokemon[2], {'hp': 500})
-    print(box.find())
-    print(box.find(having={'type2': None}))
-    print(box.find(excluding={'type2': None}))
+    zapdos = Pokemon('Zapdos', 'Electric', 'Flying')
+    pikachu_1 = Pokemon('Pikachu', 'Electric', None)
+    pikachu_2 = Pokemon('Pikachu', 'Electric', None)
+    eevee = Pokemon('Eevee', 'Normal', None)
 
-    bidoof = Pokemon(name='Bidoof', type1='Electric', type2=None, hp=111, hp_max=111)
-    box.update(pokemon[-1],)
+    mi = MatchIndex(get_attribs(Pokemon))
+    mi.add(zapdos)
+    mi.add(pikachu_1)
+    mi.add(pikachu_2)
+    mi.add(eevee)
 
+    result = mi.find(having={'name': 'Pikachu'})  # Finds two Pikachus
+    print('2 Pikachus:', result)
+
+    mi.remove(pikachu_2)
+    result = mi.find(having={'name': 'Pikachu'})  # Finds one Pikachu
+    print('1 Pikachu:', result)
+
+    result = mi.find(having=None, excluding={'type2': None})  # Finds Zapdos
+    print('Zapdos:', result)
+
+    result = mi.find({'type1': ['Electric', 'Normal']})  # Finds everything
+    print('everything', result)
+
+    mi.update(eevee, {'name': 'Jolteon', 'type1': 'Electric', 'type2': None})
+    result = mi.find({'name': 'Eevee'})    # No results
+    print('empty:', result)
+
+    result = mi.find({'name': 'Jolteon'})  # Finds Jolteon
+    print('Jolteon', result)
 
 if __name__ == '__main__':
     main()

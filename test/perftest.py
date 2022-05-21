@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from hashbox import HashBox
+from src.matchindex import HashBox
 
 from pympler import asizeof
 
@@ -21,8 +21,8 @@ class Obj:
 
 def make_objs(n):
     ls = []
-    for i in range(10):
-        for i in range(n//10):
+    for i in range(10000):  # hackery to test dict density here
+        for i in range(n//10000):
             ls.append(Obj(
                 a=str(i),
                 b=str(i),
@@ -40,7 +40,7 @@ def make_objs(n):
 
 def perf_test(size=100000, n_indices=1):
     print(f"=== HashBox Test: {size} items, {n_indices} indices ===")
-    TARGET = str(size // 20)
+    TARGET = str(1)
 
     ls = make_objs(size)
 
