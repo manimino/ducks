@@ -36,62 +36,26 @@ for obj in objects:
     mi.add(obj)
 ```
 
-Find all the green objects: `mi.find(match={'color': 'green'}))`
+Find all the squares: 
+```
+mi.find(match={'shape': 'square'})
+# result:
+# [Thing(shape='square', color='green'), Thing(shape='square', color='red')]
+```
+
 
 Find all circles and squares that are not red:
-`print(mi.find(match={'shape': ['circle', 'square']}, exclude={'color': 'red'}))`
-
-### Larger Example
-
-Define a dataclass:
 ```
-@dataclasses.dataclass
-class Pokemon:
-    name: str
-    type1: str
-    type2: Optional[str]
+mi.find(match={'shape': ['circle', 'square']}, exclude={'color': 'red'})
+# result: 
+# [Thing(shape='circle', color='green'), Thing(shape='square', color='green')]
 ```
 
-Make some objects, put them in the MatchIndex:
-```
-from matchindex import MatchIndex, get_attributes
+### Limitations
 
-zapdos = Pokemon('Zapdos', 'Electric', 'Flying')
-pikachu_1 = Pokemon('Pikachu', 'Electric', None)
-pikachu_2 = Pokemon('Pikachu', 'Electric', None)
-eevee = Pokemon('Eevee', 'Normal', None)
+MatchIndex performs exact-value lookups only. It does not perform range queries or wildcard matching; consider 
+heavier libraries like pandas or sqlite if you need those.
 
-mi = MatchIndex(get_attributes(Pokemon))
-mi.add(zapdos)
-mi.add(pikachu_1)
-mi.add(pikachu_2)
-mi.add(eevee)
-```
+Indexed values must be hashable.
 
-Find matching objects:
-```
-mi.find(match={'name': 'Pikachu'})  # Finds two Pikachus
-mi.find(match=None, exclude={'name': ['Pikachu', 'Eevee']})  # Finds Zapdos
-```
-
-Update an object:
-```
-# What? Eevee is evolving!
-mi.update(eevee, {'name': 'Jolteon', 'type1': 'Electric', 'type2': None})
-mi.find({'name': 'Eevee'})    # No results
-mi.find({'name': 'Jolteon'})  # Finds Jolteon
-```
-
-Delete an object:
-```
-mi.remove(pikachu_1)
-mi.find({'name': 'Pikachu'})  # Finds the one remaining Pikachu
-```
-
-### Scope Declaration
-
-MatchIndex does exact-value lookups only. Values must be hashable.
-
-If you need range queries, string matching, and so on, consider heavier solutions like sqlite or pandas.
-
-It is not concurrent / thread-safe.
+MatchIndex is not thread-safe.
