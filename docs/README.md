@@ -11,7 +11,7 @@ class Pokemon:
     type2: Optional[str]
 ```
 
-Make some objects, put them in the MatchIndex:
+Make some objects, put them in the HashIndex:
 ```
 from matchindex import MatchIndex, get_attributes
 

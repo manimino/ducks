@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from matchindex import MatchIndex, get_attributes
+from hashindex import HashIndex, get_attributes
 
 
 @dataclass
@@ -21,7 +21,7 @@ def make_test_data():
     pikachu_1 = Pokemon('Pikachu', 'Electric', None)
     pikachu_2 = Pokemon('Pikachu', 'Electric', None)
     eevee = Pokemon('Eevee', 'Normal', None)
-    mi = MatchIndex(get_attributes(Pokemon))
+    mi = HashIndex(get_attributes(Pokemon))
     mi.add(zapdos)
     mi.add(pikachu_1)
     mi.add(pikachu_2)

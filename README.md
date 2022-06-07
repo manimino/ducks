@@ -1,17 +1,17 @@
-# MatchIndex
+# HashIndex
 
 Find Python objects by exact match on their attributes.
 
-`pip install matchindex`
+`pip install hashindex`
 
 ### Example
 
 Find objects that have size "large", shape "circle" or "square", where the color is not "red".
 
 ```
-from matchindex import MatchIndex
+from hashindex import HashIndex
 
-mi = MatchIndex(['size', 'color', 'shape'])
+mi = HashIndex(['size', 'color', 'shape'])
 for obj in my_objects:
     mi.add(obj)
 mi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color': 'red'})
@@ -28,9 +28,9 @@ mi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color'
 
 ### Limitations
 
-MatchIndex performs exact-value lookups only. It does not perform range queries or wildcard matching; consider 
+HashIndex performs exact-value lookups only. It does not perform range queries or wildcard matching; consider 
 heavier solutions like pandas or a DB if you need those.
 
 Indexed values must be hashable.
 
-MatchIndex is not thread-safe.
+HashIndex is not thread-safe.

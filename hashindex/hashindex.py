@@ -8,7 +8,7 @@ THRESH_LOW = 50
 THRESH_HIGH = 100
 
 
-class MatchIndex:
+class HashIndex:
     def __init__(self, fields: Iterable[str]):
         # the objects themselves are stored in a dict of {pointer: obj}
         self.objs = dict()
@@ -53,7 +53,7 @@ class MatchIndex:
 
     def update(self, obj, new_values: dict):
         """
-        Update the MatchIndex for a changed object. Also applies the update to the object.
+        Update the HashIndex for a changed object. Also applies the update to the object.
 
         new_values contains {field: new_value} for each changed field.
         """
