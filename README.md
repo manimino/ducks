@@ -1,60 +1,35 @@
 # MatchIndex
 
-Put your Python objects in a MatchIndex. 
-
-Find objects by their attributes in O(1). 
-
-Remove or update an object in O(1).
+Find Python objects by exact match on their attributes.
 
 `pip install matchindex`
 
 ### Example
 
-Make some objects:
+Find objects that have size "large", shape "circle" or "square", where the color is not "red".
+
 ```
-import dataclasses
 from matchindex import MatchIndex
-@dataclasses.dataclass
-class Thing:
-    shape: str
-    color: str
 
-objects = [
-    Thing('square', 'green'),
-    Thing('circle', 'green'),
-    Thing('triangle', 'green'),
-    Thing('square', 'red'),
-    Thing('circle', 'red'),
-    Thing('triangle', 'red'),
-]
-```
-
-Make a MatchIndex on 'shape' and 'color'. Add the objects.
-```
-mi = MatchIndex(['shape', 'color'])
-for obj in objects:
+mi = MatchIndex(['size', 'color', 'shape'])
+for obj in my_objects:
     mi.add(obj)
+mi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color': 'red'})
 ```
 
-Find all the squares: 
-```
-mi.find(match={'shape': 'square'})
-# result:
-# [Thing(shape='square', color='green'), Thing(shape='square', color='red')]
-```
+[See docs for more.]()
 
+### Advantages
 
-Find all circles and squares that are not red:
-```
-mi.find(match={'shape': ['circle', 'square']}, exclude={'color': 'red'})
-# result: 
-# [Thing(shape='circle', color='green'), Thing(shape='square', color='green')]
-```
+ * Works on your existing Python objects.
+ * Unlike a DB, there's no need for schemas, serialization, syncing, etc.
+ * RAM-efficient, by Python standards. Objects are stored by reference in dynamically chosen containers.
+ * Find operations are dict-speed. Remove and update are constant-time.
 
 ### Limitations
 
 MatchIndex performs exact-value lookups only. It does not perform range queries or wildcard matching; consider 
-heavier libraries like pandas or sqlite if you need those.
+heavier solutions like pandas or a DB if you need those.
 
 Indexed values must be hashable.
 
