@@ -50,7 +50,7 @@ def test_update():
 
 def test_excluding():
     mi = make_test_data()
-    result = mi.find(having=None, excluding={'type2': None})  # Zapdos is the only one with a type2
+    result = mi.find(match=None, exclude={'type2': None})  # Zapdos is the only one with a type2
     assert len(result) == 1
     assert result[0].name == 'Zapdos'
 

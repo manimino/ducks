@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from matchindex.matchindex import HashBox
+from matchindex.matchindex import MatchIndex
 
 from pympler import asizeof
 
@@ -39,7 +39,7 @@ def make_objs(n):
 
 
 def perf_test(size=100000, n_indices=1):
-    print(f"=== HashBox Test: {size} items, {n_indices} indices ===")
+    print(f"=== MatchIndex Test: {size} items, {n_indices} indices ===")
     TARGET = str(1)
 
     ls = make_objs(size)
@@ -51,13 +51,13 @@ def perf_test(size=100000, n_indices=1):
             break
         indices.append(k)
 
-    # build hashbox
+    # build MatchIndex
     t0 = time.time()
-    box = HashBox(indices)
+    box = MatchIndex(indices)
     for item in ls:
         box.add(item)
     t_hashbox_build = time.time() - t0
-    print('HashBox Make:', round(t_hashbox_build, 6))
+    print('MatchIndex Make:', round(t_hashbox_build, 6))
 
     # linear search
     t0 = time.time()
@@ -73,12 +73,13 @@ def perf_test(size=100000, n_indices=1):
     t0 = time.time()
     box_item = box.find({'a': TARGET})[0]
     t_hashbox = time.time() - t0
-    print('HashBox Find:', round(t_hashbox, 6))
+    print('MatchIndex Find:', round(t_hashbox, 6))
     assert ls_item == box_item  # correctness
 
     print('List mem size:   ', asizeof.asizeof(ls))
-    print('HashBox mem size:', asizeof.asizeof(box))
+    print('MatchIndex mem size:', asizeof.asizeof(box))
     time.sleep(5)
+
 
 if __name__ == '__main__':
     perf_test()
