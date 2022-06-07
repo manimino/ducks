@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from matchindex.matchindex import MatchIndex
+from hashindex.hashindex import HashIndex
 
 from pympler import asizeof
 
@@ -53,7 +53,7 @@ def perf_test(size=100000, n_indices=1):
 
     # build MatchIndex
     t0 = time.time()
-    box = MatchIndex(indices)
+    box = HashIndex(indices)
     for item in ls:
         box.add(item)
     t_hashbox_build = time.time() - t0
