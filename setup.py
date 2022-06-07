@@ -7,6 +7,6 @@ setup(
     author="Theo Walker",
     packages=['matchindex'],
     url='https://github.com/manimino/matchindex',
-    keywords='matchindex',
+    keywords=['matchindex', 'objects', 'index', 'hash index', 'hash'],
     install_requires=[],
 )

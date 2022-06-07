@@ -1,8 +1,10 @@
 # MatchIndex
 
-Find Python objects by matching their attributes.
+Find Python objects by exact match on their attributes.
 
 `pip install matchindex`
+
+### Example
 
 Find objects that have size "large", shape "circle" or "square", where the color is not "red".
 
@@ -15,14 +17,16 @@ for obj in my_objects:
 mi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color': 'red'})
 ```
 
-#### Advantages
+[See docs for more.]()
 
- * Works on your existing Python objects. Just add them to the index.
- * RAM-efficient. Objects are stored by reference in dynamically chosen containers.
- * Unlike a DB, there's no need for schemas, serialization, etc. 
- * Finds are dict-speed.
+### Advantages
 
-#### Limitations
+ * Works on your existing Python objects.
+ * Unlike a DB, there's no need for schemas, serialization, syncing, etc.
+ * RAM-efficient, by Python standards. Objects are stored by reference in dynamically chosen containers.
+ * Find operations are dict-speed. Remove and update are constant-time.
+
+### Limitations
 
 MatchIndex performs exact-value lookups only. It does not perform range queries or wildcard matching; consider 
 heavier solutions like pandas or a DB if you need those.

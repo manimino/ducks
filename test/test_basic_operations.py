@@ -29,7 +29,20 @@ def make_test_data():
     return mi
 
 
-def test_delete():
+def test_find_match():
+    mi = make_test_data()
+    result = mi.find({'name': ['Pikachu', 'Eevee']})
+    assert len(result) == 3
+
+
+def test_find_excluding():
+    mi = make_test_data()
+    result = mi.find(match=None, exclude={'type2': None})  # Zapdos is the only one with a type2
+    assert len(result) == 1
+    assert result[0].name == 'Zapdos'
+
+
+def test_remove():
     mi = make_test_data()
     two_chus = mi.find({'name': 'Pikachu'})
     assert len(two_chus) == 2
@@ -47,15 +60,3 @@ def test_update():
     assert not res_eevee
     assert res_jolteon
 
-
-def test_excluding():
-    mi = make_test_data()
-    result = mi.find(match=None, exclude={'type2': None})  # Zapdos is the only one with a type2
-    assert len(result) == 1
-    assert result[0].name == 'Zapdos'
-
-
-def test_union():
-    mi = make_test_data()
-    result = mi.find({'name': ['Pikachu', 'Eevee']})
-    assert len(result) == 3
