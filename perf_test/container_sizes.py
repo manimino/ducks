@@ -1,3 +1,8 @@
+"""
+Quick script that was used to determine which container and
+what threshold to use for small-cardinality cases.
+"""
+
 import array
 import random
 import dataclasses

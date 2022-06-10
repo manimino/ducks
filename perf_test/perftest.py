@@ -5,6 +5,12 @@ from hashindex.hashindex import HashIndex
 from pympler import asizeof
 
 
+# Graphs we want:
+# - RAM usage
+# -- Determine the summed size of the objects
+# -- Find overhead of a `list` containing the objects
+# -- Find cost of a
+
 @dataclass
 class Obj:
     a: str
