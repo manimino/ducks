@@ -11,26 +11,25 @@ Find objects that have size "large", shape "circle" or "square", where the color
 ```
 from hashindex import HashIndex
 
-mi = HashIndex(['size', 'color', 'shape'])
+hi = HashIndex(['size', 'color', 'shape'])
 for obj in my_objects:
-    mi.add(obj)
-mi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color': 'red'})
+    hi.add(obj)
+hi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color': 'red'})
 ```
 
-[See docs for more.]()
+[See docs for more.](https://pypi.org/project/hashindex/)
 
 ### Advantages
 
  * Works on your existing Python objects.
- * Unlike a DB, there's no need for schemas, serialization, syncing, etc.
- * RAM-efficient, by Python standards. Objects are stored by reference in dynamically chosen containers.
+ * Objects are referenced, not copied.
  * Find operations are dict-speed. Remove and update are constant-time.
 
 ### Limitations
 
-HashIndex performs exact-value lookups only. It does not perform range queries or wildcard matching; consider 
-heavier solutions like pandas or a DB if you need those.
+ * Supports exact-value lookups only. Use [RangeIndex](https://github.com/manimino/rangeindex/) if you need other comparisons.
+ * Indexed values must be hashable.
+ * Not thread-safe.
 
-Indexed values must be hashable.
+### Performance
 
-HashIndex is not thread-safe.

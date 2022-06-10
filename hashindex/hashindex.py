@@ -37,7 +37,7 @@ class HashIndex:
         self.objs[ptr] = obj
 
         for field in self.indices:
-            val = obj.__dict__[field]
+            val = obj.__dict__.get(field, None)
             self._add_to_field_index(ptr, field, val)
 
     def remove(self, obj):
@@ -47,7 +47,7 @@ class HashIndex:
             raise MissingObjectError
 
         for field in self.indices:
-            val = obj.__dict__[field]
+            val = obj.__dict__.get(field, None)
             self._remove_from_field_index(ptr, field, val)
         del self.objs[ptr]
 
@@ -62,7 +62,7 @@ class HashIndex:
             raise MissingObjectError
         for field, new_value in new_values.items():
             # update obj
-            old_value = obj.__dict__[field]
+            old_value = obj.__dict__.get(field, None)
             obj.__dict__[field] = new_value
             # update index
             if field in self.indices:
