@@ -4,6 +4,10 @@ Find Python objects by exact match on their attributes.
 
 `pip install hashindex`
 
+### Project status
+
+Beta, it probably works but I wouldn't put it in prod yet.
+
 ### Example
 
 Find objects that have size "large", shape "circle" or "square", where the color is not "red".
