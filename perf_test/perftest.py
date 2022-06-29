@@ -47,7 +47,7 @@ def make_objs(n_keys, n_items):
 
 
 def perf_test(size=100000, n_indices=1):
-    print(f"=== MatchIndex Test: {size} items, {n_indices} indices ===")
+    print(f"=== HashIndex Test: {size} items, {n_indices} indices ===")
     TARGET = str(1)
 
     # About 10% of the objs will have the first key
@@ -70,7 +70,7 @@ def perf_test(size=100000, n_indices=1):
     #for k in sorted(d.keys()):
     #    print(k, len(d[k]))
 
-    # build MatchIndex
+    # build HashIndex
     t0 = time.time()
     hi = HashIndex(indices)
     for item in ls:

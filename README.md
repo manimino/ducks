@@ -6,7 +6,7 @@ Find Python objects by exact match on their attributes.
 
 ### Project status
 
-Beta, it probably works but I wouldn't put it in prod yet.
+Beta, it probably works, but I wouldn't put it in prod yet.
 
 ### Example
 
