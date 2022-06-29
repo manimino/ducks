@@ -29,6 +29,12 @@ def make_test_data():
     return mi
 
 
+def test_find_one():
+    mi = make_test_data()
+    result = mi.find({'name': ['Zapdos']})
+    assert len(result) == 1
+
+
 def test_find_match():
     mi = make_test_data()
     result = mi.find({'name': ['Pikachu', 'Eevee']})

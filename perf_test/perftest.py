@@ -1,3 +1,5 @@
+import math
+import random
 import time
 from dataclasses import dataclass
 from hashindex.hashindex import HashIndex
@@ -25,22 +27,22 @@ class Obj:
     j: int
 
 
-def make_objs(n):
+def make_objs(n_keys, n_items):
     ls = []
-    for i in range(10000):  # hackery to test dict density here
-        for i in range(n//10000):
-            ls.append(Obj(
-                a=str(i),
-                b=str(i),
-                c=str(i),
-                d=str(i),
-                e=str(i),
-                f=i,
-                g=i,
-                h=i,
-                i=i,
-                j=i,
-            ))
+    for _ in range(n_items):
+        i = int(random.random() * random.random() * n_keys)  # keys are mostly low numbers
+        ls.append(Obj(
+            a=str(i),
+            b=str(i),
+            c=str(i),
+            d=str(i),
+            e=str(i),
+            f=i,
+            g=i,
+            h=i,
+            i=i,
+            j=i,
+        ))
     return ls
 
 
@@ -48,7 +50,9 @@ def perf_test(size=100000, n_indices=1):
     print(f"=== MatchIndex Test: {size} items, {n_indices} indices ===")
     TARGET = str(1)
 
-    ls = make_objs(size)
+    # About 10% of the objs will have the first key
+    # A long tail of keys will have fewer objs each
+    ls = make_objs(int(size**(1/3)), size)
 
     attribs = Obj.__annotations__.keys()
     indices = []
@@ -57,36 +61,36 @@ def perf_test(size=100000, n_indices=1):
             break
         indices.append(k)
 
+    d = {}
+    for o in ls:
+        if not d.get(o.f, None):
+            d[o.f] = []
+        d[o.f].append(o)
+    print('n_keys', len(d.keys()))
+    #for k in sorted(d.keys()):
+    #    print(k, len(d[k]))
+
     # build MatchIndex
     t0 = time.time()
-    box = HashIndex(indices)
+    hi = HashIndex(indices)
     for item in ls:
-        box.add(item)
+        hi.add(item)
     t_hashbox_build = time.time() - t0
-    print('MatchIndex Make:', round(t_hashbox_build, 6))
-
-    # linear search
-    t0 = time.time()
-    ls_item = None
-    for item in ls:
-        if item.a == TARGET:
-            ls_item = item
-            break
-    t_linear = time.time() - t0
-    print('Linear Find: ', round(t_linear, 6))
+    print('Build time:', round(t_hashbox_build, 6))
 
     # index lookup
     t0 = time.time()
-    box_item = box.find({'a': TARGET})[0]
+    _ = hi.find({'a': TARGET})[0]
     t_hashbox = time.time() - t0
-    print('MatchIndex Find:', round(t_hashbox, 6))
-    assert ls_item == box_item  # correctness
+    print('HashIndex Find:', round(t_hashbox, 6))
 
-    print('List mem size:   ', asizeof.asizeof(ls))
-    print('MatchIndex mem size:', asizeof.asizeof(box))
+    objs_size = asizeof.asizeof(ls)
+    hi_size = asizeof.asizeof(hi)
+    print('Mem cost:', (hi_size-objs_size) // 10**6, 'MB')
     time.sleep(5)
 
 
 if __name__ == '__main__':
-    perf_test()
-    perf_test(size=1000000, n_indices=10)
+    perf_test(size=10**5, n_indices=1)
+    perf_test(size=10**5, n_indices=10)
+    perf_test(size=10**6, n_indices=1)

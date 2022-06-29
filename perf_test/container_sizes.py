@@ -6,8 +6,8 @@ what threshold to use for small-cardinality cases.
 import array
 import random
 import dataclasses
-import sys
 import time
+from pympler.asizeof import asizeof
 
 
 @dataclasses.dataclass
@@ -52,9 +52,9 @@ def main():
 
         # check sizes
         print(f" === {n} items === ")
-        #print('array size:', sys.getsizeof(a))
-        print('tuple size:', sys.getsizeof(t))
-        print('set size:', sys.getsizeof(s))
+        print('array size:', asizeof(a))
+        print('tuple size:', asizeof(t))
+        print('set size:', asizeof(s))
 
         # check lookups
         obj = make_a_thing()
@@ -71,7 +71,7 @@ def main():
         _ = t.index(obj_id)
         t3 = time.time()
 
-        #print('array lookup (worst):', t1-t0)
+        print('array lookup (worst):', t1-t0)
         print('tuple lookup (worst):', t3-t2)
         print('set lookup:', t2-t1)
 
@@ -85,7 +85,7 @@ def main():
         t2 = time.time()
         t = t + (o2_id,)
         t3 = time.time()
-        #print('array add:', t1-t0)
+        print('array add:', t1-t0)
         print('tuple add:', t3-t2)
         print('set add:', t2-t1)
 
