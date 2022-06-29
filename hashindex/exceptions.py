@@ -1,0 +1,2 @@
+class WriteLockedError(Exception):
+    raise

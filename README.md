@@ -1,5 +1,7 @@
 # HashIndex
 
+[![tests Actions Status](https://github.com/manimino/hashindex/workflows/tests/badge.svg)](https://github.com/manimino/hashindex/actions)
+
 Find Python objects by exact match on their attributes.
 
 `pip install hashindex`

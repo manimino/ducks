@@ -1,19 +1,23 @@
-from cykhash import Int64Set
-
-
 from typing import Iterable, Optional, List, Any, Dict, Set
+
+from cykhash import Int64Set
+import numpy as np
+import sortednp
+from hashindex.exceptions import WriteLockedError
 
 
 class HashIndex:
     def __init__(self, fields: Iterable[str]):
-        # the objects themselves are stored in a dict of {pointer: obj}
-        self.objs = dict()
-
         # Make an index for each field.
         # Each index is a dict of {field_value: set(pointers)}.
         self.indices = {}
         for field in fields:
             self.indices[field] = dict()
+
+        # lookup table for objs
+        self.objs = dict()
+
+        self.frozen = False  # See freeze() method
 
     def find(self, match: Optional[Dict[str, Any]] = None, exclude: Optional[Dict[str, Any]] = None) -> List:
         """
@@ -25,10 +29,16 @@ class HashIndex:
         If the "match" term is None, all objects in the index will be matched.
         """
         hits = self.find_ids(match, exclude)
-        return [self.objs[ptr] for ptr in hits]
+        if isinstance(self.objs, dict):
+            return [self.objs[ptr] for ptr in hits]
+        else:
+            return self.objs.get(hits)
 
     def add(self, obj):
         """Add object to collection, update indices."""
+        if self.frozen:
+            raise WriteLockedError('Cannot add item - index is frozen.')
+
         ptr = id(obj)
         self.objs[ptr] = obj
 
@@ -38,6 +48,9 @@ class HashIndex:
 
     def remove(self, obj):
         """Delete object and update indices."""
+        if self.frozen:
+            raise WriteLockedError('Cannot remove item - index is frozen.')
+
         ptr = id(obj)
         if ptr not in self.objs:
             raise MissingObjectError
@@ -53,6 +66,9 @@ class HashIndex:
 
         new_values contains {field: new_value} for each changed field.
         """
+        if self.writes_locked:
+            raise WriteLockedError('Cannot update item - index is frozen.')
+
         ptr = id(obj)
         if ptr not in self.objs:
             raise MissingObjectError
@@ -109,6 +125,27 @@ class HashIndex:
 
         return hits
 
+    def freeze(self):
+        """
+        Prevent future changes to the index. Makes find() faster. Reduces RAM usage.
+
+        Any attempts to add / update / remove from a frozen index will throw exceptions.
+        Call this method before using HashIndex in a multithreaded environment.
+
+        There is no unlock(), just make a new index if you want that. To make a new index, you can do:
+        new_index = HashIndex(this_index.fields)
+        for obj in this_index:
+            new_index.add(obj)
+        """
+        self.frozen = True
+        # Convert each set of object ids to a sorted numpy array
+        # intersect operations can use the super fast compare-sorted logic
+        # unions, ehh, isn't there a np.union thing? does it preserve sort order?
+        # https://numpy.org/doc/stable/reference/generated/numpy.union1d.html  Hell yeah it does
+        # https://numpy.org/doc/stable/reference/generated/numpy.intersect1d.html  also does this
+        # Convert self.objs into a pair of sorted numpy arrays for faster lookup there too
+        # this should be awe; initially dict(), changes to two parallel numpy arrays on freezesome
+
     def values_of(self, field) -> Iterable:
         """Get available values for a given field."""
         if field not in self.indices:
@@ -155,6 +192,16 @@ class HashIndex:
             if isinstance(matches, tuple):
                 return set(matches)
             return matches
+
+    def __contains__(self, obj):
+        return self.objs.get(id(obj), None) is not None
+
+    def __iter__(self):
+        pass
+
+
+class HashIndexIterator:
+
 
 
 def get_attributes(cls) -> List[str]:
