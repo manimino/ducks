@@ -1,11 +1,7 @@
-from typing import Iterable, Optional, List, Any, Dict, Set
+from cykhash import Int64Set
 
-# These size thresholds determine whether a tuple or set is used to store the matching objects for a field value.
-# When there are few objects, a tuple's RAM-efficiency makes it the better container.
-# At a high number of objects, a set becomes necessary for lookup speed reasons.
-# There are two thresholds to give hysteresis; we don't want to convert between the two repeatedly for small changes.
-THRESH_LOW = 50
-THRESH_HIGH = 100
+
+from typing import Iterable, Optional, List, Any, Dict, Set
 
 
 class HashIndex:
@@ -97,10 +93,10 @@ class HashIndex:
                     hits = field_hits
                 if not field_hits:
                     # this was empty, so intersection will be empty
-                    hits = set()
+                    hits = Int64Set()
                     break
                 else:
-                    hits = set.intersection(hits, field_hits)
+                    hits = hits.intersection(field_hits)
         else:
             # 'match' is unspecified, so match all objects
             hits = set(self.objs.keys())
@@ -127,19 +123,9 @@ class HashIndex:
         """
         idx = self.indices[field]
         if val not in idx:
-            # make new tuple of obj ids
-            idx[val] = (ptr,)
-        elif isinstance(idx[val], tuple):
-            if len(idx[val]) <= THRESH_HIGH:
-                # "append" by copying to a new tuple (very fast for small n)
-                idx[val] = idx[val] + (ptr,)
-            else:
-                # we have too many items for a tuple. Change to a set.
-                idx[val] = set(idx[val])
-                idx[val].add(ptr)
-        else:
-            # add to set
-            idx[val].add(ptr)
+            # make new set of obj ids
+            idx[val] = Int64Set()
+        idx[val].add(ptr)
 
     def _remove_from_field_index(self, ptr: int, field: str, val: Any):
         """
@@ -149,17 +135,11 @@ class HashIndex:
         If 0 elements remain, remove the value from the field index.
         """
         idx = self.indices[field]
-        if isinstance(idx[val], tuple):
-            if len(idx[val]) == 1:
-                # no more pointers for this value, remove value
-                del idx[val]
-            else:
-                idx[val] = tuple(p for p in idx[val] if p!=ptr)
+        if len(idx[val]) == 1:
+            # no more pointers for this value, remove value
+            del idx[val]
         else:
             idx[val].remove(ptr)
-            if len(idx[val]) < THRESH_LOW:
-                # change to using a tuple to hold these values
-                idx[val] = tuple(idx[val])
 
     def _match_any_of(self, field: str, value: Any):
         """Get matches during a find(). If multiple values specified, handle union logic."""
