@@ -8,7 +8,7 @@ from hashindex.exceptions import MissingObjectError, MissingIndexError
 class MutableIndex:
     def __init__(self, fields):
         # Make an index for each field.
-        # Each index is a dict of {field_value: set(pointers)}.
+        # Each index is a dict of {field_value: Int64Set(pointers)}.
         self.indices = {}
         for field in fields:
             self.indices[field] = dict()
@@ -67,13 +67,13 @@ class MutableIndex:
                     hits = hits.intersection(field_hits)
         else:
             # 'match' is unspecified, so match all objects
-            hits = set(self.objs.keys())
+            hits = Int64Set(self.objs.keys())
 
         # perform 'exclude' query
         if exclude:
             for field, value in exclude.items():
                 field_hits = self._match_any_of(field, value)
-                hits = set.difference(hits, field_hits)
+                hits = Int64Set.difference(hits, field_hits)
                 if len(hits) == 0:
                     break
 
@@ -135,15 +135,15 @@ class MutableIndex:
         """Get matches during a find(). If multiple values specified, handle union logic."""
         if type(value) is list:
             # take the union of all matches
-            matches = set()
+            matches = Int64Set()
             for v in value:
-                v_matches = self.indices[field].get(v, set())
-                matches = set.union(
+                v_matches = self.indices[field].get(v, Int64Set())
+                matches = Int64Set.union(
                     matches, v_matches
-                )  # TODO should this be an Int64Set operation?
+                )
             return matches
         else:
-            return self.indices[field].get(value, set())
+            return self.indices[field].get(value, Int64Set())
 
     def __contains__(self, obj):
         return self.objs.get(id(obj), None) is not None
