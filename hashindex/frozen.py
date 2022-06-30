@@ -29,9 +29,6 @@ class FrozenIndex:
 
     def _dereference_obj_ids(self, sorted_obj_ids: np.array) -> np.ndarray:
         """Get the objs associated with many obj_ids. Assumes everything is sorted. Very fast."""
-        print(
-            "sorted_obj_ids", sorted_obj_ids, type(sorted_obj_ids), sorted_obj_ids.dtype
-        )
         result = snp.intersect(sorted_obj_ids, self.obj_ids, indices=True)
         # result format:
         # [matching_elements, [positions_in_first_array, positions_in_second_array]]
