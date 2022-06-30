@@ -66,3 +66,36 @@ def test_update():
     assert not res_eevee
     assert res_jolteon
 
+
+def test_find_freezing():
+    mi = make_test_data()
+    mi.freeze()
+    result = mi.find({'name': ['Pikachu', 'Eevee']})
+    assert len(result) == 3
+
+
+def test_exclude_freezing():
+    mi = make_test_data()
+    mi.freeze()
+    result = mi.find(match=None, exclude={'type2': None})  # Zapdos is the only one with a type2
+    assert len(result) == 1
+    assert result[0].name == 'Zapdos'
+
+
+def test_another():
+    mi = make_test_data()
+    result = mi.find(match={'name': ['Pikachu', 'Zapdos'], 'type1': 'Electric'},
+                     exclude={'type2': 'Flying'})
+    assert len(result) == 2
+    assert result[0].name == 'Pikachu'
+    assert result[1].name == 'Pikachu'
+
+
+def test_another_freeze():
+    mi = make_test_data()
+    mi.freeze()
+    result = mi.find(match={'name': ['Pikachu', 'Zapdos'], 'type1': 'Electric'},
+                     exclude={'type2': 'Flying'})
+    assert len(result) == 2
+    assert result[0].name == 'Pikachu'
+    assert result[1].name == 'Pikachu'

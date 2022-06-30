@@ -47,6 +47,13 @@ storing each high-cardinality key (say, >1% of the dataset) in its own devoted l
 
 ----
 
-## Freezing a HashIndex
+## Freeze
 
- - Each 
+Numpy arrays are up to 10x faster than Python sets or cykash sets. They also use less RAM. The downside is that 
+mutability is worse; removes and updates become very slow.
+
+The `freeze()` method of hashindex converts the containers from cykhash sets to numpy arrays, and prevents future
+changes to the data structure. 
+
+Making the index immutable also helps in multithreaded situations. With no writes, multiple threads
+can access the hashindex simultaneously with no risk of concurrency bugs.
