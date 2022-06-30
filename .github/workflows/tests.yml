@@ -22,6 +22,7 @@ jobs:
           pip install pytest
           pip install cykhash
           pip install numpy
+          pip install sortednp
           pip install .
       - name: Run tests with pytest
         run: pytest 

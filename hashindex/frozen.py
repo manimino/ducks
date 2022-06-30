@@ -9,26 +9,29 @@ from hashindex.mutable import MutableIndex
 
 def int_arr():
     """Shorthand function for making an empty int array"""
-    return np.array([], dtype='uint64')
+    return np.array([], dtype="uint64")
 
 
 class FrozenIndex:
-
     def __init__(self, mut: MutableIndex):
         # Convert everything to sorted numpy arrays, where lookups, intersection, and union
         # are all BLAZING fast.
-        self.obj_ids = np.array(sorted(mut.objs.keys()), dtype='uint64')
-        self.objects = np.array([mut.objs[k] for k in self.obj_ids], dtype='O')
+        self.obj_ids = np.array(sorted(mut.objs.keys()), dtype="uint64")
+        self.objects = np.array([mut.objs[k] for k in self.obj_ids], dtype="O")
 
         self.indices = {}
         for field in mut.indices:
             self.indices[field] = dict()
             for key in mut.indices[field]:
-                self.indices[field][key] = np.array(sorted(mut.indices[field][key]), dtype='uint64')
+                self.indices[field][key] = np.array(
+                    sorted(mut.indices[field][key]), dtype="uint64"
+                )
 
     def _dereference_obj_ids(self, sorted_obj_ids: np.array) -> np.ndarray:
         """Get the objs associated with many obj_ids. Assumes everything is sorted. Very fast."""
-        print('sorted_obj_ids', sorted_obj_ids, type(sorted_obj_ids), sorted_obj_ids.dtype)
+        print(
+            "sorted_obj_ids", sorted_obj_ids, type(sorted_obj_ids), sorted_obj_ids.dtype
+        )
         result = snp.intersect(sorted_obj_ids, self.obj_ids, indices=True)
         # result format:
         # [matching_elements, [positions_in_first_array, positions_in_second_array]]
@@ -36,11 +39,18 @@ class FrozenIndex:
         positions = result[1][1]
         return self.objects[positions]
 
-    def find(self, match: Optional[Dict[str, Any]] = None, exclude: Optional[Dict[str, Any]] = None) -> np.ndarray:
+    def find(
+        self,
+        match: Optional[Dict[str, Any]] = None,
+        exclude: Optional[Dict[str, Any]] = None,
+    ) -> np.ndarray:
         return self._dereference_obj_ids(self.find_obj_ids(match, exclude))
 
-    def find_obj_ids(self, match: Optional[Dict[str, Any]] = None,
-                     exclude: Optional[Dict[str, Any]] = None) -> np.ndarray:
+    def find_obj_ids(
+        self,
+        match: Optional[Dict[str, Any]] = None,
+        exclude: Optional[Dict[str, Any]] = None,
+    ) -> np.ndarray:
         # input validation -- check that we have an index for all desired lookups
         required_indices = set()
         if match:
@@ -77,7 +87,9 @@ class FrozenIndex:
             match_arrays = [self.indices[field].get(v, int_arr()) for v in value]
             # sortednp's docs say to try heapq.merge and other numpy functions, but snp.kway_merge
             # is actually 2x ~ 10x faster than any of those.
-            return snp.kway_merge(*match_arrays, assume_sorted=True, duplicates=snp.DROP)
+            return snp.kway_merge(
+                *match_arrays, assume_sorted=True, duplicates=snp.DROP
+            )
         else:
             return self.indices[field].get(value, int_arr())
 

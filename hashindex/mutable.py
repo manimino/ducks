@@ -6,7 +6,6 @@ from hashindex.exceptions import MissingObjectError, MissingIndexError
 
 
 class MutableIndex:
-
     def __init__(self, fields):
         # Make an index for each field.
         # Each index is a dict of {field_value: set(pointers)}.
@@ -19,14 +18,22 @@ class MutableIndex:
 
         self.frozen = False  # See freeze() method
 
-    def find(self, match: Optional[Dict[str, Any]] = None, exclude: Optional[Dict[str, Any]] = None) -> List:
+    def find(
+        self,
+        match: Optional[Dict[str, Any]] = None,
+        exclude: Optional[Dict[str, Any]] = None,
+    ) -> List:
         hits = self.find_ids(match, exclude)
         if isinstance(self.objs, dict):
             return [self.objs[ptr] for ptr in hits]
         else:
             return self.objs.get(hits)
 
-    def find_ids(self, match: Optional[Dict[str, Any]] = None, exclude: Optional[Dict[str, Any]] = None) -> Set:
+    def find_ids(
+        self,
+        match: Optional[Dict[str, Any]] = None,
+        exclude: Optional[Dict[str, Any]] = None,
+    ) -> Set:
         """
         Perform lookup based on given values. Return a set of object IDs matching constraints.
 
@@ -131,7 +138,9 @@ class MutableIndex:
             matches = set()
             for v in value:
                 v_matches = self.indices[field].get(v, set())
-                matches = set.union(matches, v_matches)  # TODO should this be an Int64Set operation?
+                matches = set.union(
+                    matches, v_matches
+                )  # TODO should this be an Int64Set operation?
             return matches
         else:
             return self.indices[field].get(value, set())

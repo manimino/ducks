@@ -10,7 +10,11 @@ class HashIndex:
         self.index = MutableIndex(fields)
         self.frozen = False
 
-    def find(self, match: Optional[Dict[str, Any]] = None, exclude: Optional[Dict[str, Any]] = None) -> List:
+    def find(
+        self,
+        match: Optional[Dict[str, Any]] = None,
+        exclude: Optional[Dict[str, Any]] = None,
+    ) -> List:
         """
         Find objects that fit the query.
 
@@ -24,13 +28,13 @@ class HashIndex:
     def add(self, obj):
         """Add object to collection, update indices."""
         if self.frozen:
-            raise FrozenError('Cannot add item - index is frozen.')
+            raise FrozenError("Cannot add item - index is frozen.")
         self.index.add(obj)
 
     def remove(self, obj):
         """Delete object and update indices."""
         if self.frozen:
-            raise FrozenError('Cannot remove item - index is frozen.')
+            raise FrozenError("Cannot remove item - index is frozen.")
         self.index.remove(obj)
 
     def update(self, obj, new_values: dict):
@@ -40,10 +44,14 @@ class HashIndex:
         new_values contains {field: new_value} for each changed field.
         """
         if self.frozen:
-            raise FrozenError('Cannot update item - index is frozen.')
+            raise FrozenError("Cannot update item - index is frozen.")
         self.index.update(obj, new_values)
 
-    def find_ids(self, match: Optional[Dict[str, Any]] = None, exclude: Optional[Dict[str, Any]] = None) -> Set:
+    def find_ids(
+        self,
+        match: Optional[Dict[str, Any]] = None,
+        exclude: Optional[Dict[str, Any]] = None,
+    ) -> Set:
         return self.index.find_ids(match, exclude)
 
     def freeze(self):
@@ -79,4 +87,3 @@ class HashIndex:
 def get_attributes(cls) -> List[str]:
     """Helper function to grab the attributes of a class"""
     return list(cls.__annotations__.keys())
-

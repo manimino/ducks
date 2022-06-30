@@ -17,10 +17,10 @@ class Pokemon:
 
 
 def make_test_data():
-    zapdos = Pokemon('Zapdos', 'Electric', 'Flying')
-    pikachu_1 = Pokemon('Pikachu', 'Electric', None)
-    pikachu_2 = Pokemon('Pikachu', 'Electric', None)
-    eevee = Pokemon('Eevee', 'Normal', None)
+    zapdos = Pokemon("Zapdos", "Electric", "Flying")
+    pikachu_1 = Pokemon("Pikachu", "Electric", None)
+    pikachu_2 = Pokemon("Pikachu", "Electric", None)
+    eevee = Pokemon("Eevee", "Normal", None)
     mi = HashIndex(get_attributes(Pokemon))
     mi.add(zapdos)
     mi.add(pikachu_1)
@@ -31,38 +31,40 @@ def make_test_data():
 
 def test_find_one():
     mi = make_test_data()
-    result = mi.find({'name': ['Zapdos']})
+    result = mi.find({"name": ["Zapdos"]})
     assert len(result) == 1
 
 
 def test_find_match():
     mi = make_test_data()
-    result = mi.find({'name': ['Pikachu', 'Eevee']})
+    result = mi.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
 
 
 def test_find_excluding():
     mi = make_test_data()
-    result = mi.find(match=None, exclude={'type2': None})  # Zapdos is the only one with a type2
+    result = mi.find(
+        match=None, exclude={"type2": None}
+    )  # Zapdos is the only one with a type2
     assert len(result) == 1
-    assert result[0].name == 'Zapdos'
+    assert result[0].name == "Zapdos"
 
 
 def test_remove():
     mi = make_test_data()
-    two_chus = mi.find({'name': 'Pikachu'})
+    two_chus = mi.find({"name": "Pikachu"})
     assert len(two_chus) == 2
     mi.remove(two_chus[1])
-    one_chu = mi.find({'name': 'Pikachu'})
+    one_chu = mi.find({"name": "Pikachu"})
     assert len(one_chu) == 1
 
 
 def test_update():
     mi = make_test_data()
-    eevee = mi.find({'name': 'Eevee'})[0]
-    mi.update(eevee, {'name': 'Jolteon', 'type1': 'Electric', 'type2': None})
-    res_eevee = mi.find({'name': 'Eevee'})
-    res_jolteon = mi.find({'name': 'Jolteon'})
+    eevee = mi.find({"name": "Eevee"})[0]
+    mi.update(eevee, {"name": "Jolteon", "type1": "Electric", "type2": None})
+    res_eevee = mi.find({"name": "Eevee"})
+    res_jolteon = mi.find({"name": "Jolteon"})
     assert not res_eevee
     assert res_jolteon
 
@@ -70,32 +72,38 @@ def test_update():
 def test_find_freezing():
     mi = make_test_data()
     mi.freeze()
-    result = mi.find({'name': ['Pikachu', 'Eevee']})
+    result = mi.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
 
 
 def test_exclude_freezing():
     mi = make_test_data()
     mi.freeze()
-    result = mi.find(match=None, exclude={'type2': None})  # Zapdos is the only one with a type2
+    result = mi.find(
+        match=None, exclude={"type2": None}
+    )  # Zapdos is the only one with a type2
     assert len(result) == 1
-    assert result[0].name == 'Zapdos'
+    assert result[0].name == "Zapdos"
 
 
 def test_another():
     mi = make_test_data()
-    result = mi.find(match={'name': ['Pikachu', 'Zapdos'], 'type1': 'Electric'},
-                     exclude={'type2': 'Flying'})
+    result = mi.find(
+        match={"name": ["Pikachu", "Zapdos"], "type1": "Electric"},
+        exclude={"type2": "Flying"},
+    )
     assert len(result) == 2
-    assert result[0].name == 'Pikachu'
-    assert result[1].name == 'Pikachu'
+    assert result[0].name == "Pikachu"
+    assert result[1].name == "Pikachu"
 
 
 def test_another_freeze():
     mi = make_test_data()
     mi.freeze()
-    result = mi.find(match={'name': ['Pikachu', 'Zapdos'], 'type1': 'Electric'},
-                     exclude={'type2': 'Flying'})
+    result = mi.find(
+        match={"name": ["Pikachu", "Zapdos"], "type1": "Electric"},
+        exclude={"type2": "Flying"},
+    )
     assert len(result) == 2
-    assert result[0].name == 'Pikachu'
-    assert result[1].name == 'Pikachu'
+    assert result[0].name == "Pikachu"
+    assert result[1].name == "Pikachu"
