@@ -1,8 +1,8 @@
-from typing import Optional, List, Any, Dict, Set
-
+from typing import Optional, List, Any, Dict, Set, Callable, Union
 from cykhash import Int64Set
 
 from hashindex.exceptions import MissingObjectError, MissingIndexError
+from hashindex.utils import get_field
 
 
 class MutableIndex:
@@ -20,8 +20,8 @@ class MutableIndex:
 
     def find(
         self,
-        match: Optional[Dict[str, Any]] = None,
-        exclude: Optional[Dict[str, Any]] = None,
+        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
     ) -> List:
         hits = self.find_ids(match, exclude)
         if isinstance(self.objs, dict):
@@ -31,8 +31,8 @@ class MutableIndex:
 
     def find_ids(
         self,
-        match: Optional[Dict[str, Any]] = None,
-        exclude: Optional[Dict[str, Any]] = None,
+        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
     ) -> Set:
         """
         Perform lookup based on given values. Return a set of object IDs matching constraints.
@@ -82,9 +82,8 @@ class MutableIndex:
     def add(self, obj):
         ptr = id(obj)
         self.objs[ptr] = obj
-
         for field in self.indices:
-            val = obj.__dict__.get(field, None)
+            val = get_field(obj, field)  # TODO add this to the others too, let's have a party
             self._add_to_field_index(ptr, field, val)
 
     def remove(self, obj):
