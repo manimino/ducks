@@ -20,7 +20,7 @@ def make_a_thing():
 
 
 def make_array(n=1):
-    a = array.array('Q')
+    a = array.array("Q")
     ls = []
     for i in range(n):
         t = make_a_thing()
@@ -45,16 +45,16 @@ def make_tuple(n=1):
 
 
 def main():
-    for n in [1, 10, 25, 50, 75, 100, 110, 115, 120, 150, 200, 250, 500, 1000, 10**6]:
+    for n in [1, 10, 25, 50, 75, 100, 110, 115, 120, 150, 200, 250, 500, 1000, 10 ** 6]:
         a, junk1 = make_array(n)
         s, junk2 = make_set(n)
         t, junk3 = make_tuple(n)
 
         # check sizes
         print(f" === {n} items === ")
-        print('array size:', asizeof(a))
-        print('tuple size:', asizeof(t))
-        print('set size:', asizeof(s))
+        print("array size:", asizeof(a))
+        print("tuple size:", asizeof(t))
+        print("set size:", asizeof(s))
 
         # check lookups
         obj = make_a_thing()
@@ -71,9 +71,9 @@ def main():
         _ = t.index(obj_id)
         t3 = time.time()
 
-        print('array lookup (worst):', t1-t0)
-        print('tuple lookup (worst):', t3-t2)
-        print('set lookup:', t2-t1)
+        print("array lookup (worst):", t1 - t0)
+        print("tuple lookup (worst):", t3 - t2)
+        print("set lookup:", t2 - t1)
 
         # check add speed
         obj2 = make_a_thing()
@@ -85,11 +85,10 @@ def main():
         t2 = time.time()
         t = t + (o2_id,)
         t3 = time.time()
-        print('array add:', t1-t0)
-        print('tuple add:', t3-t2)
-        print('set add:', t2-t1)
+        print("array add:", t1 - t0)
+        print("tuple add:", t3 - t2)
+        print("set add:", t2 - t1)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

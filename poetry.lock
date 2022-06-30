@@ -1,0 +1,89 @@
+[[package]]
+name = "cykhash"
+version = "2.0.0"
+description = "cython wrapper for khash-sets/maps, efficient implementation of isin and unique"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "numpy"
+version = "1.21.1"
+description = "NumPy is the fundamental package for array computing with Python."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
+name = "sortednp"
+version = "0.4.0"
+description = "Merge and intersect sorted numpy arrays."
+category = "main"
+optional = false
+python-versions = ">=3"
+
+[package.dependencies]
+numpy = ">=1.14"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.7"
+content-hash = "a3b0b3a8e03e4f9e12bf2308989bc36d5954006d900931245fe25fcb2c4e0086"
+
+[metadata.files]
+cykhash = [
+    {file = "cykhash-2.0.0.tar.gz", hash = "sha256:ab2e7b3a701291f71df626d8fe597a50b097c1b33e25b4c37681415639d270fd"},
+]
+numpy = [
+    {file = "numpy-1.21.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:38e8648f9449a549a7dfe8d8755a5979b45b3538520d1e735637ef28e8c2dc50"},
+    {file = "numpy-1.21.1-cp37-cp37m-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:fd7d7409fa643a91d0a05c7554dd68aa9c9bb16e186f6ccfe40d6e003156e33a"},
+    {file = "numpy-1.21.1-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a75b4498b1e93d8b700282dc8e655b8bd559c0904b3910b144646dbbbc03e062"},
+    {file = "numpy-1.21.1-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1412aa0aec3e00bc23fbb8664d76552b4efde98fb71f60737c83efbac24112f1"},
+    {file = "numpy-1.21.1-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:e46ceaff65609b5399163de5893d8f2a82d3c77d5e56d976c8b5fb01faa6b671"},
+    {file = "numpy-1.21.1-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:c6a2324085dd52f96498419ba95b5777e40b6bcbc20088fddb9e8cbb58885e8e"},
+    {file = "numpy-1.21.1-cp37-cp37m-win32.whl", hash = "sha256:73101b2a1fef16602696d133db402a7e7586654682244344b8329cdcbbb82172"},
+    {file = "numpy-1.21.1-cp37-cp37m-win_amd64.whl", hash = "sha256:7a708a79c9a9d26904d1cca8d383bf869edf6f8e7650d85dbc77b041e8c5a0f8"},
+    {file = "numpy-1.21.1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:95b995d0c413f5d0428b3f880e8fe1660ff9396dcd1f9eedbc311f37b5652e16"},
+    {file = "numpy-1.21.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:635e6bd31c9fb3d475c8f44a089569070d10a9ef18ed13738b03049280281267"},
+    {file = "numpy-1.21.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:4a3d5fb89bfe21be2ef47c0614b9c9c707b7362386c9a3ff1feae63e0267ccb6"},
+    {file = "numpy-1.21.1-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:8a326af80e86d0e9ce92bcc1e65c8ff88297de4fa14ee936cb2293d414c9ec63"},
+    {file = "numpy-1.21.1-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:791492091744b0fe390a6ce85cc1bf5149968ac7d5f0477288f78c89b385d9af"},
+    {file = "numpy-1.21.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0318c465786c1f63ac05d7c4dbcecd4d2d7e13f0959b01b534ea1e92202235c5"},
+    {file = "numpy-1.21.1-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:9a513bd9c1551894ee3d31369f9b07460ef223694098cf27d399513415855b68"},
+    {file = "numpy-1.21.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:91c6f5fc58df1e0a3cc0c3a717bb3308ff850abdaa6d2d802573ee2b11f674a8"},
+    {file = "numpy-1.21.1-cp38-cp38-win32.whl", hash = "sha256:978010b68e17150db8765355d1ccdd450f9fc916824e8c4e35ee620590e234cd"},
+    {file = "numpy-1.21.1-cp38-cp38-win_amd64.whl", hash = "sha256:9749a40a5b22333467f02fe11edc98f022133ee1bfa8ab99bda5e5437b831214"},
+    {file = "numpy-1.21.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:d7a4aeac3b94af92a9373d6e77b37691b86411f9745190d2c351f410ab3a791f"},
+    {file = "numpy-1.21.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:d9e7912a56108aba9b31df688a4c4f5cb0d9d3787386b87d504762b6754fbb1b"},
+    {file = "numpy-1.21.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:25b40b98ebdd272bc3020935427a4530b7d60dfbe1ab9381a39147834e985eac"},
+    {file = "numpy-1.21.1-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:8a92c5aea763d14ba9d6475803fc7904bda7decc2a0a68153f587ad82941fec1"},
+    {file = "numpy-1.21.1-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:05a0f648eb28bae4bcb204e6fd14603de2908de982e761a2fc78efe0f19e96e1"},
+    {file = "numpy-1.21.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f01f28075a92eede918b965e86e8f0ba7b7797a95aa8d35e1cc8821f5fc3ad6a"},
+    {file = "numpy-1.21.1-cp39-cp39-win32.whl", hash = "sha256:88c0b89ad1cc24a5efbb99ff9ab5db0f9a86e9cc50240177a571fbe9c2860ac2"},
+    {file = "numpy-1.21.1-cp39-cp39-win_amd64.whl", hash = "sha256:01721eefe70544d548425a07c80be8377096a54118070b8a62476866d5208e33"},
+    {file = "numpy-1.21.1-pp37-pypy37_pp73-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:2d4d1de6e6fb3d28781c73fbde702ac97f03d79e4ffd6598b880b2d95d62ead4"},
+    {file = "numpy-1.21.1.zip", hash = "sha256:dff4af63638afcc57a3dfb9e4b26d434a7a602d225b42d746ea7fe2edf1342fd"},
+]
+sortednp = [
+    {file = "sortednp-0.4.0-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:af83cb46c4fa35288d16f1550a6ec40bd865a909640e92b4d3d16c0a7d7d8529"},
+    {file = "sortednp-0.4.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:dada9f29b7dfd589e9a3f12cdc8484898a49e9c6e4d182d46798a9e8eabfddea"},
+    {file = "sortednp-0.4.0-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:f9fd982771f9a053d4e89160219b9a9622eb90690b89233000702bab32a605a3"},
+    {file = "sortednp-0.4.0-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:43b50e77a0f5ddbce3e0864507ec6b8fb94b6eddc481a2846609499d6b022ba7"},
+    {file = "sortednp-0.4.0-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:b916e97dec8fc2f1032c24505e5f6dd3ab3798d2a21c0c40a65f47c6157b0374"},
+    {file = "sortednp-0.4.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:8cccf8f54de06cc21036ab530da0e4b1e3c749504ac33bb8c1f984820f708b97"},
+    {file = "sortednp-0.4.0-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:fe3cf250ff32bb4eb7b79351c6e9309655c41f885e3af0ceb0edf5811d265908"},
+    {file = "sortednp-0.4.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:7e9591b3b237b10ad8c7dc85b49c6c9dfa1a316ebd79a6994f6b1e09f6517566"},
+    {file = "sortednp-0.4.0-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:595ccf3b96c8788ff230db7e730a8530eaa41e3db5f7ecc5a8e125724dafb6df"},
+    {file = "sortednp-0.4.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:418a4db80f494c7d1b5ed45da266306a930b789fbb5b81e2f451e68bdb4ea060"},
+    {file = "sortednp-0.4.0-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:8d396c4b9b34b672ee15988891520c95463fd6a062784f1fff06739c2dad3bdd"},
+    {file = "sortednp-0.4.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:64c3df93e0323b8b26f07c4b1514da74f59a9cbd93b1725eb66217a21043bbaa"},
+    {file = "sortednp-0.4.0-cp38-cp38-manylinux1_i686.whl", hash = "sha256:ba2e5c76fd6fbb75176edf16bf88aa483fe58bfa7a33ff0bfca3c52074504bbc"},
+    {file = "sortednp-0.4.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:1d6d7be8161845962f18890cfb7ad6c3c15a2e7ae2b26d0bdafe1f17b5cc9b8a"},
+    {file = "sortednp-0.4.0-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:6366d6aad08052122dafc371d7f9b9b4524998a83fc6e850a0d7470e5ae64339"},
+    {file = "sortednp-0.4.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:28b499fafc5f14a74924c0e8b78038d46d58824308b27437a277434c79efa4de"},
+    {file = "sortednp-0.4.0-cp39-cp39-manylinux1_i686.whl", hash = "sha256:e99c74f40319072089b19ce668d2737334ff5a3bcd06a8551eecfe6ee9b68d28"},
+    {file = "sortednp-0.4.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:e53d90de98ea8cc72b319797197ae11a798a5d4ed59c238fa4eb8b83cb387748"},
+    {file = "sortednp-0.4.0-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:e469c372e3ec4a8fcd2811734b5e9939a7fcefdf698584b36078b9df45d7228a"},
+    {file = "sortednp-0.4.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:0f8a4c4c140de4c0375c6525d993fcfececc59e805b0c17057dd0c27900cdf19"},
+    {file = "sortednp-0.4.0.tar.gz", hash = "sha256:96dc648030e00d3ff2626ea9fdd6a958caa2bcd0418124a8d2c984ce925df8a5"},
+]
