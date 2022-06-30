@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, List, Any, Dict, Set
+from typing import Iterable, Optional, List, Any, Dict, Set, Callable, Union
 
 from hashindex.exceptions import MissingIndexError, FrozenError
 from hashindex.mutable import MutableIndex
@@ -6,7 +6,7 @@ from hashindex.frozen import FrozenIndex
 
 
 class HashIndex:
-    def __init__(self, fields: Iterable[str]):
+    def __init__(self, fields: Iterable[Union[str, Callable]]):
         self.index = MutableIndex(fields)
         self.frozen = False
 
