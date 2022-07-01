@@ -29,9 +29,7 @@ def make_dict_data():
 
 def test_dicts(freeze):
     dicts = make_dict_data()
-    hi = HashIndex(['t0', 't1', 's'])
-    for d in dicts:
-        hi.add(d)
+    hi = HashIndex(dicts, ['t0', 't1', 's'])
     if freeze:
         hi.freeze()
     result = hi.find(match={'t0': [0.1, 0.3], 's': ['ABC', 'DEF']}, exclude={'t1': 0.4})
@@ -43,9 +41,7 @@ def test_getter_fn(freeze):
         return obj['s'][1]
 
     dicts = make_dict_data()
-    hi = HashIndex([_middle_letter])
-    for d in dicts:
-        hi.add(d)
+    hi = HashIndex(dicts, on=[_middle_letter])
     if freeze:
         hi.freeze()
     result = hi.find({_middle_letter: 'H'})

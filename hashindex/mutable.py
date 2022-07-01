@@ -1,4 +1,4 @@
-from typing import Optional, List, Any, Dict, Set, Callable, Union
+from typing import Optional, List, Any, Dict, Set, Callable, Union, Iterable
 from cykhash import Int64Set
 
 from hashindex.exceptions import MissingObjectError, MissingIndexError
@@ -6,17 +6,22 @@ from hashindex.utils import get_field
 
 
 class MutableIndex:
-    def __init__(self, fields):
+    def __init__(self,
+                 objs: Optional[Iterable[Any]] = None,
+                 on: Iterable[Union[str, Callable]] = None
+                 ):
         # Make an index for each field.
         # Each index is a dict of {field_value: Int64Set(pointers)}.
         self.indices = {}
-        for field in fields:
+        for field in on:
             self.indices[field] = dict()
 
         # lookup table for objs
         self.objs = dict()
-
         self.frozen = False  # See freeze() method
+
+        for obj in objs:
+            self.add(obj)
 
     def find(
         self,

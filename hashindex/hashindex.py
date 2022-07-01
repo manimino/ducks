@@ -6,8 +6,11 @@ from hashindex.frozen import FrozenIndex
 
 
 class HashIndex:
-    def __init__(self, fields: Iterable[Union[str, Callable]]):
-        self.index = MutableIndex(fields)
+    def __init__(self,
+                 objs: Optional[Iterable[Any]] = None,
+                 on: Iterable[Union[str, Callable]] = None
+                 ):
+        self.index = MutableIndex(objs, on=on)
         self.frozen = False
 
     def find(

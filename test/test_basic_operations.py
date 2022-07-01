@@ -23,11 +23,7 @@ def make_test_data(freeze):
     pikachu_1 = Pokemon("Pikachu", "Electric", None)
     pikachu_2 = Pokemon("Pikachu", "Electric", None)
     eevee = Pokemon("Eevee", "Normal", None)
-    mi = HashIndex(get_attributes(Pokemon))
-    mi.add(zapdos)
-    mi.add(pikachu_1)
-    mi.add(pikachu_2)
-    mi.add(eevee)
+    mi = HashIndex([zapdos, pikachu_1, pikachu_2, eevee], on=get_attributes(Pokemon))
     if freeze:
         mi.freeze()
     return mi
