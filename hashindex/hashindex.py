@@ -11,6 +11,7 @@ class HashIndex:
                  on: Iterable[Union[str, Callable]] = None
                  ):
         self.index = MutableIndex(objs, on=on)
+        self.on = on  # just here to allow easy cloning via `new_idx = HashIndex(old_idx, old_idx.on)`
         self.frozen = False
 
     def find(
