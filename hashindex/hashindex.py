@@ -16,8 +16,8 @@ class HashIndex:
 
     def find(
         self,
-        match: Optional[Dict[str, Any]] = None,
-        exclude: Optional[Dict[str, Any]] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> List:
         """
         Find objects that fit the query.

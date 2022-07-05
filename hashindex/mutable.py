@@ -1,6 +1,7 @@
 from typing import Optional, List, Any, Dict, Set, Callable, Union, Iterable
 from cykhash import Int64Set
 
+from operator import itemgetter
 from hashindex.exceptions import MissingObjectError, MissingIndexError
 from hashindex.utils import get_field
 
@@ -29,10 +30,13 @@ class MutableIndex:
         exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
     ) -> List:
         hits = self.find_ids(match, exclude)
-        if isinstance(self.objs, dict):
-            return [self.objs[ptr] for ptr in hits]
+        # itemgetter is about 10% faster than doing a comprehension like [self.objs[ptr] for ptr in hits]
+        if len(hits) == 0:
+            return []
+        elif len(hits) == 1:
+            return [itemgetter(*hits)(self.objs)]  # itemgetter returns a single item here, not in a collection
         else:
-            return self.objs.get(hits)
+            return list(itemgetter(*hits)(self.objs))  # itemgetter returns a tuple of items here, so make it a list
 
     def find_ids(
         self,

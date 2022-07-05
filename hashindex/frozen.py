@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, Union, Callable
 
 import numpy as np
 import sortednp as snp
@@ -17,6 +17,8 @@ class FrozenIndex:
         # Convert everything to sorted numpy arrays, where lookups, intersection, and union
         # are all BLAZING fast.
         self.obj_ids = np.array(sorted(mut.objs.keys()), dtype="uint64")
+
+        # todo: can store these in a list instead and use operator.itemgetter() to subselect the matching indices
         self.objects = np.array([mut.objs[k] for k in self.obj_ids], dtype="O")
 
         self.indices = {}
@@ -38,8 +40,8 @@ class FrozenIndex:
 
     def find(
         self,
-        match: Optional[Dict[str, Any]] = None,
-        exclude: Optional[Dict[str, Any]] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> np.ndarray:
         return self._dereference_obj_ids(self.find_obj_ids(match, exclude))
 
