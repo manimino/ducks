@@ -73,7 +73,11 @@ class MutableIndex:
                     hits = Int64Set()
                     break
                 else:
-                    hits = hits.intersection(field_hits)
+                    # intersecting from the smaller set is faster in cykhash sets
+                    if len(hits) < len(field_hits):
+                        hits = hits.intersection(field_hits)
+                    else:
+                        hits = field_hits.intersection(hits)
         else:
             # 'match' is unspecified, so match all objects
             hits = Int64Set(self.objs.keys())
@@ -146,9 +150,11 @@ class MutableIndex:
             matches = Int64Set()
             for v in value:
                 v_matches = self.indices[field].get(v, Int64Set())
-                matches = Int64Set.union(
-                    matches, v_matches
-                )
+                # intersecting based on the larger set is faster in cykhash
+                if len(matches) > len(v_matches):
+                    matches = matches.union(v_matches)
+                else:
+                    matches = v_matches.union(matches)
             return matches
         else:
             return self.indices[field].get(value, Int64Set())
