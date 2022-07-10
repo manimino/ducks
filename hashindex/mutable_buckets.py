@@ -1,4 +1,6 @@
-from cykhash import Int64Set
+from typing import Dict, Any
+
+from cykhash import Int64Set, Int64toInt64Map
 
 
 class HashBucket:
@@ -6,13 +8,11 @@ class HashBucket:
     A HashBucket contains all obj_ids that have value hashes between some min and max value.
     When the number of items in a HashBucket reaches SIZE_THRESH, the bucket will be split
     into two buckets.
-    If a bucket ever gets empty, delete it unless it's the leftmost one -- we need at least one
-    always.
     """
 
     def __init__(self):
-        self.obj_ids = set()  # uint64
-        self.val_hash_counts = dict()  # {int64: int64} - which hashes are stored in this bucket
+        self.obj_ids = Int64Set()  # uint64
+        self.val_hash_counts = Int64toInt64Map()  # {int64: int64} - which hashes are stored in this bucket
 
     def add(self, val_hash, obj_id):
         count = self.val_hash_counts.get(val_hash, 0)
@@ -33,7 +33,7 @@ class HashBucket:
         self.val_hash_counts[val_hash] -= 1
         self.obj_ids.remove(obj_id)
 
-    def split(self, field, obj_lookup):
+    def split(self, field, obj_map: Dict[int, Any]):
         my_hashes = list(sorted(self.val_hash_counts.keys()))
         # dump out the upper half of our hashes
         half_point = len(my_hashes) // 2
@@ -42,9 +42,9 @@ class HashBucket:
         # dereference each object
         # Find the objects with field_vals that hash to any of dumped_hashes
         # we will move their ids to the new bucket
-        dumped_obj_ids = set()
+        dumped_obj_ids = Int64Set()
         for obj_id in list(self.obj_ids):
-            obj = obj_lookup.get(obj_id)
+            obj = obj_map.get(obj_id)
             obj_val = getattr(obj, field, None)
             if hash(obj_val) in dumped_hash_counts:
                 dumped_obj_ids.add(obj_id)
@@ -60,23 +60,23 @@ class HashBucket:
 class DictBucket:
     """
     A DictBucket stores object ids corresponding to only one val_hash. Note that multiple values
-    coult have the same val_hash (collision).
+    could have the same val_hash (collision), but usually this bucket will contain just one value.
     It stores all entries in a dict of {val: obj_id_set}, so it supports lookup by field value.
     This makes finding objects by val very fast. Unlike a HashBucket, we don't have to dereference
     all the objects and check their values during a find().
     DictBucket is great when many objects have the same val.
     """
 
-    def __init__(self, val_hash, obj_ids, obj_lookup, field):
+    def __init__(self, val_hash, obj_ids, obj_map, field):
         self.val_hash = val_hash
         self.d = dict()
         for obj_id in obj_ids:
-            obj = obj_lookup.get(obj_id)
+            obj = obj_map.get(obj_id)
             val = getattr(obj, field, None)
             if val in self.d:
                 self.d[val].add(obj_id)
             else:
-                self.d[val] = set([obj_id])
+                self.d[val] = Int64Set([obj_id])
 
     def add(self, val, obj_id):
         obj_ids = self.d.get(val, Int64Set())
@@ -99,15 +99,3 @@ class DictBucket:
 
     def __len__(self):
         return sum(len(s) for s in self.d.values())
-
-
-class ObjLookup:
-
-    def __init__(self):
-        self.objs = dict()
-
-    def get(self, obj_id):
-        return self.objs.get(obj_id)
-
-    def add(self, obj_id, obj):
-        self.objs[obj_id] = obj

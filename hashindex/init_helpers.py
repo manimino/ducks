@@ -76,7 +76,7 @@ def find_bucket_starts(counts, limit):
 
 
 @dataclass
-class BucketInfo:
+class BucketPlan:
     distinct_hashes: np.ndarray
     distinct_hash_counts: np.ndarray
     obj_arr: np.ndarray
@@ -95,7 +95,7 @@ def compute_buckets(objs, field, bucket_size_limit):
     starts, counts, val_hashes = run_length_encode(sorted_hashes)
     bucket_starts = find_bucket_starts(counts, bucket_size_limit)
 
-    bucket_infos = []
+    bucket_plans = []
     for i, s in enumerate(bucket_starts):
         if i + 1 == len(bucket_starts):
             distinct_hashes = val_hashes[s:]
@@ -108,12 +108,12 @@ def compute_buckets(objs, field, bucket_size_limit):
             distinct_hash_counts = counts[s:t]
             obj_arr = sorted_objs[starts[s]:starts[t]]
             hash_arr = sorted_hashes[starts[s]:starts[t]]
-        bucket_infos.append(
-            BucketInfo(
+        bucket_plans.append(
+            BucketPlan(
                 distinct_hashes=distinct_hashes,
                 distinct_hash_counts=distinct_hash_counts,
                 obj_arr=obj_arr,
                 hash_arr=hash_arr,
             )
         )
-    return bucket_infos
+    return bucket_plans

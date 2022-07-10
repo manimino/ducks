@@ -1,8 +1,7 @@
-import math
 import random
 import time
 from dataclasses import dataclass
-from hashindex.hashindex import HashIndex
+from hashindex import HashIndex
 
 from pympler import asizeof
 

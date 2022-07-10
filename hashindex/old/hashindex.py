@@ -2,7 +2,7 @@ from typing import Iterable, Optional, List, Any, Dict, Set, Callable, Union
 
 from hashindex.exceptions import MissingIndexError, FrozenError
 from hashindex.mutable import MutableIndex
-from hashindex.frozen import FrozenIndex
+from hashindex.old.frozen import FrozenIndex
 
 
 class HashIndex:

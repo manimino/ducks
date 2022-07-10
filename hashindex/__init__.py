@@ -1,1 +1,2 @@
-from .hashindex import HashIndex, get_attributes
+from hashindex.mutable import HashIndex
+from hashindex.old.frozen import FrozenHashIndex

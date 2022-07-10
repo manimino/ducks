@@ -4,25 +4,22 @@ from cykhash import Int64Set
 from operator import itemgetter
 from hashindex.exceptions import MissingObjectError, MissingIndexError
 from hashindex.utils import get_field
+from hashindex.mutable_field import MutableFieldIndex
 
 
-class MutableIndex:
+class HashIndex:
     def __init__(self,
                  objs: Optional[Iterable[Any]] = None,
                  on: Iterable[Union[str, Callable]] = None
                  ):
+
+        self.obj_map = {id(obj): obj for obj in objs}
+
         # Make an index for each field.
         # Each index is a dict of {field_value: Int64Set(pointers)}.
         self.indices = {}
         for field in on:
-            self.indices[field] = dict()
-
-        # lookup table for objs
-        self.objs = dict()
-        self.frozen = False  # See freeze() method
-
-        for obj in objs:
-            self.add(obj)
+            self.indices[field] = MutableFieldIndex(field, self.obj_map)
 
     def find(
         self,
@@ -34,9 +31,9 @@ class MutableIndex:
         if len(hits) == 0:
             return []
         elif len(hits) == 1:
-            return [itemgetter(*hits)(self.objs)]  # itemgetter returns a single item here, not in a collection
+            return [itemgetter(*hits)(self.obj_map)]  # itemgetter returns a single item here, not in a collection
         else:
-            return list(itemgetter(*hits)(self.objs))  # itemgetter returns a tuple of items here, so make it a list
+            return list(itemgetter(*hits)(self.obj_map))  # itemgetter returns a tuple of items here, so make it a list
 
     def find_ids(
         self,
@@ -80,7 +77,7 @@ class MutableIndex:
                         hits = field_hits.intersection(hits)
         else:
             # 'match' is unspecified, so match all objects
-            hits = Int64Set(self.objs.keys())
+            hits = Int64Set(self.obj_map.keys())
 
         # perform 'exclude' query
         if exclude:
@@ -94,24 +91,24 @@ class MutableIndex:
 
     def add(self, obj):
         ptr = id(obj)
-        self.objs[ptr] = obj
+        self.obj_map[ptr] = obj
         for field in self.indices:
             val = get_field(obj, field)  # TODO add this to the others too, let's have a party
             self._add_to_field_index(ptr, field, val)
 
     def remove(self, obj):
         ptr = id(obj)
-        if ptr not in self.objs:
+        if ptr not in self.obj_map:
             raise MissingObjectError
 
         for field in self.indices:
             val = obj.__dict__.get(field, None)
             self._remove_from_field_index(ptr, field, val)
-        del self.objs[ptr]
+        del self.obj_map[ptr]
 
     def update(self, obj, new_values: dict):
         ptr = id(obj)
-        if ptr not in self.objs:
+        if ptr not in self.obj_map:
             raise MissingObjectError
         for field, new_value in new_values.items():
             # update obj
@@ -160,7 +157,7 @@ class MutableIndex:
             return self.indices[field].get(value, Int64Set())
 
     def __contains__(self, obj):
-        return self.objs.get(id(obj), None) is not None
+        return self.obj_map.get(id(obj), None) is not None
 
     def __iter__(self, obj):
-        return iter(self.objs.values())
+        return iter(self.obj_map.values())

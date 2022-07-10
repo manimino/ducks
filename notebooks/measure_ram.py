@@ -1,13 +1,15 @@
 import os
 import psutil
+import random
 import subprocess
 import sys
 
 from cykhash import Int64Set
 import numpy as np
+from BTrees.LOBTree import LOBTreePy
 
 
-TOT_ITEMS = 5 * 10 ** 7
+TOT_ITEMS = 1 * 10 ** 5
 
 
 def cyk(items_per=10):
@@ -64,10 +66,25 @@ def pytup(items_per=10):
     print("python_tuple", items_per, ram)
 
 
+def btree(junk):
+    items = [random.random() for _ in range(TOT_ITEMS)]
+    ids = [id(item) for item in items]
+    process = psutil.Process(os.getpid())
+    baseline = process.memory_info().rss
+    t = LOBTreePy()
+    for i in range(TOT_ITEMS):
+        t.insert(ids[i], items[i])
+    used = process.memory_info().rss - baseline
+    ram = round(used / TOT_ITEMS, 1)
+    print("python_btree", junk, ram)
+
+
 def main(method, items_per):
     iper = int(items_per)
     if method == "pytup":
         f = pytup
+    elif method == "btree":
+        f = btree
     elif method == "pyset":
         f = pyset
     elif method == "cyk":
@@ -102,7 +119,7 @@ if __name__ == "__main__":
         main(sys.argv[1], sys.argv[2])
     else:
         results = dict()
-        for method in ["pytup", "pyset", "cyk", "nparr"]:
+        for method in ["pytup", "pyset", "cyk", "nparr", 'btree']:
             m_result = dict()
             for items_per in [1, 10, 50, 100, 1000, 10000]:
                 txt = subprocess.check_output(
