@@ -12,7 +12,7 @@ def make_index():
     things = [Thing() for _ in range(10 ** 3)]
     mf = MutableFieldIndex('s')
     for thing in things:
-        mf.add(thing)
+        mf.add(id(thing), thing)
     return things, mf
 
 

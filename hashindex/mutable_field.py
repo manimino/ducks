@@ -2,9 +2,11 @@
 from sortedcontainers import SortedDict
 from typing import Callable, Union, Dict, Any
 
+from cykhash import Int64Set
+
 from hashindex.constants import SIZE_THRESH, HASH_MIN
 from hashindex.mutable_buckets import HashBucket, DictBucket
-
+from hashindex.utils import get_field
 
 class MutableFieldIndex:
     """
@@ -43,13 +45,13 @@ class MutableFieldIndex:
         if isinstance(bucket, DictBucket):
             return bucket.get_matching_ids(val)
         else:
-            # filter to just the obj_ids that match val
-            matched_ids = []
+            # get everything in this HashBucket, and filter to just the obj_ids where val matches
+            matched_ids = Int64Set()
             for obj_id in bucket.get_all_ids():
                 obj = self.obj_map.get(obj_id)
-                obj_val = getattr(obj, self.field, None)
+                obj_val = get_field(obj, self.field)
                 if obj_val is val or obj_val == val:
-                    matched_ids.append(obj_id)
+                    matched_ids.add(obj_id)
             return matched_ids
 
     def get_all_objs(self):
@@ -77,10 +79,9 @@ class MutableFieldIndex:
             new_bucket.update(new_hash_counts, new_obj_ids)
             self.buckets[min(new_hash_counts.keys())] = new_bucket
 
-    def add(self, obj):
-        val = getattr(obj, self.field, None)
+    def add(self, obj_id, obj):
+        val = get_field(obj, self.field)
         val_hash = hash(val)
-        obj_id = id(obj)
         self.obj_map[obj_id] = obj
         k = self._get_bucket_key_for(val_hash)
         if isinstance(self.buckets[k], DictBucket):
@@ -99,7 +100,7 @@ class MutableFieldIndex:
         if isinstance(self.buckets[k], HashBucket) and len(self.buckets[k]) > SIZE_THRESH:
             self._handle_big_hash_bucket(k)
 
-    def remove(self, val, obj_id):
+    def remove(self, obj_id, obj):
         """
         Remove a single object from the index.
 
@@ -109,6 +110,7 @@ class MutableFieldIndex:
         TODO: We should remove it and create a HashBucket instead.
         TODO: also check logic to make sure we create a new hash bucket to the right of dictbucket
         """
+        val = get_field(obj, self.field)
         val_hash = hash(val)
         k = self._get_bucket_key_for(val_hash)
         if isinstance(self.buckets[k], HashBucket):
@@ -124,7 +126,7 @@ class MutableFieldIndex:
             bucket = self.buckets[bkey]
             bset = set()
             for obj_id in bucket.get_all_ids():
-                o = self.obj_map.get(obj_id)
-                bset.add(getattr(o, self.field))
+                obj = self.obj_map.get(obj_id)
+                bset.add(get_field(obj, self.field))
             ls.append((bkey, bset, len(bucket), type(self.buckets[bkey]).__name__))
         return ls

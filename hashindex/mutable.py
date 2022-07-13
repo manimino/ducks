@@ -13,13 +13,15 @@ class HashIndex:
                  on: Iterable[Union[str, Callable]] = None
                  ):
 
-        self.obj_map = {id(obj): obj for obj in objs}
+        self.obj_map = dict()
 
         # Make an index for each field.
         # Each index is a dict of {field_value: Int64Set(pointers)}.
         self.indices = {}
         for field in on:
             self.indices[field] = MutableFieldIndex(field, self.obj_map)
+        for obj in objs:
+            self.add(obj)
 
     def find(
         self,
@@ -62,19 +64,21 @@ class HashIndex:
         if match:
             # find intersection of each field
             for field, value in match.items():
+                # if multiple values for a field, find each value and union those first
                 field_hits = self._match_any_of(field, value)
-                if hits is None:
+                if hits is None:  # first field
                     hits = field_hits
-                if not field_hits:
-                    # this was empty, so intersection will be empty
-                    hits = Int64Set()
-                    break
-                else:
+                if field_hits:
+                    # intersect this field's hits with our hits so far
                     # intersecting from the smaller set is faster in cykhash sets
                     if len(hits) < len(field_hits):
                         hits = hits.intersection(field_hits)
                     else:
                         hits = field_hits.intersection(hits)
+                else:
+                    # this field had no matches, therefore the intersection will be empty. We can stop here.
+                    hits = Int64Set()
+                    break
         else:
             # 'match' is unspecified, so match all objects
             hits = Int64Set(self.obj_map.keys())
@@ -93,8 +97,7 @@ class HashIndex:
         ptr = id(obj)
         self.obj_map[ptr] = obj
         for field in self.indices:
-            val = get_field(obj, field)  # TODO add this to the others too, let's have a party
-            self._add_to_field_index(ptr, field, val)
+            self.indices[field].add(ptr, obj)
 
     def remove(self, obj):
         ptr = id(obj)
@@ -102,8 +105,7 @@ class HashIndex:
             raise MissingObjectError
 
         for field in self.indices:
-            val = get_field(obj, field)
-            self._remove_from_field_index(ptr, field, val)
+            self.indices[field].remove(ptr, obj)
         del self.obj_map[ptr]
 
     def update(self, obj, new_values: dict):
@@ -116,38 +118,17 @@ class HashIndex:
             set_field(obj, field, new_value)
             # update index
             if field in self.indices:
-                self._remove_from_field_index(ptr, field, old_value)
-                self._add_to_field_index(ptr, field, new_value)
-
-    def _add_to_field_index(self, ptr: int, field: str, val: Any):
-        """Add an object's pointer to the appropriate field index slot."""
-        idx = self.indices[field]
-        if val not in idx:
-            # make new set of obj ids
-            idx[val] = Int64Set()
-        idx[val].add(ptr)
-
-    def _remove_from_field_index(self, ptr: int, field: str, val: Any):
-        """
-        Remove an object's pointer from a field index slot.
-
-        If 0 elements remain, remove the value from the field index.
-        """
-        idx = self.indices[field]
-        if len(idx[val]) == 1:
-            # no more pointers for this value, remove value
-            del idx[val]
-        else:
-            idx[val].remove(ptr)
+                self.indices[field].remove(ptr, obj)
+                self.indices[field].add(ptr, obj)
 
     def _match_any_of(self, field: str, value: Any):
-        """Get matches during a find(). If multiple values specified, handle union logic."""
-        if type(value) is list:
+        """Get matches for a single field during a find(). If multiple values specified, handle union logic."""
+        if isinstance(value, list):
             # take the union of all matches
             matches = Int64Set()
             for v in value:
                 v_matches = self.indices[field].get_obj_ids(v)
-                # intersecting based on the larger set is faster in cykhash
+                # union with the larger set on the left is faster in cykhash
                 if len(matches) > len(v_matches):
                     matches = matches.union(v_matches)
                 else:
