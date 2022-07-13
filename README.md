@@ -10,18 +10,39 @@ Find Python objects by exact match on their attributes.
 
 Beta, it probably works, but I wouldn't put it in prod yet.
 
-### Example
+### Examples
 
 Find objects that have size "large", shape "circle" or "square", where the color is not "red".
 
 ```
 from hashindex import HashIndex
 
-hi = HashIndex(['size', 'color', 'shape'])
-for obj in my_objects:
-    hi.add(obj)
-hi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color': 'red'})
+hi = HashIndex(my_objects, ['size', 'color', 'shape'])
+hi.find(
+    match={
+        'size': 'large', 
+        'shape': ['circle', 'square']
+    }, 
+    exclude={
+        'color': 'red'
+    })
 ```
+
+You can also index on functions of objects.
+
+```
+def has_e(obj):
+    return 'e' in obj
+
+objects = ['one', 'two', 'three']
+hi = HashIndex(objects, [has_e, len])
+hi.find({len, 3})       # returns ['one', 'two']
+hi.find({has_e, True})  # returns ['one', 'three']
+```
+
+More examples:
+- FizzBuzz 
+- Wordle solver
 
 [See docs for more.](https://pypi.org/project/hashindex/)
 
@@ -39,3 +60,19 @@ hi.find(match={'size': 'large', 'shape': ['circle', 'square']}, exclude={'color'
 
 ### Performance
 
+Pretty good.
+
+
+### 
+
+*Attributes, attributes, Can help you organize*
+
+*A group that's too diverse and dense*
+
+*into smaller groups that make more sense*
+
+*So finally, everything computes*
+
+*Thanks to attributes*
+
+-- Peg and Cat

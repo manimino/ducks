@@ -3,7 +3,7 @@ from cykhash import Int64Set
 
 from operator import itemgetter
 from hashindex.exceptions import MissingObjectError, MissingIndexError
-from hashindex.utils import get_field
+from hashindex.utils import get_field, set_field
 from hashindex.mutable_field import MutableFieldIndex
 
 
@@ -102,7 +102,7 @@ class HashIndex:
             raise MissingObjectError
 
         for field in self.indices:
-            val = obj.__dict__.get(field, None)
+            val = get_field(obj, field)
             self._remove_from_field_index(ptr, field, val)
         del self.obj_map[ptr]
 
@@ -112,8 +112,8 @@ class HashIndex:
             raise MissingObjectError
         for field, new_value in new_values.items():
             # update obj
-            old_value = obj.__dict__.get(field, None)
-            obj.__dict__[field] = new_value
+            old_value = get_field(obj, field)
+            set_field(obj, field, new_value)
             # update index
             if field in self.indices:
                 self._remove_from_field_index(ptr, field, old_value)
@@ -146,7 +146,7 @@ class HashIndex:
             # take the union of all matches
             matches = Int64Set()
             for v in value:
-                v_matches = self.indices[field].get(v, Int64Set())
+                v_matches = self.indices[field].get_obj_ids(v)
                 # intersecting based on the larger set is faster in cykhash
                 if len(matches) > len(v_matches):
                     matches = matches.union(v_matches)
@@ -154,7 +154,7 @@ class HashIndex:
                     matches = v_matches.union(matches)
             return matches
         else:
-            return self.indices[field].get(value, Int64Set())
+            return self.indices[field].get_obj_ids(value)
 
     def __contains__(self, obj):
         return self.obj_map.get(id(obj), None) is not None

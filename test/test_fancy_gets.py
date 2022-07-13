@@ -27,22 +27,18 @@ def make_dict_data():
     return dicts
 
 
-def test_dicts(freeze):
+def test_dicts(index_type):
     dicts = make_dict_data()
     hi = HashIndex(dicts, ['t0', 't1', 's'])
-    if freeze:
-        hi.freeze()
     result = hi.find(match={'t0': [0.1, 0.3], 's': ['ABC', 'DEF']}, exclude={'t1': 0.4})
     assert result == [dicts[0]]
 
 
-def test_getter_fn(freeze):
+def test_getter_fn(index_type):
     def _middle_letter(obj):
         return obj['s'][1]
 
     dicts = make_dict_data()
-    hi = HashIndex(dicts, on=[_middle_letter])
-    if freeze:
-        hi.freeze()
+    hi = index_type(dicts, on=[_middle_letter])
     result = hi.find({_middle_letter: 'H'})
     assert result == [dicts[2]]

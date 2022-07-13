@@ -47,4 +47,4 @@ class FrozenHashIndex:
         return self._find_obj_id(id(obj)) != -1
 
     def __iter__(self):
-        return iter(self.objects)
+        return iter(self.obj_arr)

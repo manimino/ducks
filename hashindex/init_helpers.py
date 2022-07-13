@@ -18,7 +18,6 @@ Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-
 """
 
 import numpy as np
-from numba import njit
 from dataclasses import dataclass
 from typing import Tuple, List, Union, Callable, Any
 from hashindex.utils import get_field
@@ -56,12 +55,13 @@ def run_length_encode(sorted_hashes: np.ndarray):
     return starts, counts, sorted_hashes[i]
 
 
-@njit
 def find_bucket_starts(counts, limit):
     """
     Find the start positions for each bucket via a cumulative sum that resets when limit is exceeded.
 
-    Takes about 1ms for a counts length of 1M. Without @njit, it would take 300ms instead - great speedup here.
+    This function is ridiculously faster (like 300x) if decorated with @numba.njit.
+    However, numba is a difficult dependency to add, as it conflicts with recent numpy. And numpy updates
+    are constantly required due to security updates. So, leaving out numba here despite its amazing performance.
     """
     result = np.empty(len(counts), dtype=np.uint64)
     total = 0

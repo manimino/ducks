@@ -12,10 +12,10 @@ class MutableFieldIndex:
     Several values may be allocated to the same bucket for space efficiency reasons.
     """
 
-    def __init__(self, field: Union[Callable, str], obj_map: Dict[int, Any]):
+    def __init__(self, field: Union[Callable, str], obj_map: Dict[int, Any] = None):
         self.buckets = SortedDict()  # O(1) add / remove, O(log(n)) find bucket for key
         self.buckets[HASH_MIN] = HashBucket()  # always contains at least one bucket
-        self.obj_map = obj_map  # for reading only, will not be mutated here
+        self.obj_map = obj_map if obj_map else dict()  # for reading only, will not be mutated here
         self.field = field
 
     def get_objs(self, val):
@@ -49,7 +49,7 @@ class MutableFieldIndex:
                 obj = self.obj_map.get(obj_id)
                 obj_val = getattr(obj, self.field, None)
                 if obj_val is val or obj_val == val:
-                    matched_ids.append(obj)
+                    matched_ids.append(obj_id)
             return matched_ids
 
     def get_all_objs(self):
@@ -81,7 +81,7 @@ class MutableFieldIndex:
         val = getattr(obj, self.field, None)
         val_hash = hash(val)
         obj_id = id(obj)
-        self.obj_map.add(obj_id, obj)
+        self.obj_map[obj_id] = obj
         k = self._get_bucket_key_for(val_hash)
         if isinstance(self.buckets[k], DictBucket):
             if val_hash == self.buckets[k].val_hash:
