@@ -48,7 +48,10 @@ class HashIndex:
         If "having" is None / empty, it matches all objects.
         There is an implicit "AND" joining all constraints.
         """
-
+        for m in match, exclude:
+            if m is not None:
+                if not isinstance(m, dict):
+                    raise TypeError('Arguments must be of type dict or None.')
         # input validation -- check that we have an index for all desired lookups
         required_indices = set()
         if match:
@@ -109,17 +112,11 @@ class HashIndex:
         del self.obj_map[ptr]
 
     def update(self, obj, new_values: dict):
-        ptr = id(obj)
-        if ptr not in self.obj_map:
-            raise MissingObjectError
+        """Change the indexed values for obj to the new values specified. Also updates the values of obj."""
+        self.remove(obj)
         for field, new_value in new_values.items():
-            # update obj
-            old_value = get_field(obj, field)
             set_field(obj, field, new_value)
-            # update index
-            if field in self.indices:
-                self.indices[field].remove(ptr, obj)
-                self.indices[field].add(ptr, obj)
+        self.add(obj)
 
     def _match_any_of(self, field: str, value: Any):
         """Get matches for a single field during a find(). If multiple values specified, handle union logic."""

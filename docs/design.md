@@ -44,7 +44,7 @@ Thus, a MutableFieldIndex contains:
 on the range of value hashes they hold.
  - Logic for finding the appropriate bucket for a hashed value, splitting buckets, and deleting buckets.
 
-
+[!Layout of DictBucket and HashBucket in a MutableFieldIndex](bucketing.png)
 
 ### HashBucket
 
@@ -66,8 +66,34 @@ Each DictBucket holds all object IDs that have a specific hashed value. Potentia
 same hash (a collision). Therefore, the DictBucket is a dict of {value: {object_id_set}} so distinct values are stored
 separately even if they have the same hash.
 
-### Summary
+### Summary / Performance
 
-That's all for the mutable HashIndex. 
+While this design is more complex than the naive dict-of-set implementation, the memory efficiency is tremendously 
+improved. This allows HashIndex to store far more items than it would otherwise.
+
+DictBucket works pretty much the same as a dict-of-set does, with the minor overhead of needing to locate the bucket. 
+So the lookup speed there is quite fast.
+
+There's more of a performance hit when a query needs to find small keys. However, queries that find small keys
+tend to be fast in other ways. Their intersect and union operations are trivial, and their object-id-to-object lookups
+are quick thanks to the low number of objects. So the overall speed of a small query is still very fast.
 
 ____
+
+### FrozenIndex
+
+It's the same overall design as HashIndex. The big difference is that it does not use sets. In place of a sets of object
+IDs, FrozenIndex uses pairs of numpy arrays: one of objects, one of IDs. Both arrays are sorted by object ID.
+
+Operations on sorted arrays are quite fast. Consider that lookup in a set is O(1), unless you get unlucky, and 
+then it's up to O(n). A sorted array lookup is O(log n). Operations like intersection and union in
+sorted arrays benefit from significant locality advantages as well. 
+
+The major downside is mutability; adding or removing an element requires making a new array. But in a frozen
+container, this is not a concern. Buckets and their arrays are intelligently pre-allocated and never need to change.
+
+Overall, FrozenIndex performs very well. Its speed benefit is especially pronounced when fetching large numbers of 
+objects, since there is no "object-id-to-object" dict lookup needed. 
+
+Big thanks go to Frank Sauerburger for writing [sortednp](https://pypi.org/project/sortednp/). That library 
+makes the union / intersection operations really fly here.

@@ -102,9 +102,3 @@ class TestMutations(unittest.TestCase):
                 mi.add(glaceon)
                 res = mi.find({"name": "Glaceon"})
                 assert res == [glaceon]
-
-    def test_update_immutable_object(self):
-        x = 'blah'
-        hi = HashIndex([x], [len])
-        with self.assertRaises(ImmutableUpdateError):
-            hi.update(x, {})
