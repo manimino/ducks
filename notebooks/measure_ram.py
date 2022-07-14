@@ -9,7 +9,7 @@ import numpy as np
 from BTrees.LOBTree import LOBTreePy
 
 
-TOT_ITEMS = 1 * 10 ** 5
+TOT_ITEMS = 1 * 10 ** 6
 
 
 def cyk(items_per=10):
