@@ -2,11 +2,31 @@
 
 [![tests Actions Status](https://github.com/manimino/hashindex/workflows/tests/badge.svg)](https://github.com/manimino/hashindex/actions)
 
-Find Python objects by exact match on their attributes.
+Find Python objects by their attributes.
 
 `pip install hashindex`
 
-## Usage
+Usage:
+
+```
+from hashindex import HashIndex
+hi = HashIndex(objects, ['attr1', 'attr2', 'attr3'])
+hi.find(                                  # find objects
+    match={'attr1': a, 'attr2': [b, c]},  # where attr1 == a and attr2 in [b, c]
+    exclude={'attr3': d}                  # and attr3 != d
+)
+```
+
+Any Python object can be indexed: class instances, namedtuples, dicts, strings, floats, ints, etc.
+
+In addition to attributes, HashIndex can find objects by user-defined functions.  
+This allows for finding by nested attributes and many more applications. 
+
+____
+
+## Examples
+
+### Find dicts by attribute
 
 ```
 from hashindex import HashIndex
@@ -30,39 +50,7 @@ hi.find(
 )
 ```
 
-____
-
-## Features
-
- - Any Python object can be indexed: class instances, namedtuples, dicts, strings, floats, ints, etc. 
- - The objects do not need to be hashable. They are not serialized, copied, or persisted. HashIndex is just a container.
- - The attributes must be hashable, though.
- - Functions of the objects can also be indexed. This allows for indexing nested data and many more applications.
- - If an object is missing an attribute, it will be indexed with a `None` value for that attribute.
- - HashIndex is mutable; `add`, `remove` and `update` of objects is supported.
- - If you do not need mutability, `FrozenHashIndex` is the immutable version. It is faster, more RAM-efficient, and 
-thread-safe.
- - HashIndex and FrozenHashIndex have been optimized for memory efficiency and speed. 
- - They scale well. You can store a billion items in a HashIndex or FrozenHashIndex. It will take up about 20GB of RAM.
-
-____
-
-## How it works
-
-At a high level, you can think of each attribute index as a dict of set of object IDs. An attribute lookup
-finds a set of object IDs. Then union / intersection / difference operations are performed on the results of those
-lookups to find the object IDs matching the query constraints. The object corresponding to each ID is returned. 
-
-In practice, dict-of-set does not perform well, especially on high-cardinality data. So instead, HashIndex uses data 
-structures that deliver the same workflow but with far better memory efficiency and lookup speed.
-
-[See design for details.](docs/design.md)
-
-____
-
-## More Examples
-
-### Nested attributes
+### Find by nested attribute, using a function
 
 ```
 class Order:
@@ -87,15 +75,22 @@ hi = HashIndex(objects, ['size', has_cheese])
 hi.find({has_cheese: True})  
 ```
 
-### String objects
+### Find string objects
+
+This example uses a FrozenHashIndex. A FrozenHashIndex works just like a HashIndex, but items cannot be added, removed, 
+or updated after initialization.
+
+FrozenHashIndex is faster than the regular HashIndex, and good for multithreaded use cases.
 
 ```
+from hashindex import FrozenHashIndex
+
 objects = ['one', 'two', 'three']
 
 def e_count(obj):
     return obj.count('e')
 
-hi = HashIndex(objects, [e_count, len])
+hi = FrozenHashIndex(objects, [e_count, len])
 hi.find({len: 3})       # returns ['one', 'two']
 hi.find({e_count: 2})  # returns ['three']
 ```
@@ -107,13 +102,40 @@ hi.find({e_count: 2})  # returns ['three']
 
 ____
 
+## How it works
+
+At a high level, you can think of each attribute index as a dict of set of object IDs. Each attribute lookup
+returns a set of object IDs. Then union / intersection / difference operations are performed on the results of those
+lookups to find the object IDs matching the query constraints. Finally, the object corresponding to each ID is returned. 
+
+In practice, HashIndex uses specialized data structures to achieve this in a fast, memory-efficient way.
+
+[Would you like to know more?](docs/design.md)
+
+____
+
+## Notes
+
+ - The objects do not need to be hashable. They are not serialized, copied, or persisted. HashIndex is just a container.
+ - The attributes must be hashable.
+ - If an object is missing an attribute, it will be indexed with a `None` value for that attribute.
+ - HashIndex is mutable; `add`, `remove` and `update` of objects is supported.
+ - If you do not need mutability, `FrozenHashIndex` is the immutable version. It is faster, more RAM-efficient, and 
+thread-safe.
+ - They are designed to store a billion items or more in memory on a decent-sized machine.
+
+____
+
 ## HashIndex API
 
 ### 
 
 ____
 
-## FrozenIndex API
+## FrozenHashIndex API
+
+### 
+
 
 ____
 
