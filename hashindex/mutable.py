@@ -2,8 +2,10 @@ from typing import Optional, List, Any, Dict, Set, Callable, Union, Iterable
 from cykhash import Int64Set
 
 from operator import itemgetter
+from hashindex.constants import SIZE_THRESH
 from hashindex.exceptions import MissingObjectError, MissingIndexError
-from hashindex.utils import get_field, set_field
+from hashindex.utils import set_field
+from hashindex.init_helpers import compute_buckets, BucketPlan
 from hashindex.mutable_field import MutableFieldIndex
 
 
@@ -16,10 +18,13 @@ class HashIndex:
         self.obj_map = dict()
 
         # Make an index for each field.
-        # Each index is a dict of {field_value: Int64Set(pointers)}.
         self.indices = {}
         for field in on:
-            self.indices[field] = MutableFieldIndex(field, self.obj_map)
+            if objs:
+                bucket_plan = compute_buckets(objs, field, SIZE_THRESH)
+            else:
+                bucket_plan = None
+            self.indices[field] = MutableFieldIndex(field, self.obj_map, bucket_plan)
         for obj in objs:
             self.add(obj)
 

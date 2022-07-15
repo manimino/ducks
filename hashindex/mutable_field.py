@@ -5,8 +5,10 @@ from typing import Callable, Union, Dict, Any
 from cykhash import Int64Set
 
 from hashindex.constants import SIZE_THRESH, HASH_MIN
+from hashindex.init_helpers import BucketPlan
 from hashindex.mutable_buckets import HashBucket, DictBucket
 from hashindex.utils import get_field
+
 
 class MutableFieldIndex:
     """
@@ -14,11 +16,17 @@ class MutableFieldIndex:
     Several values may be allocated to the same bucket for space efficiency reasons.
     """
 
-    def __init__(self, field: Union[Callable, str], obj_map: Dict[int, Any] = None):
+    def __init__(self,
+                 field: Union[Callable, str],
+                 obj_map: Dict[int, Any] = None,
+                 bucket_plan: BucketPlan = None):
+        self.field = field
+        self.obj_map = obj_map  # for reading only, will not be mutated here
         self.buckets = SortedDict()  # O(1) add / remove, O(log(n)) find bucket for key
         self.buckets[HASH_MIN] = HashBucket()  # always contains at least one bucket
-        self.obj_map = obj_map if obj_map else dict()  # for reading only, will not be mutated here
-        self.field = field
+        if bucket_plan:
+            # TODO handle this
+            assert False
 
     def get_objs(self, val):
         val_hash = hash(val)
@@ -82,7 +90,6 @@ class MutableFieldIndex:
     def add(self, obj_id, obj):
         val = get_field(obj, self.field)
         val_hash = hash(val)
-        self.obj_map[obj_id] = obj
         k = self._get_bucket_key_for(val_hash)
         if isinstance(self.buckets[k], DictBucket):
             if val_hash == self.buckets[k].val_hash:

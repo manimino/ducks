@@ -2,8 +2,6 @@
 
 [![tests Actions Status](https://github.com/manimino/hashindex/workflows/tests/badge.svg)](https://github.com/manimino/hashindex/actions)
 
-Find Python objects by their attributes.
-
 `pip install hashindex`
 
 Usage:
@@ -21,6 +19,7 @@ Any Python object can be indexed: class instances, namedtuples, dicts, strings, 
 
 In addition to attributes, HashIndex can find objects by user-defined functions.  
 This allows for finding by nested attributes and many more applications. 
+
 
 ____
 
@@ -99,6 +98,7 @@ hi.find({e_count: 2})  # returns ['three']
  
  - [Document search]()
  - [Wordle solver]()
+ - [HashIndex plus vector index]()
 
 ____
 
@@ -108,7 +108,8 @@ At a high level, you can think of each attribute index as a dict of set of objec
 returns a set of object IDs. Then union / intersection / difference operations are performed on the results of those
 lookups to find the object IDs matching the query constraints. Finally, the object corresponding to each ID is returned. 
 
-In practice, HashIndex uses specialized data structures to achieve this in a fast, memory-efficient way.
+In practice, HashIndex uses specialized data structures to achieve this in a fast, memory-efficient way. HashIndex
+can store a billion objects on a decent computer.
 
 [Would you like to know more?](docs/design.md)
 
@@ -116,26 +117,37 @@ ____
 
 ## Notes
 
- - The objects do not need to be hashable. They are not serialized, copied, or persisted. HashIndex is just a container.
+ - Objects are not serialized, copied, or persisted. HashIndex is just a container, it's not a database.
+
+____
+
+## HashIndex Methods
+
+### Init
+
+```
+HashIndex(
+        objs: Optional[Iterable[Any]] = None,
+        on: List[str, Any] = None
+)
+```
+
+
+### add()
+
+```
+add(obj:Any)
+```
+
+ - The objects do not need to be hashable. 
  - The attributes must be hashable.
  - If an object is missing an attribute, it will be indexed with a `None` value for that attribute.
- - HashIndex is mutable; `add`, `remove` and `update` of objects is supported.
- - If you do not need mutability, `FrozenHashIndex` is the immutable version. It is faster, more RAM-efficient, and 
-thread-safe.
- - They are designed to store a billion items or more in memory on a decent-sized machine.
 
 ____
 
-## HashIndex API
+## FrozenHashIndex Methods
 
 ### 
-
-____
-
-## FrozenHashIndex API
-
-### 
-
 
 ____
 
