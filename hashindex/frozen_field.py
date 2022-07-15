@@ -3,8 +3,10 @@ from hashindex.exceptions import FrozenError
 
 class FrozenFieldIndex:
 
-    def __init__(self, plan: BucketPlan):
-        pass
+    def __init__(self, bucket_plans: BucketPlan):
+        for bucket_plan in bucket_plans:
+            self._add_bucket(bp)
+
 
 
     def add(self):

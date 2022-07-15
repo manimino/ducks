@@ -4,6 +4,7 @@ import numpy as np
 import sortednp as snp
 from hashindex.constants import SIZE_THRESH
 from hashindex.exceptions import MissingIndexError, FrozenError
+from hashindex.frozen_buckets import FDictBucket, FHashBucket
 from hashindex.frozen_field import FrozenFieldIndex
 from hashindex.init_helpers import compute_buckets
 from hashindex.utils import int_arr
@@ -23,8 +24,8 @@ class FrozenHashIndex:
         self.on = on
         self.indices = {}
         for field in on:
-            plan = compute_buckets(objs, field, SIZE_THRESH)
-            self.indices[field] = FrozenFieldIndex(plan)
+            bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
+            self.indices[field] = FrozenFieldIndex(bucket_plans)
 
     def find(self,
              match: Optional[Dict[Union[str, Callable], Any]] = None,

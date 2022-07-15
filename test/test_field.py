@@ -60,7 +60,7 @@ def initialize_and_add(idx_class, data_class):
 @pytest.fixture(params=[
         (MutableFieldIndex, initialize_with_objs),
         (MutableFieldIndex, initialize_and_add),
-        # (FrozenFieldIndex, initialize_with_objs)
+        (FrozenFieldIndex, initialize_with_objs)
 ])
 def idx_and_init(request):
     return request.param

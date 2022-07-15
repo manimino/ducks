@@ -1,4 +1,4 @@
-from typing import Dict, Any, Union, Iterable, Callable
+from typing import Dict, Any, Union, Iterable, Callable, Optional
 
 from cykhash import Int64Set, Int64toInt64Map
 
@@ -69,12 +69,20 @@ class DictBucket:
     DictBucket is great when many objects have the same val.
     """
 
-    def __init__(self, val_hash: int, objs: Iterable[Any], obj_ids: Iterable[int], field: Union[str, Callable]):
+    def __init__(self,
+                 val_hash: int,
+                 objs: Iterable[Any],
+                 obj_ids: Iterable[int],
+                 vals: Optional[Iterable[Any]],
+                 field: Union[str, Callable]):
         self.val_hash = val_hash
         self.d = dict()
         for i, obj_id in enumerate(obj_ids):
             obj = objs[i]
-            val = get_field(obj, field)
+            if vals is not None:
+                val = vals[i]
+            else:
+                val = get_field(obj, field)
             if val not in self.d:
                 self.d[val] = Int64Set()
             self.d[val].add(obj_id)

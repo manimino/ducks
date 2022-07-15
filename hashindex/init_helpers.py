@@ -19,12 +19,12 @@ Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-
 
 import numpy as np
 from dataclasses import dataclass
-from typing import Tuple, List, Union, Callable, Any
+from typing import Tuple, List, Union, Callable, Any, Iterable
 from hashindex.utils import get_field
 from operator import itemgetter
 
 
-def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.array, np.ndarray]:
+def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.ndarray, np.ndarray, List[Any]]:
     """
     Hash the given attribute for all objs. Sort objs and hashes by the hashes.
 
@@ -35,11 +35,15 @@ def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.
      - 100ms to sort the hashes
      - 30ms of whatever
     """
-    hashes = np.fromiter((hash(get_field(obj, field)) for obj in objs), dtype='int64')
+    vals = np.empty((len(objs,)), dtype='O')
+    for i, obj in enumerate(objs):
+        vals[i] = get_field(obj, field)
+    hashes = np.fromiter((hash(val) for val in vals), dtype='int64')
     pos = np.argsort(hashes)
     sorted_hashes = hashes[pos]
-    sorted_objs = itemgetter(*pos)(objs)  # todo handle itemgetter len 0, 1 weirdness
-    return sorted_hashes, sorted_objs
+    sorted_objs = itemgetter(*pos)(objs)  # TODO: handle itemgetter weirdness
+    sorted_vals = vals[pos]
+    return sorted_vals, sorted_hashes, sorted_objs
 
 
 def run_length_encode(sorted_hashes: np.ndarray):
@@ -88,18 +92,20 @@ class BucketPlan:
     distinct_hashes: np.ndarray
     distinct_hash_counts: np.ndarray
     obj_arr: np.ndarray
-    hash_arr: np.ndarray
+    hash_arr: Iterable[Any]
+    val_arr: np.ndarray
 
     def __str__(self):
         d = dict(zip(self.distinct_hashes, self.distinct_hash_counts))
         l1 = len(self.obj_arr)
         l2 = len(self.hash_arr)
+        l3 = len(self.val_arr)
         mh = min(self.hash_arr)
-        return f'{mh}: {l1}={l2}; ' + str(d)
+        return f'{mh}: {l1}={l2}={l3}; ' + str(d)
 
 
 def compute_buckets(objs, field, bucket_size_limit):
-    sorted_hashes, sorted_objs = get_sorted_hashes(objs, field)
+    sorted_vals, sorted_hashes, sorted_objs = get_sorted_hashes(objs, field)
     starts, counts, val_hashes = run_length_encode(sorted_hashes)
     bucket_starts = find_bucket_starts(counts, bucket_size_limit)
 
@@ -110,18 +116,21 @@ def compute_buckets(objs, field, bucket_size_limit):
             distinct_hash_counts = counts[s:]
             obj_arr = sorted_objs[starts[s]:]
             hash_arr = sorted_hashes[starts[s]:]
+            val_arr = sorted_vals[starts[s]:]
         else:
             t = bucket_starts[i + 1]
             distinct_hashes = val_hashes[s:t]
             distinct_hash_counts = counts[s:t]
             obj_arr = sorted_objs[starts[s]:starts[t]]
-            hash_arr = sorted_hashes[starts[s]:starts[t]]
+            hash_arr = sorted_hashes[starts[s]:]
+            val_arr = sorted_vals[starts[s]:starts[t]]
         bucket_plans.append(
             BucketPlan(
                 distinct_hashes=distinct_hashes,
                 distinct_hash_counts=distinct_hash_counts,
                 obj_arr=obj_arr,
                 hash_arr=hash_arr,
+                val_arr=val_arr
             )
         )
     return bucket_plans

@@ -78,7 +78,7 @@ class MutableFieldIndex:
         if len(hb.val_hash_counts) == 1:
             # convert it to a dictbucket
             hb_objs = [self.obj_map[obj_id] for obj_id in hb.obj_ids]
-            db = DictBucket(list(hb.val_hash_counts.keys())[0], hb_objs, hb.obj_ids, self.field)
+            db = DictBucket(list(hb.val_hash_counts.keys())[0], hb_objs, hb.obj_ids, None, self.field)
             del self.buckets[k]
             self.buckets[db.val_hash] = db
         else:
@@ -151,6 +151,7 @@ class MutableFieldIndex:
             b = DictBucket(bp.distinct_hashes[0],
                            bp.obj_arr,
                            bucket_obj_ids,
+                           bp.val_arr,
                            self.field)
         else:
             bucket_obj_ids = Int64Set(id(obj) for obj in bp.obj_arr)
