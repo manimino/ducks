@@ -59,16 +59,24 @@ def find_bucket_starts(counts, limit):
     """
     Find the start positions for each bucket via a cumulative sum that resets when limit is exceeded.
 
-    This function is ridiculously faster (like 300x) if decorated with @numba.njit.
+    inputs:
+        counts, a histogram of the number of values with each hash, e.g. [1 1000 1 1 1 1]
+        limit, a maximum of how many items can fit in a multi-item bucket
+    output:
+        an array of start positions such that each bucket multi-item bucket contains <= limit values
+        e.g. [0, 1, 2] for the example input
+
+    Note: This function is ridiculously faster (like 300x) if decorated with @numba.njit.
     However, numba is a difficult dependency to add, as it conflicts with recent numpy. And numpy updates
-    are constantly required due to security updates. So, leaving out numba here despite its amazing performance.
+    are constantly required due to security updates. So, we can't use numba here despite its amazing performance.
     """
     result = np.empty(len(counts), dtype=np.uint64)
-    total = 0
     idx = 0
+    total = 0
     for i, count in enumerate(counts):
         total += count
-        if total > limit:
+        if total > limit or idx == 0:
+            # we're overfilled; start a new bucket at this position to hold the current count
             total = count
             result[idx] = i
             idx += 1

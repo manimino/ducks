@@ -1,8 +1,8 @@
 
 from sortedcontainers import SortedDict
-from typing import Callable, Union, Dict, Any
+from typing import Callable, Union, Dict, Any, List
 
-from cykhash import Int64Set
+from cykhash import Int64Set, Int64toInt64Map
 
 from hashindex.constants import SIZE_THRESH, HASH_MIN
 from hashindex.init_helpers import BucketPlan
@@ -18,15 +18,15 @@ class MutableFieldIndex:
 
     def __init__(self,
                  field: Union[Callable, str],
-                 obj_map: Dict[int, Any] = None,
-                 bucket_plan: BucketPlan = None):
+                 obj_map: Dict[int, Any],
+                 bucket_plans: List[BucketPlan] = None):
         self.field = field
-        self.obj_map = obj_map  # for reading only, will not be mutated here
+        self.obj_map = obj_map
         self.buckets = SortedDict()  # O(1) add / remove, O(log(n)) find bucket for key
         self.buckets[HASH_MIN] = HashBucket()  # always contains at least one bucket
-        if bucket_plan:
-            # TODO handle this
-            assert False
+        if bucket_plans:
+            for bp in bucket_plans:
+                self._add_bucket(bp)
 
     def get_objs(self, val):
         val_hash = hash(val)
@@ -77,7 +77,8 @@ class MutableFieldIndex:
         hb = self.buckets[k]
         if len(hb.val_hash_counts) == 1:
             # convert it to a dictbucket
-            db = DictBucket(list(hb.val_hash_counts.keys())[0], hb.obj_ids, self.obj_map, self.field)
+            hb_objs = [self.obj_map[obj_id] for obj_id in hb.obj_ids]
+            db = DictBucket(list(hb.val_hash_counts.keys())[0], hb_objs, hb.obj_ids, self.field)
             del self.buckets[k]
             self.buckets[db.val_hash] = db
         else:
@@ -114,8 +115,8 @@ class MutableFieldIndex:
         If a bucket ever gets empty, delete it unless it's the leftmost one.
         There will always be at least one bucket.
         TODO: What if a DictBucket is created on the min hash value?
-        TODO: We should remove it and create a HashBucket instead.
-        TODO: also check logic to make sure we create a new hash bucket to the right of dictbucket
+        TODO: What if a DictBucket is removed, and the bucket to the right of it is a HashBucket?
+        TODO: What if a DictBucket is removed, and the bucket to the right of it is another DictBucket?
         """
         val = get_field(obj, self.field)
         val_hash = hash(val)
@@ -124,8 +125,39 @@ class MutableFieldIndex:
             self.buckets[k].remove(val_hash, obj_id)
         else:
             self.buckets[k].remove(val, obj_id)
-        if len(self.buckets[k]) == 0 and k != HASH_MIN:
-            del self.buckets[k]
+        if len(self.buckets[k]) == 0:
+            self._remove_bucket(k)
+
+    def _remove_bucket(self, bucket_id: int):
+        """
+        Possible conditions:
+        - This bucket is a HashBucket, and...
+            - There is no bucket to the left of this one.
+            - This bucket is between two DictBuckets.
+            - This bucket has a DictBucket
+        - This bucket is a DictBucket, and...
+            - ugh
+            - can't wait to work on the FrozenIndex where this isn't a thing
+        """
+        if bucket_id != HASH_MIN:
+            # Never delete the leftmost nondict bucket.
+            return
+        del self.buckets[bucket_id]
+
+    def _add_bucket(self, bp: BucketPlan):
+        """Adds a bucket. Only used during init."""
+        if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts > SIZE_THRESH:
+            bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
+            b = DictBucket(bp.distinct_hashes[0],
+                           bp.obj_arr,
+                           bucket_obj_ids,
+                           self.field)
+        else:
+            bucket_obj_ids = Int64Set(id(obj) for obj in bp.obj_arr)
+            val_hash_counts = Int64toInt64Map(zip(bp.distinct_hashes, bp.distinct_hash_counts))
+            b = HashBucket(bucket_obj_ids, val_hash_counts)
+        lowest_hash = min(bp.distinct_hashes)
+        self.buckets[lowest_hash] = b
 
     def bucket_report(self):
         ls = []
@@ -135,5 +167,5 @@ class MutableFieldIndex:
             for obj_id in bucket.get_all_ids():
                 obj = self.obj_map.get(obj_id)
                 bset.add(get_field(obj, self.field))
-            ls.append((bkey, bset, len(bucket), type(self.buckets[bkey]).__name__))
+            ls.append((bkey, bset, 'size:', len(bucket), type(self.buckets[bkey]).__name__))
         return ls

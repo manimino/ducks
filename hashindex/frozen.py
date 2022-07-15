@@ -3,7 +3,7 @@ from typing import Optional, Any, Dict, Union, Callable, Iterable
 import numpy as np
 import sortednp as snp
 from hashindex.constants import SIZE_THRESH
-from hashindex.exceptions import MissingIndexError
+from hashindex.exceptions import MissingIndexError, FrozenError
 from hashindex.frozen_field import FrozenFieldIndex
 from hashindex.init_helpers import compute_buckets
 from hashindex.utils import int_arr

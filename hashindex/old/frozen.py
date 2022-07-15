@@ -10,7 +10,7 @@ from hashindex.init_helpers import compute_buckets
 from hashindex.utils import int_arr
 
 
-class FrozenHashIndex:
+class FrozenBlashIndex:
     def __init__(self,
                  objs: Optional[Iterable[Any]] = None,
                  on: Iterable[Union[str, Callable]] = None

@@ -1,6 +1,8 @@
-from typing import Dict, Any
+from typing import Dict, Any, Union, Iterable, Callable
 
 from cykhash import Int64Set, Int64toInt64Map
+
+from hashindex.utils import get_field
 
 
 class HashBucket:
@@ -10,9 +12,9 @@ class HashBucket:
     into two buckets.
     """
 
-    def __init__(self):
-        self.obj_ids = Int64Set()  # uint64
-        self.val_hash_counts = Int64toInt64Map()  # {int64: int64} - which hashes are stored in this bucket
+    def __init__(self, obj_ids: Int64Set = None, val_hash_counts: Int64toInt64Map = None):
+        self.obj_ids = obj_ids if obj_ids else Int64Set()
+        self.val_hash_counts = val_hash_counts if val_hash_counts else Int64toInt64Map()
 
     def add(self, val_hash, obj_id):
         count = self.val_hash_counts.get(val_hash, 0)
@@ -67,16 +69,15 @@ class DictBucket:
     DictBucket is great when many objects have the same val.
     """
 
-    def __init__(self, val_hash, obj_ids, obj_map, field):
+    def __init__(self, val_hash: int, objs: Iterable[Any], obj_ids: Iterable[int], field: Union[str, Callable]):
         self.val_hash = val_hash
         self.d = dict()
-        for obj_id in obj_ids:
-            obj = obj_map.get(obj_id)
-            val = getattr(obj, field, None)
-            if val in self.d:
-                self.d[val].add(obj_id)
-            else:
-                self.d[val] = Int64Set([obj_id])
+        for i, obj_id in enumerate(obj_ids):
+            obj = objs[i]
+            val = get_field(obj, field)
+            if val not in self.d:
+                self.d[val] = Int64Set()
+            self.d[val].add(obj_id)
 
     def add(self, val, obj_id):
         obj_ids = self.d.get(val, Int64Set())
@@ -95,7 +96,7 @@ class DictBucket:
         return self.d[val]
 
     def get_all_ids(self):
-        return set.union(*self.d.values())
+        return Int64Set.union(*self.d.values())
 
     def __len__(self):
         return sum(len(s) for s in self.d.values())

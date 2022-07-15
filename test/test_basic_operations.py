@@ -25,25 +25,25 @@ def make_test_data(index_type):
     pikachu_1 = Pokemon("Pikachu", "Electric", None)
     pikachu_2 = Pokemon("Pikachu", "Electric", None)
     eevee = Pokemon("Eevee", "Normal", None)
-    mi = index_type([zapdos, pikachu_1, pikachu_2, eevee], on=get_attributes(Pokemon))
-    return mi
+    hi = index_type([zapdos, pikachu_1, pikachu_2, eevee], on=get_attributes(Pokemon))
+    return hi
 
 
 def test_find_one(index_type):
-    mi = make_test_data(index_type)
-    result = mi.find({"name": ["Zapdos"]})
+    hi = make_test_data(index_type)
+    result = hi.find({"name": ["Zapdos"]})
     assert len(result) == 1
 
 
 def test_find_match(index_type):
-    mi = make_test_data(index_type)
-    result = mi.find({"name": ["Pikachu", "Eevee"]})
+    hi = make_test_data(index_type)
+    result = hi.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
 
 
 def test_find_excluding(index_type):
-    mi = make_test_data(index_type)
-    result = mi.find(
+    hi = make_test_data(index_type)
+    result = hi.find(
         match=None, exclude={"type2": None}
     )  # Zapdos is the only one with a type2
     assert len(result) == 1
@@ -51,8 +51,8 @@ def test_find_excluding(index_type):
 
 
 def test_another(index_type):
-    mi = make_test_data(index_type)
-    result = mi.find(
+    hi = make_test_data(index_type)
+    result = hi.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric"},
         exclude={"type2": "Flying"},
     )
@@ -65,40 +65,40 @@ class TestMutations(unittest.TestCase):
 
     def test_remove(self):
         for index_type in [HashIndex, FrozenHashIndex]:
-            mi = make_test_data(index_type)
-            two_chus = mi.find({"name": "Pikachu"})
+            hi = make_test_data(index_type)
+            two_chus = hi.find({"name": "Pikachu"})
             assert len(two_chus) == 2
             if index_type == FrozenHashIndex:
-                with self.assertRaises(FrozenError):
-                    mi.remove(two_chus[1])
+                with self.assertRaises(AttributeError):
+                    hi.remove(two_chus[1])
             else:
-                mi.remove(two_chus[1])
-                one_chu = mi.find({"name": "Pikachu"})
+                hi.remove(two_chus[1])
+                one_chu = hi.find({"name": "Pikachu"})
                 assert len(one_chu) == 1
 
     def test_update(self):
         for index_type in [HashIndex, FrozenHashIndex]:
-            mi = make_test_data(index_type)
-            eevee = mi.find({"name": "Eevee"})[0]
+            hi = make_test_data(index_type)
+            eevee = hi.find({"name": "Eevee"})[0]
             update = {"name": "Glaceon", "type1": "Ice", "type2": None}
             if index_type == FrozenHashIndex:
-                with self.assertRaises(FrozenError):
-                    mi.update(eevee, update)
+                with self.assertRaises(AttributeError):
+                    hi.update(eevee, update)
             else:
-                mi.update(eevee, update)
-                res_eevee = mi.find({"name": "Eevee"})
-                res_glaceon = mi.find({"name": "Glaceon"})
+                hi.update(eevee, update)
+                res_eevee = hi.find({"name": "Eevee"})
+                res_glaceon = hi.find({"name": "Glaceon"})
                 assert not res_eevee
                 assert res_glaceon
 
-    def test_add_frozen(self):
+    def test_add(self):
         for index_type in [HashIndex, FrozenHashIndex]:
-            mi = make_test_data(index_type)
+            hi = make_test_data(index_type)
             glaceon = Pokemon("Glaceon", "Ice", None)
             if index_type == FrozenHashIndex:
-                with self.assertRaises(FrozenError):
-                    mi.add(glaceon)
+                with self.assertRaises(AttributeError):
+                    hi.add(glaceon)
             else:
-                mi.add(glaceon)
-                res = mi.find({"name": "Glaceon"})
+                hi.add(glaceon)
+                res = hi.find({"name": "Glaceon"})
                 assert res == [glaceon]

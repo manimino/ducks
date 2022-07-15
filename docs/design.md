@@ -40,7 +40,7 @@ hashes in one larger collection. This common solution is also done in the
 for example.
 
 Thus, a MutableFieldIndex contains:
- - A collection of HashBucket and DictBucket items. The collection is an OrderedDict (B-tree); buckets are ordered based
+ - A collection of HashBucket and DictBucket items. The collection is a SortedDict (B-tree); buckets are ordered based
 on the range of value hashes they hold.
  - Logic for finding the appropriate bucket for a hashed value, splitting buckets, and deleting buckets.
 

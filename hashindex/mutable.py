@@ -5,7 +5,7 @@ from operator import itemgetter
 from hashindex.constants import SIZE_THRESH
 from hashindex.exceptions import MissingObjectError, MissingIndexError
 from hashindex.utils import set_field
-from hashindex.init_helpers import compute_buckets, BucketPlan
+from hashindex.init_helpers import compute_buckets
 from hashindex.mutable_field import MutableFieldIndex
 
 
@@ -21,10 +21,10 @@ class HashIndex:
         self.indices = {}
         for field in on:
             if objs:
-                bucket_plan = compute_buckets(objs, field, SIZE_THRESH)
+                bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
             else:
-                bucket_plan = None
-            self.indices[field] = MutableFieldIndex(field, self.obj_map, bucket_plan)
+                bucket_plans = None
+            self.indices[field] = MutableFieldIndex(field, self.obj_map, bucket_plans)
         for obj in objs:
             self.add(obj)
 
