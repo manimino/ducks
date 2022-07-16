@@ -22,3 +22,14 @@ def test_compute_buckets():
         for o in b.obj_arr:
             bucket_objs.append(o)
     assert len(bucket_objs) == len(objs)
+
+
+def test_compute_buckets_mini():
+    # uses the fact that hash() on a small positive integer is just the integer
+    objs = [{'a': int(i/2)} for i in range(20)]
+    for limit in [1, 2]:  # limit 1 makes ten DictBuckets, 2 makes ten HashBuckets
+        bucket_plans = compute_buckets(objs, 'a', limit)
+        assert len(bucket_plans) == 10
+        for i, b in enumerate(bucket_plans):
+            assert i in b.val_arr
+            assert len(b.val_arr) == 2

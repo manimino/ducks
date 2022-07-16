@@ -18,7 +18,6 @@ Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-
 """
 
 import numpy as np
-from hashindex.constants import HASH_MIN
 from dataclasses import dataclass
 from typing import Tuple, List, Union, Callable, Any, Iterable
 from hashindex.utils import get_field
@@ -43,7 +42,7 @@ def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.
     sorted_hashes = hashes[pos]
     sorted_objs = np.empty_like(hashes, dtype='O')
     for i in pos:
-        sorted_objs[pos[i]] = objs[i]
+        sorted_objs[i] = objs[pos[i]]
     sorted_vals = vals[pos]
     return sorted_vals, sorted_hashes, sorted_objs
 
@@ -94,7 +93,7 @@ class BucketPlan:
     distinct_hashes: np.ndarray
     distinct_hash_counts: np.ndarray
     obj_arr: np.ndarray
-    hash_arr: Iterable[Any]
+    hash_arr: np.ndarray
     val_arr: np.ndarray
 
     def __str__(self):
@@ -124,7 +123,7 @@ def compute_buckets(objs, field, bucket_size_limit):
             distinct_hashes = val_hashes[s:t]
             distinct_hash_counts = counts[s:t]
             obj_arr = sorted_objs[starts[s]:starts[t]]
-            hash_arr = sorted_hashes[starts[s]:]
+            hash_arr = sorted_hashes[starts[s]:starts[t]]
             val_arr = sorted_vals[starts[s]:starts[t]]
         bucket_plans.append(
             BucketPlan(
