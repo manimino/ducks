@@ -35,12 +35,14 @@ def make_array_pair(obj_arr: np.ndarray):
 
 
 class FHashBucket:
-    def __init__(self, bp: BucketPlan):
+    def __init__(self, bp: BucketPlan, field: Union[str, Callable]):
         self.array_pair = make_array_pair(bp.obj_arr)
+        self.field = field
 
 
 class FDictBucket:
     def __init__(self, bp: BucketPlan, field: Union[str, Callable]):
+        self.field = field
         first = bp.val_arr[0]  # assumption: bp will never be empty (true as long as bucket size limit >= 1)
         if all(val == first for val in bp.val_arr):
             # In the overwhelming majority of cases, val will be unique.

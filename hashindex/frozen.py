@@ -4,7 +4,6 @@ import numpy as np
 import sortednp as snp
 from hashindex.constants import SIZE_THRESH
 from hashindex.exceptions import MissingIndexError, FrozenError
-from hashindex.frozen_buckets import FDictBucket, FHashBucket
 from hashindex.frozen_field import FrozenFieldIndex
 from hashindex.init_helpers import compute_buckets
 from hashindex.utils import int_arr
@@ -16,7 +15,7 @@ class FrozenHashIndex:
                  on: Iterable[Union[str, Callable]] = None
                  ):
         """
-        TODO: we may not actually need these arrays, since they can be read out of any field index.
+        TODO: we do not actually need these arrays, since they can be read out of any field index.
         Consider removing.
         """
         self.id_arr = np.array([id(obj) for obj in objs], dtype="uint64")
@@ -31,6 +30,13 @@ class FrozenHashIndex:
              match: Optional[Dict[Union[str, Callable], Any]] = None,
              exclude: Optional[Dict[Union[str, Callable], Any]] = None,
              ) -> np.ndarray:
+        pass
+
+    def find_ids(
+        self,
+        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+    ) -> np.ndarray:
         pass
 
     def _find_obj_id(self, ptr):

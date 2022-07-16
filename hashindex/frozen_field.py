@@ -1,19 +1,24 @@
+import bisect
+
 from hashindex.init_helpers import BucketPlan
-from hashindex.exceptions import FrozenError
+from hashindex.constants import SIZE_THRESH
+from hashindex.frozen_buckets import FDictBucket, FHashBucket, ArrayPair
+from typing import List, Union, Callable
+
 
 class FrozenFieldIndex:
 
-    def __init__(self, bucket_plans: BucketPlan):
-        for bucket_plan in bucket_plans:
-            self._add_bucket(bp)
+    def __init__(self, bucket_plans: List[BucketPlan], field: Union[str, Callable]):
+        self.buckets = []
+        self.bucket_min_hashes = []
+        for bp in bucket_plans:
+            if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts > SIZE_THRESH:
+                b = FDictBucket(bp, self.field)
+            else:
+                b = FHashBucket(bp, self.field)
+            lowest_hash = min(bp.distinct_hashes)
+            self.bucket_min_hashes.append(lowest_hash)
+            self.buckets.append(b)
 
-
-
-    def add(self):
-        raise FrozenError('Cannot add items to a FrozenHashIndex. If mutability is needed, try HashIndex instead.')
-
-    def remove(self):
-        raise FrozenError('Cannot remove items from a FrozenHashIndex. If mutability is needed, try HashIndex instead.')
-
-    def update(self):
-        raise FrozenError('Cannot update items in a FrozenHashIndex. If mutability is needed, try HashIndex instead.')
+    def get(self, val):
+        val_hash = hash(val)
