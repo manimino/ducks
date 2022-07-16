@@ -10,7 +10,7 @@ import unittest
 # test getting with expected 0 items and 1 item
 
 
-def test_get_zero():
+def test_get_zero(index_type):
     def _f(x):
         return x[0]
     hi = HashIndex(['a', 'b', 'c'], on=[_f])
@@ -18,8 +18,8 @@ def test_get_zero():
     assert hi.find({_f: 'd'}) == []
 
 
-def test_empty_index(index_type):
-    hi = index_type([], on=['stuff'])
+def test_empty_mutable_index():
+    hi = HashIndex([], on=['stuff'])
     result = hi.find({'stuff': 3})
     assert len(result) == 0
 
@@ -27,7 +27,10 @@ def test_empty_index(index_type):
 class TestExceptions(unittest.TestCase):
 
     def test_remove_empty(self):
-        for index_type in [HashIndex, FrozenHashIndex]:
-            hi = index_type([], on=['stuff'])
-            with self.assertRaises(MissingObjectError):
-                hi.remove('nope')
+        hi = HashIndex([], on=['stuff'])
+        with self.assertRaises(MissingObjectError):
+            hi.remove('nope')
+
+    def test_empty_frozen(self):
+        with self.assertRaises(ValueError):
+            hi = FrozenHashIndex([], on=['stuff'])

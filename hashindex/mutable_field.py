@@ -10,6 +10,26 @@ from hashindex.mutable_buckets import HashBucket, DictBucket
 from hashindex.utils import get_field
 
 
+def fill_in_gaps(bucket_plans: List[BucketPlan]) -> List[BucketPlan]:
+    # TODO, sigh
+    """
+    The planned buckets must meet the requirements:
+    1. A bucket must start at HASH_MIN
+    2. Every DictBucket must have a bucket starting at its val_hash+1.
+    """
+    """
+    fixed_plans = []
+    if min(bucket_plans[0].distinct_hashes) != HASH_MIN:
+        if len(bucket_plans[0].obj_arr) > SIZE_THRESH:
+            # create an empty HashBucket left of this DictBucket
+            fixed_plans.append()
+        else:
+            # extend the leftmost HashBucket to the left
+            pass
+    """
+    return bucket_plans
+
+
 class MutableFieldIndex:
     """
     Stores the possible values of this field in a collection of buckets.
@@ -25,7 +45,7 @@ class MutableFieldIndex:
         self.buckets = SortedDict()  # O(1) add / remove, O(log(n)) find bucket for key
         self.buckets[HASH_MIN] = HashBucket()  # always contains at least one bucket
         if bucket_plans:
-            for bp in bucket_plans:
+            for bp in fill_in_gaps(bucket_plans):
                 self._add_bucket(bp)
 
     def get_objs(self, val):
@@ -168,5 +188,5 @@ class MutableFieldIndex:
             for obj_id in bucket.get_all_ids():
                 obj = self.obj_map.get(obj_id)
                 bset.add(get_field(obj, self.field))
-            ls.append((bkey, bset, 'size:', len(bucket), type(self.buckets[bkey]).__name__))
+            ls.append((type(self.buckets[bkey]).__name__, bkey, 'size:', len(bucket)))
         return ls

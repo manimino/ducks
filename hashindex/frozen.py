@@ -1,57 +1,95 @@
 from typing import Optional, Any, Dict, Union, Callable, Iterable
 
 import numpy as np
-import sortednp as snp
 from hashindex.constants import SIZE_THRESH
-from hashindex.exceptions import MissingIndexError, FrozenError
 from hashindex.frozen_field import FrozenFieldIndex
 from hashindex.init_helpers import compute_buckets
-from hashindex.utils import int_arr
+from hashindex.frozen_buckets import ArrayPair, empty_array_pair
+from hashindex.utils import validate_query
 
 
 class FrozenHashIndex:
     def __init__(self,
-                 objs: Optional[Iterable[Any]] = None,
+                 objs: Iterable[Any],
                  on: Iterable[Union[str, Callable]] = None
                  ):
-        """
-        TODO: we do not actually need these arrays, since they can be read out of any field index.
-        Consider removing.
-        """
-        self.id_arr = np.array([id(obj) for obj in objs], dtype="uint64")
-        self.obj_arr = np.array(objs, dtype="O")
+        if not objs:
+            raise ValueError('Cannot build an empty FrozenHashIndex; at least 1 object is required.')
         self.on = on
         self.indices = {}
         for field in on:
             bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
-            self.indices[field] = FrozenFieldIndex(bucket_plans)
+            self.indices[field] = FrozenFieldIndex(field, bucket_plans)
 
     def find(self,
              match: Optional[Dict[Union[str, Callable], Any]] = None,
              exclude: Optional[Dict[Union[str, Callable], Any]] = None,
              ) -> np.ndarray:
-        pass
+        return self._do_find(match, exclude).obj_arr
 
     def find_ids(
         self,
         match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
         exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
     ) -> np.ndarray:
-        pass
+        return self._do_find(match, exclude).id_arr
 
-    def _find_obj_id(self, ptr):
-        """Use binary search to look up the position of an obj id in the sorted numpy array."""
-        i = self.id_arr.searchsorted(ptr)
-        if i == len(self.id_arr):
-            # happens when index is empty, or the ptr is bigger than any obj ptr we have
-            return -1
-        # searchsorted tells us the first index <= target, check for ==
-        if self.id_arr[i] == ptr:
-            return i
-        return -1
+    def _do_find(self,
+                 match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+                 exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+                 ) -> ArrayPair:
+        validate_query(self.indices, match, exclude)
+
+        # perform 'match' query
+        hits = None
+        if match:
+            # find intersection of each field
+            for field, value in match.items():
+                # if multiple values for a field, find each value and union those first
+                field_hits = self._match_any_of(field, value)
+                if hits is None:  # first field
+                    hits = field_hits
+                if field_hits:
+                    # intersect this field's hits with our hits so far
+                    hits.apply_intersection(field_hits)
+                else:
+                    # this field had no matches, therefore the intersection will be empty. We can stop here.
+                    return empty_array_pair()
+        else:
+            # 'match' is unspecified, so match all objects
+            hits = self._get_all()
+
+        # perform 'exclude' query
+        if exclude:
+            for field, value in exclude.items():
+                field_hits = self._match_any_of(field, value)
+                hits.apply_difference(field_hits)
+                if len(hits) == 0:
+                    break
+
+        return hits
+
+    def _match_any_of(self, field: str, value: Any):
+        """Get matches for a single field during a find(). If multiple values specified, handle union logic."""
+        if isinstance(value, list):
+            # take the union of all matches
+            matches = None
+            for v in value:
+                v_matches = self.indices[field].get(v)
+                if matches is None:
+                    matches = v_matches
+                else:
+                    matches.apply_union(v_matches)
+            return matches
+        else:
+            return self.indices[field].get(value)
+
+    def _get_all(self) -> ArrayPair:
+        for f in self.indices:
+            return self.indices[f].get_all()
 
     def __contains__(self, obj):
-        return self._find_obj_id(id(obj)) != -1
+        pass
 
     def __iter__(self):
-        return iter(self.obj_arr)
+        pass

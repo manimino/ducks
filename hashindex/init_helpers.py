@@ -18,13 +18,13 @@ Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-
 """
 
 import numpy as np
+from hashindex.constants import HASH_MIN
 from dataclasses import dataclass
 from typing import Tuple, List, Union, Callable, Any, Iterable
 from hashindex.utils import get_field
-from operator import itemgetter
 
 
-def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.ndarray, np.ndarray, List[Any]]:
+def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Hash the given attribute for all objs. Sort objs and hashes by the hashes.
 
@@ -41,7 +41,9 @@ def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.
     hashes = np.fromiter((hash(val) for val in vals), dtype='int64')
     pos = np.argsort(hashes)
     sorted_hashes = hashes[pos]
-    sorted_objs = itemgetter(*pos)(objs)  # TODO: handle itemgetter weirdness
+    sorted_objs = np.empty_like(hashes, dtype='O')
+    for i in pos:
+        sorted_objs[pos[i]] = objs[i]
     sorted_vals = vals[pos]
     return sorted_vals, sorted_hashes, sorted_objs
 
@@ -133,4 +135,5 @@ def compute_buckets(objs, field, bucket_size_limit):
                 val_arr=val_arr
             )
         )
+
     return bucket_plans

@@ -12,14 +12,28 @@ class ArrayPair:
     id_arr: np.ndarray
     obj_arr: np.ndarray
 
-    def intersect(self, other):
-        pass
+    def apply_intersection(self, other):
+        intersect_ids, indices = snp.intersect(self.id_arr, other.id_arr, indices=True)
+        self.obj_arr = self.obj_arr[indices[0]]
+        self.id_arr = intersect_ids
 
-    def union(self, other):
-        pass
+    def apply_union(self, other):
+        merged_id_arr, indices = snp.merge(self.id_arr, other.id_arr, indices=True, duplicates=snp.DROP)
+        obj_arr = np.empty_like(merged_id_arr, dtype='O')
+        obj_arr[indices[0]] = self.obj_arr
+        obj_arr[indices[1]] = other.obj_arr
+        self.id_arr = merged_id_arr
+        self.obj_arr = obj_arr
 
-    def difference(self, other):
-        pass
+    def apply_difference(self, other):
+        matched_positions = snp.intersect(self.id_arr, other.id_arr, indices=True)[1][0]
+        matches = np.zeros_like(self.id_arr, dtype=bool)
+        matches[matched_positions] = True
+        self.id_arr = self.id_arr[~matches]
+        self.obj_arr = self.obj_arr[~matches]
+
+    def __len__(self):
+        return len(self.id_arr)
 
 
 def make_array_pair(obj_arr: np.ndarray):
@@ -34,10 +48,28 @@ def make_array_pair(obj_arr: np.ndarray):
     )
 
 
+def empty_array_pair() -> ArrayPair:
+    return ArrayPair(id_arr=np.array([], dtype='int64'), obj_arr=np.array([], dtype='O'))
+
+
 class FHashBucket:
     def __init__(self, bp: BucketPlan, field: Union[str, Callable]):
         self.array_pair = make_array_pair(bp.obj_arr)
         self.field = field
+
+    def get(self, val):
+        match_pos = []
+        for i in range(len(self)):
+            obj_val = get_field(self.array_pair.obj_arr[i], self.field)
+            if obj_val == val or obj_val is val:
+                match_pos.append(i)
+        return ArrayPair(id_arr=self.array_pair.id_arr[match_pos], obj_arr=self.array_pair.obj_arr[match_pos])
+
+    def get_all(self):
+        return self.array_pair
+
+    def __len__(self):
+        return len(self.array_pair)
 
 
 class FDictBucket:
@@ -57,3 +89,15 @@ class FDictBucket:
                 d_idx[val].append(i)
             for val in self.d_idx:
                 self.d[val] = bp.obj_arr[d_idx[val]]
+
+    def get_all(self):
+        arrs = empty_array_pair()
+        for val in self.d:
+            arrs.apply_union(self.d[val])
+        return arrs
+
+    def get(self, val):
+        return self.d[val]
+
+    def __len__(self):
+        return sum(len(self.d[val]) for val in self.d)

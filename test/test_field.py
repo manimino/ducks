@@ -18,8 +18,12 @@ class FieldWrapper:
         self.obj_map = {id(obj): obj for obj in objs} if objs else dict()
         if objs:
             bucket_plan = compute_buckets(objs, field, SIZE_THRESH)
-            self.idx = field_index_class(field, self.obj_map, bucket_plan)
+            if field_index_class == MutableFieldIndex:
+                self.idx = field_index_class(field, self.obj_map, bucket_plan)
+            else:
+                self.idx = field_index_class(field, bucket_plan)
         else:
+            # can only be Mutable
             self.idx = field_index_class(field, self.obj_map)
 
     def add(self, obj: Any):
@@ -79,12 +83,15 @@ def test_get_objs(idx_and_init, data_class):
     assert things[0] in result
 
 
-def test_get_obj_id(idx_and_init, data_class):
+def test_get_obj_ids(idx_and_init, data_class):
     idx_class, init_fn = idx_and_init
     things, fw = init_fn(idx_class, data_class)
-    result = fw.idx.get_obj_ids(things[0].s)
-    print(fw.idx.bucket_report())
-    assert id(things[0]) in result
+    isin = []
+    for t in things:
+        isin.append(id(t) in fw.idx.get_obj_ids(t.s))
+    print('\n'.join(str(x) for x in fw.idx.bucket_report()))
+    print(len([x for x in isin if x]) / len(isin))
+    assert all(isin)
 
 
 def test_create_and_remove(data_class):

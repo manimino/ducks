@@ -4,7 +4,7 @@ from cykhash import Int64Set
 from operator import itemgetter
 from hashindex.constants import SIZE_THRESH
 from hashindex.exceptions import MissingObjectError, MissingIndexError
-from hashindex.utils import set_field
+from hashindex.utils import set_field, validate_query
 from hashindex.init_helpers import compute_buckets
 from hashindex.mutable_field import MutableFieldIndex
 
@@ -46,26 +46,14 @@ class HashIndex:
         self,
         match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
         exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-    ) -> Set:
+    ) -> Int64Set:
         """
         Perform lookup based on given values. Return a set of object IDs matching constraints.
 
         If "having" is None / empty, it matches all objects.
         There is an implicit "AND" joining all constraints.
         """
-        for m in match, exclude:
-            if m is not None:
-                if not isinstance(m, dict):
-                    raise TypeError('Arguments must be of type dict or None.')
-        # input validation -- check that we have an index for all desired lookups
-        required_indices = set()
-        if match:
-            required_indices.update(match.keys())
-        if exclude:
-            required_indices.update(exclude.keys())
-        missing_indices = required_indices.difference(self.indices)
-        if missing_indices:
-            raise MissingIndexError
+        validate_query(self.indices, match, exclude)
 
         # perform 'match' query
         hits = None
@@ -85,8 +73,7 @@ class HashIndex:
                         hits = field_hits.intersection(hits)
                 else:
                     # this field had no matches, therefore the intersection will be empty. We can stop here.
-                    hits = Int64Set()
-                    break
+                    return Int64Set()
         else:
             # 'match' is unspecified, so match all objects
             hits = Int64Set(self.obj_map.keys())

@@ -41,10 +41,10 @@ def test_find_match(index_type):
     assert len(result) == 3
 
 
-def test_find_excluding(index_type):
+def test_find_exclude_only(index_type):
     hi = make_test_data(index_type)
     result = hi.find(
-        match=None, exclude={"type2": None}
+        exclude={"type2": None}
     )  # Zapdos is the only one with a type2
     assert len(result) == 1
     assert result[0].name == "Zapdos"
