@@ -18,9 +18,11 @@ class MissingValueError(Exception):
 
 class MissingObjectError(Exception):
     """Raised when removing or updating an object we don't have."""
+
     pass
 
 
 class ImmutableUpdateError(Exception):
     """Raised when someone attempts to update an immutable object such as a string."""
+
     pass

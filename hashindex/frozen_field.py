@@ -4,18 +4,25 @@ import numpy as np
 
 from hashindex.init_helpers import BucketPlan
 from hashindex.constants import SIZE_THRESH
-from hashindex.frozen_buckets import FDictBucket, FHashBucket, ArrayPair, empty_array_pair
+from hashindex.frozen_buckets import (
+    FDictBucket,
+    FHashBucket,
+    ArrayPair,
+    empty_array_pair,
+)
 from typing import List, Union, Callable
 
 
 class FrozenFieldIndex:
-
     def __init__(self, field: Union[str, Callable], bucket_plans: List[BucketPlan]):
         self.buckets = []
         self.bucket_min_hashes = []
         self.field = field
         for bp in bucket_plans:
-            if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts > SIZE_THRESH:
+            if (
+                len(bp.distinct_hash_counts) == 1
+                and bp.distinct_hash_counts > SIZE_THRESH
+            ):
                 b = FDictBucket(bp, self.field)
             else:
                 b = FHashBucket(bp, self.field)
@@ -46,5 +53,5 @@ class FrozenFieldIndex:
         ls = []
         for i, min_hash in enumerate(self.bucket_min_hashes):
             bucket = self.buckets[i]
-            ls.append((min_hash, 'size:', len(bucket), type(self.buckets[i]).__name__))
+            ls.append((min_hash, "size:", len(bucket), type(self.buckets[i]).__name__))
         return ls

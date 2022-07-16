@@ -12,7 +12,7 @@ class Word:
     c4: str
 
     def __repr__(self):
-        return f'{self.c0}{self.c1}{self.c2}{self.c3}{self.c4}'
+        return f"{self.c0}{self.c1}{self.c2}{self.c3}{self.c4}"
 
 
 mi = HashIndex(get_attributes(Word))
@@ -22,27 +22,24 @@ for w, _ in all_wordle_words:
 mi.freeze()
 
 # CLEAN got yellow on 'C', green on 'A'.
-r = mi.find(match={'c3': 'A'}, exclude={
-    'c0': list('CLEN'),
-    'c1': list('LEN'),
-    'c2': list('LEN'),
-    'c4': list('LEN'),
-})
+r = mi.find(
+    match={"c3": "A"},
+    exclude={
+        "c0": list("CLEN"),
+        "c1": list("LEN"),
+        "c2": list("LEN"),
+        "c4": list("LEN"),
+    },
+)
 print(len(r))
 # for w in r:
 #     print(w)
 
 
 # SQUAD got green on S and A.
-r = mi.find(match={
-    'c0': 'S',
-    'c3': 'A'
-},
-    exclude={
-        'c1': list('LENQD'),
-        'c2': list('LENQD'),
-        'c4': list('LENQD'),
-    }
+r = mi.find(
+    match={"c0": "S", "c3": "A"},
+    exclude={"c1": list("LENQD"), "c2": list("LENQD"), "c4": list("LENQD"),},
 )
 print(len(r))
 # for w in r:
@@ -50,17 +47,9 @@ print(len(r))
 
 
 # SCRAM got green on SCRA.
-r = mi.find(match={
-    'c0': 'S',
-    'c1': 'C',
-    'c2': 'R',
-    'c3': 'A'
-},
-    exclude={
-        'c1': list('LENQDM'),
-        'c2': list('LENQDM'),
-        'c4': list('LENQDM'),
-    }
+r = mi.find(
+    match={"c0": "S", "c1": "C", "c2": "R", "c3": "A"},
+    exclude={"c1": list("LENQDM"), "c2": list("LENQDM"), "c4": list("LENQDM"),},
 )
 
 print(len(r))

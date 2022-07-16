@@ -34,13 +34,14 @@ def get_attributes(cls) -> List[str]:
 
 
 def validate_query(
-        indices: Dict,
-        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None):
+    indices: Dict,
+    match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+    exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+):
     for m in match, exclude:
         if m is not None:
             if not isinstance(m, dict):
-                raise TypeError('Arguments must be of type dict or None.')
+                raise TypeError("Arguments must be of type dict or None.")
     # input validation -- check that we have an index for all desired lookups
     required_indices = set()
     if match:

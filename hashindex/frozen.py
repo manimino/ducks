@@ -9,22 +9,22 @@ from hashindex.utils import validate_query
 
 
 class FrozenHashIndex:
-    def __init__(self,
-                 objs: Iterable[Any],
-                 on: Iterable[Union[str, Callable]] = None
-                 ):
+    def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]] = None):
         if not objs:
-            raise ValueError('Cannot build an empty FrozenHashIndex; at least 1 object is required.')
+            raise ValueError(
+                "Cannot build an empty FrozenHashIndex; at least 1 object is required."
+            )
         self.on = on
         self.indices = {}
         for field in on:
             bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
             self.indices[field] = FrozenFieldIndex(field, bucket_plans)
 
-    def find(self,
-             match: Optional[Dict[Union[str, Callable], Any]] = None,
-             exclude: Optional[Dict[Union[str, Callable], Any]] = None,
-             ) -> np.ndarray:
+    def find(
+        self,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
+    ) -> np.ndarray:
         return self._do_find(match, exclude).obj_arr
 
     def find_ids(
@@ -34,10 +34,11 @@ class FrozenHashIndex:
     ) -> np.ndarray:
         return self._do_find(match, exclude).id_arr
 
-    def _do_find(self,
-                 match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-                 exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-                 ) -> ArrayPair:
+    def _do_find(
+        self,
+        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+    ) -> ArrayPair:
         validate_query(self.indices, match, exclude)
 
         # perform 'match' query

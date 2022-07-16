@@ -18,8 +18,10 @@ class ArrayPair:
         self.id_arr = intersect_ids
 
     def apply_union(self, other):
-        merged_id_arr, indices = snp.merge(self.id_arr, other.id_arr, indices=True, duplicates=snp.DROP)
-        obj_arr = np.empty_like(merged_id_arr, dtype='O')
+        merged_id_arr, indices = snp.merge(
+            self.id_arr, other.id_arr, indices=True, duplicates=snp.DROP
+        )
+        obj_arr = np.empty_like(merged_id_arr, dtype="O")
         obj_arr[indices[0]] = self.obj_arr
         obj_arr[indices[1]] = other.obj_arr
         self.id_arr = merged_id_arr
@@ -38,18 +40,17 @@ class ArrayPair:
 
 def make_array_pair(obj_arr: np.ndarray):
     """Finds obj_ids and sorts obj_arr by the ids. Returns an ArrayPair."""
-    obj_ids = np.empty_like(obj_arr, dtype='int64')
+    obj_ids = np.empty_like(obj_arr, dtype="int64")
     for i, obj in enumerate(obj_arr):
         obj_ids[i] = id(obj)
     sort_order = np.argsort(obj_ids)
-    return ArrayPair(
-        id_arr=obj_ids[sort_order],
-        obj_arr=obj_arr[sort_order]
-    )
+    return ArrayPair(id_arr=obj_ids[sort_order], obj_arr=obj_arr[sort_order])
 
 
 def empty_array_pair() -> ArrayPair:
-    return ArrayPair(id_arr=np.array([], dtype='int64'), obj_arr=np.array([], dtype='O'))
+    return ArrayPair(
+        id_arr=np.array([], dtype="int64"), obj_arr=np.array([], dtype="O")
+    )
 
 
 class FHashBucket:
@@ -63,7 +64,10 @@ class FHashBucket:
             obj_val = get_field(self.array_pair.obj_arr[i], self.field)
             if obj_val == val or obj_val is val:
                 match_pos.append(i)
-        return ArrayPair(id_arr=self.array_pair.id_arr[match_pos], obj_arr=self.array_pair.obj_arr[match_pos])
+        return ArrayPair(
+            id_arr=self.array_pair.id_arr[match_pos],
+            obj_arr=self.array_pair.obj_arr[match_pos],
+        )
 
     def get_all(self):
         return self.array_pair
@@ -75,7 +79,9 @@ class FHashBucket:
 class FDictBucket:
     def __init__(self, bp: BucketPlan, field: Union[str, Callable]):
         self.field = field
-        first = bp.val_arr[0]  # assumption: bp will never be empty (true as long as bucket size limit >= 1)
+        first = bp.val_arr[
+            0
+        ]  # assumption: bp will never be empty (true as long as bucket size limit >= 1)
         if all(val == first for val in bp.val_arr):
             # In the overwhelming majority of cases, val will be unique.
             self.d = {first: make_array_pair(bp.obj_arr)}

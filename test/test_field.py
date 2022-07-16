@@ -5,16 +5,20 @@ from hashindex.mutable_field import MutableFieldIndex
 from hashindex.frozen_field import FrozenFieldIndex
 from hashindex.init_helpers import compute_buckets
 
-from typing import List,Union, Callable, Any, Optional
+from typing import List, Union, Callable, Any, Optional
 
 
 class FieldWrapper:
     """
     A FieldIndex holds a reference an obj_map outside itself, so it needs a minimal wrapper for testing.
     """
-    def __init__(self, field_index_class,
-                 field: Union[str, Callable],
-                 objs: Optional[List[Any]] = None):
+
+    def __init__(
+        self,
+        field_index_class,
+        field: Union[str, Callable],
+        objs: Optional[List[Any]] = None,
+    ):
         self.obj_map = {id(obj): obj for obj in objs} if objs else dict()
         if objs:
             bucket_plan = compute_buckets(objs, field, SIZE_THRESH)
@@ -38,7 +42,11 @@ class FloatObj:
 
 
 class StringObj:
-    planets = ['mercury', 'venus', 'earth', 'mars'] + ['jupiter']*100 + ['saturn', 'uranus', 'neptune']
+    planets = (
+        ["mercury", "venus", "earth", "mars"]
+        + ["jupiter"] * 100
+        + ["saturn", "uranus", "neptune"]
+    )
 
     def __init__(self):
         self.s = random.choice(self.planets)
@@ -48,24 +56,26 @@ def initialize_with_objs(idx_class, data_class):
     """Make a MutableFieldIndex and add items during init."""
     random.seed(42)
     things = [data_class() for _ in range(10 ** 3)]
-    fw = FieldWrapper(idx_class, 's', things)
+    fw = FieldWrapper(idx_class, "s", things)
     return things, fw
 
 
 def initialize_and_add(idx_class, data_class):
     random.seed(42)
     things = [data_class() for _ in range(10 ** 3)]
-    fw = FieldWrapper(idx_class, 's')
+    fw = FieldWrapper(idx_class, "s")
     for thing in things:
         fw.add(thing)
     return things, fw
 
 
-@pytest.fixture(params=[
+@pytest.fixture(
+    params=[
         (MutableFieldIndex, initialize_with_objs),
         (MutableFieldIndex, initialize_and_add),
-        (FrozenFieldIndex, initialize_with_objs)
-])
+        (FrozenFieldIndex, initialize_with_objs),
+    ]
+)
 def idx_and_init(request):
     return request.param
 
@@ -89,7 +99,7 @@ def test_get_obj_ids(idx_and_init, data_class):
     isin = []
     for t in things:
         isin.append(id(t) in fw.idx.get_obj_ids(t.s))
-    print('\n'.join(str(x) for x in fw.idx.bucket_report()))
+    print("\n".join(str(x) for x in fw.idx.bucket_report()))
     print(len([x for x in isin if x]) / len(isin))
     assert all(isin)
 

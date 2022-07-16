@@ -119,7 +119,7 @@ if __name__ == "__main__":
         main(sys.argv[1], sys.argv[2])
     else:
         results = dict()
-        for method in ["pytup", "pyset", "cyk", "nparr", 'btree']:
+        for method in ["pytup", "pyset", "cyk", "nparr", "btree"]:
             m_result = dict()
             for items_per in [1, 10, 50, 100, 1000, 10000]:
                 txt = subprocess.check_output(

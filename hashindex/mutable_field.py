@@ -1,4 +1,3 @@
-
 from sortedcontainers import SortedDict
 from typing import Callable, Union, Dict, Any, List
 
@@ -36,10 +35,12 @@ class MutableFieldIndex:
     Several values may be allocated to the same bucket for space efficiency reasons.
     """
 
-    def __init__(self,
-                 field: Union[Callable, str],
-                 obj_map: Dict[int, Any],
-                 bucket_plans: List[BucketPlan] = None):
+    def __init__(
+        self,
+        field: Union[Callable, str],
+        obj_map: Dict[int, Any],
+        bucket_plans: List[BucketPlan] = None,
+    ):
         self.field = field
         self.obj_map = obj_map
         self.buckets = SortedDict()  # O(1) add / remove, O(log(n)) find bucket for key
@@ -98,12 +99,20 @@ class MutableFieldIndex:
         if len(hb.val_hash_counts) == 1:
             # convert it to a dictbucket
             hb_objs = [self.obj_map[obj_id] for obj_id in hb.obj_ids]
-            db = DictBucket(list(hb.val_hash_counts.keys())[0], hb_objs, hb.obj_ids, None, self.field)
+            db = DictBucket(
+                list(hb.val_hash_counts.keys())[0],
+                hb_objs,
+                hb.obj_ids,
+                None,
+                self.field,
+            )
             del self.buckets[k]
             self.buckets[db.val_hash] = db
         else:
             # split it into two hashbuckets
-            new_hash_counts, new_obj_ids = self.buckets[k].split(self.field, self.obj_map)
+            new_hash_counts, new_obj_ids = self.buckets[k].split(
+                self.field, self.obj_map
+            )
             new_bucket = HashBucket()
             new_bucket.update(new_hash_counts, new_obj_ids)
             self.buckets[min(new_hash_counts.keys())] = new_bucket
@@ -125,7 +134,10 @@ class MutableFieldIndex:
             # add to hashbucket
             self.buckets[k].add(val_hash, obj_id)
 
-        if isinstance(self.buckets[k], HashBucket) and len(self.buckets[k]) > SIZE_THRESH:
+        if (
+            isinstance(self.buckets[k], HashBucket)
+            and len(self.buckets[k]) > SIZE_THRESH
+        ):
             self._handle_big_hash_bucket(k)
 
     def remove(self, obj_id, obj):
@@ -168,14 +180,18 @@ class MutableFieldIndex:
         """Adds a bucket. Only used during init."""
         if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts > SIZE_THRESH:
             bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
-            b = DictBucket(bp.distinct_hashes[0],
-                           bp.obj_arr,
-                           bucket_obj_ids,
-                           bp.val_arr,
-                           self.field)
+            b = DictBucket(
+                bp.distinct_hashes[0],
+                bp.obj_arr,
+                bucket_obj_ids,
+                bp.val_arr,
+                self.field,
+            )
         else:
             bucket_obj_ids = Int64Set(id(obj) for obj in bp.obj_arr)
-            val_hash_counts = Int64toInt64Map(zip(bp.distinct_hashes, bp.distinct_hash_counts))
+            val_hash_counts = Int64toInt64Map(
+                zip(bp.distinct_hashes, bp.distinct_hash_counts)
+            )
             b = HashBucket(bucket_obj_ids, val_hash_counts)
         lowest_hash = min(bp.distinct_hashes)
         self.buckets[lowest_hash] = b
@@ -188,5 +204,5 @@ class MutableFieldIndex:
             for obj_id in bucket.get_all_ids():
                 obj = self.obj_map.get(obj_id)
                 bset.add(get_field(obj, self.field))
-            ls.append((type(self.buckets[bkey]).__name__, bkey, 'size:', len(bucket)))
+            ls.append((type(self.buckets[bkey]).__name__, bkey, "size:", len(bucket)))
         return ls

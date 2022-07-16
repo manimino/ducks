@@ -13,24 +13,24 @@ import unittest
 def test_get_zero(index_type):
     def _f(x):
         return x[0]
-    hi = HashIndex(['a', 'b', 'c'], on=[_f])
-    assert hi.find({_f: 'c'}) == ['c']
-    assert hi.find({_f: 'd'}) == []
+
+    hi = HashIndex(["a", "b", "c"], on=[_f])
+    assert hi.find({_f: "c"}) == ["c"]
+    assert hi.find({_f: "d"}) == []
 
 
 def test_empty_mutable_index():
-    hi = HashIndex([], on=['stuff'])
-    result = hi.find({'stuff': 3})
+    hi = HashIndex([], on=["stuff"])
+    result = hi.find({"stuff": 3})
     assert len(result) == 0
 
 
 class TestExceptions(unittest.TestCase):
-
     def test_remove_empty(self):
-        hi = HashIndex([], on=['stuff'])
+        hi = HashIndex([], on=["stuff"])
         with self.assertRaises(MissingObjectError):
-            hi.remove('nope')
+            hi.remove("nope")
 
     def test_empty_frozen(self):
         with self.assertRaises(ValueError):
-            hi = FrozenHashIndex([], on=['stuff'])
+            hi = FrozenHashIndex([], on=["stuff"])

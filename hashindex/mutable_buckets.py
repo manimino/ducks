@@ -12,7 +12,9 @@ class HashBucket:
     into two buckets.
     """
 
-    def __init__(self, obj_ids: Int64Set = None, val_hash_counts: Int64toInt64Map = None):
+    def __init__(
+        self, obj_ids: Int64Set = None, val_hash_counts: Int64toInt64Map = None
+    ):
         self.obj_ids = obj_ids if obj_ids else Int64Set()
         self.val_hash_counts = val_hash_counts if val_hash_counts else Int64toInt64Map()
 
@@ -39,7 +41,9 @@ class HashBucket:
         my_hashes = list(sorted(self.val_hash_counts.keys()))
         # dump out the upper half of our hashes
         half_point = len(my_hashes) // 2
-        dumped_hash_counts = {v: self.val_hash_counts[v] for v in my_hashes[half_point:]}
+        dumped_hash_counts = {
+            v: self.val_hash_counts[v] for v in my_hashes[half_point:]
+        }
 
         # dereference each object
         # Find the objects with field_vals that hash to any of dumped_hashes
@@ -69,12 +73,14 @@ class DictBucket:
     DictBucket is great when many objects have the same val.
     """
 
-    def __init__(self,
-                 val_hash: int,
-                 objs: Iterable[Any],
-                 obj_ids: Iterable[int],
-                 vals: Optional[Iterable[Any]],
-                 field: Union[str, Callable]):
+    def __init__(
+        self,
+        val_hash: int,
+        objs: Iterable[Any],
+        obj_ids: Iterable[int],
+        vals: Optional[Iterable[Any]],
+        field: Union[str, Callable],
+    ):
         self.val_hash = val_hash
         self.d = dict()
         for i, obj_id in enumerate(obj_ids):
@@ -93,9 +99,9 @@ class DictBucket:
 
     def remove(self, val, obj_id):
         if val not in self.d:
-            raise KeyError('Object value not in here')
+            raise KeyError("Object value not in here")
         if obj_id not in self.d[val]:
-            raise KeyError('Object ID not in here')
+            raise KeyError("Object ID not in here")
         self.d[val].remove(obj_id)
         if len(self.d[val]) == 0:
             del self.d[val]

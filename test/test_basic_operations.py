@@ -43,9 +43,7 @@ def test_find_match(index_type):
 
 def test_find_exclude_only(index_type):
     hi = make_test_data(index_type)
-    result = hi.find(
-        exclude={"type2": None}
-    )  # Zapdos is the only one with a type2
+    result = hi.find(exclude={"type2": None})  # Zapdos is the only one with a type2
     assert len(result) == 1
     assert result[0].name == "Zapdos"
 
@@ -62,7 +60,6 @@ def test_another(index_type):
 
 
 class TestMutations(unittest.TestCase):
-
     def test_remove(self):
         for index_type in [HashIndex, FrozenHashIndex]:
             hi = make_test_data(index_type)

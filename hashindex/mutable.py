@@ -10,10 +10,11 @@ from hashindex.mutable_field import MutableFieldIndex
 
 
 class HashIndex:
-    def __init__(self,
-                 objs: Optional[Iterable[Any]] = None,
-                 on: Iterable[Union[str, Callable]] = None
-                 ):
+    def __init__(
+        self,
+        objs: Optional[Iterable[Any]] = None,
+        on: Iterable[Union[str, Callable]] = None,
+    ):
 
         self.obj_map = dict()
 
@@ -38,9 +39,13 @@ class HashIndex:
         if len(hits) == 0:
             return []
         elif len(hits) == 1:
-            return [itemgetter(*hits)(self.obj_map)]  # itemgetter returns a single item here, not in a collection
+            return [
+                itemgetter(*hits)(self.obj_map)
+            ]  # itemgetter returns a single item here, not in a collection
         else:
-            return list(itemgetter(*hits)(self.obj_map))  # itemgetter returns a tuple of items here, so make it a list
+            return list(
+                itemgetter(*hits)(self.obj_map)
+            )  # itemgetter returns a tuple of items here, so make it a list
 
     def find_ids(
         self,

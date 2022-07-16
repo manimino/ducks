@@ -23,7 +23,9 @@ from typing import Tuple, List, Union, Callable, Any, Iterable
 from hashindex.utils import get_field
 
 
-def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def get_sorted_hashes(
+    objs: List[Any], field: Union[Callable, str]
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Hash the given attribute for all objs. Sort objs and hashes by the hashes.
 
@@ -34,13 +36,13 @@ def get_sorted_hashes(objs: List[Any], field: Union[Callable, str]) -> Tuple[np.
      - 100ms to sort the hashes
      - 30ms of whatever
     """
-    vals = np.empty((len(objs,)), dtype='O')
+    vals = np.empty((len(objs,)), dtype="O")
     for i, obj in enumerate(objs):
         vals[i] = get_field(obj, field)
-    hashes = np.fromiter((hash(val) for val in vals), dtype='int64')
+    hashes = np.fromiter((hash(val) for val in vals), dtype="int64")
     pos = np.argsort(hashes)
     sorted_hashes = hashes[pos]
-    sorted_objs = np.empty_like(hashes, dtype='O')
+    sorted_objs = np.empty_like(hashes, dtype="O")
     for i in pos:
         sorted_objs[i] = objs[pos[i]]
     sorted_vals = vals[pos]
@@ -102,7 +104,7 @@ class BucketPlan:
         l2 = len(self.hash_arr)
         l3 = len(self.val_arr)
         mh = min(self.hash_arr)
-        return f'{mh}: {l1}={l2}={l3}; ' + str(d)
+        return f"{mh}: {l1}={l2}={l3}; " + str(d)
 
 
 def compute_buckets(objs, field, bucket_size_limit):
@@ -115,23 +117,23 @@ def compute_buckets(objs, field, bucket_size_limit):
         if i + 1 == len(bucket_starts):
             distinct_hashes = val_hashes[s:]
             distinct_hash_counts = counts[s:]
-            obj_arr = sorted_objs[starts[s]:]
-            hash_arr = sorted_hashes[starts[s]:]
-            val_arr = sorted_vals[starts[s]:]
+            obj_arr = sorted_objs[starts[s] :]
+            hash_arr = sorted_hashes[starts[s] :]
+            val_arr = sorted_vals[starts[s] :]
         else:
             t = bucket_starts[i + 1]
             distinct_hashes = val_hashes[s:t]
             distinct_hash_counts = counts[s:t]
-            obj_arr = sorted_objs[starts[s]:starts[t]]
-            hash_arr = sorted_hashes[starts[s]:starts[t]]
-            val_arr = sorted_vals[starts[s]:starts[t]]
+            obj_arr = sorted_objs[starts[s] : starts[t]]
+            hash_arr = sorted_hashes[starts[s] : starts[t]]
+            val_arr = sorted_vals[starts[s] : starts[t]]
         bucket_plans.append(
             BucketPlan(
                 distinct_hashes=distinct_hashes,
                 distinct_hash_counts=distinct_hash_counts,
                 obj_arr=obj_arr,
                 hash_arr=hash_arr,
-                val_arr=val_arr
+                val_arr=val_arr,
             )
         )
 
