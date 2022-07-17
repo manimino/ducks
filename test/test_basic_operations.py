@@ -5,7 +5,6 @@ import unittest
 
 from hashindex import HashIndex, FrozenHashIndex
 from hashindex.utils import get_attributes
-from hashindex.exceptions import FrozenError, ImmutableUpdateError
 
 
 @dataclass
