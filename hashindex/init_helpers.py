@@ -21,6 +21,7 @@ import numpy as np
 from dataclasses import dataclass
 from typing import Tuple, List, Union, Callable, Any, Iterable
 from hashindex.utils import get_field
+from hashindex.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 
 
 def get_sorted_hashes(
@@ -107,6 +108,15 @@ class BucketPlan:
         return f"{mh}: {l1}={l2}={l3}; " + str(d)
 
 
+def empty_plan():
+    return BucketPlan(
+        distinct_hashes=np.array([]),
+        distinct_hash_counts=np.array([]),
+        obj_arr=np.array([]),
+        hash_arr=np.array([]),
+        val_arr=np.array([]),
+    )
+
 def compute_buckets(objs, field, bucket_size_limit):
     sorted_vals, sorted_hashes, sorted_objs = get_sorted_hashes(objs, field)
     starts, counts, val_hashes = run_length_encode(sorted_hashes)
@@ -138,3 +148,4 @@ def compute_buckets(objs, field, bucket_size_limit):
         )
 
     return bucket_plans
+

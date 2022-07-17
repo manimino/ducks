@@ -1,7 +1,6 @@
 import numpy as np
 import sortednp as snp
 from dataclasses import dataclass
-from collections import Counter
 from hashindex.init_helpers import BucketPlan
 from hashindex.utils import get_field
 from typing import Callable, Union
@@ -13,11 +12,13 @@ class ArrayPair:
     obj_arr: np.ndarray
 
     def apply_intersection(self, other):
+        """Compute the intersection of self and other. Preserves sort order. Update this object to the result."""
         intersect_ids, indices = snp.intersect(self.id_arr, other.id_arr, indices=True)
         self.obj_arr = self.obj_arr[indices[0]]
         self.id_arr = intersect_ids
 
     def apply_union(self, other):
+        """Compute the sorted of self and other. Preserves sort order. Update this object to the result."""
         merged_id_arr, indices = snp.merge(
             self.id_arr, other.id_arr, indices=True, duplicates=snp.DROP
         )
@@ -28,6 +29,7 @@ class ArrayPair:
         self.obj_arr = obj_arr
 
     def apply_difference(self, other):
+        """Compute the difference of self and other. Preserves sort order. Update this object to the result."""
         matched_positions = snp.intersect(self.id_arr, other.id_arr, indices=True)[1][0]
         matches = np.zeros_like(self.id_arr, dtype=bool)
         matches[matched_positions] = True
@@ -103,7 +105,7 @@ class FDictBucket:
         return arrs
 
     def get(self, val):
-        return self.d[val]
+        return self.d.get(val, empty_array_pair())
 
     def __len__(self):
         return sum(len(self.d[val]) for val in self.d)

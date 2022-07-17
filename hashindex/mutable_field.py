@@ -3,8 +3,8 @@ from typing import Callable, Union, Dict, Any, List
 
 from cykhash import Int64Set, Int64toInt64Map
 
-from hashindex.constants import SIZE_THRESH, HASH_MIN
-from hashindex.init_helpers import BucketPlan
+from hashindex.constants import SIZE_THRESH, HASH_MIN, HASH_MAX
+from hashindex.init_helpers import BucketPlan, empty_plan
 from hashindex.mutable_buckets import HashBucket, DictBucket
 from hashindex.utils import get_field
 
@@ -43,11 +43,12 @@ class MutableFieldIndex:
     ):
         self.field = field
         self.obj_map = obj_map
-        self.buckets = SortedDict()  # O(1) add / remove, O(log(n)) find bucket for key
-        self.buckets[HASH_MIN] = HashBucket()  # always contains at least one bucket
+        self.buckets = SortedDict()
         if bucket_plans:
-            for bp in fill_in_gaps(bucket_plans):
-                self._add_bucket(bp)
+            self._apply_bucket_plan(bucket_plans)
+        else:
+            # create a single HashBucket to cover the whole range.
+            self.buckets[HASH_MIN] = HashBucket()
 
     def get_objs(self, val):
         val_hash = hash(val)
@@ -160,25 +161,43 @@ class MutableFieldIndex:
         if len(self.buckets[k]) == 0:
             self._remove_bucket(k)
 
-    def _remove_bucket(self, bucket_id: int):
+    def _remove_bucket(self, bucket_key: int):
         """
-        Possible conditions:
-        - This bucket is a HashBucket, and...
-            - There is no bucket to the left of this one.
-            - This bucket is between two DictBuckets.
-            - This bucket has a DictBucket
-        - This bucket is a DictBucket, and...
-            - ugh
-            - can't wait to work on the FrozenIndex where this isn't a thing
-        """
-        if bucket_id != HASH_MIN:
-            # Never delete the leftmost nondict bucket.
-            return
-        del self.buckets[bucket_id]
+        Remove a bucket.
 
-    def _add_bucket(self, bp: BucketPlan):
+        If this creates a gap in the [HASH_MIN..HASH_MAX] space that is not covered by a bucket, fix that.
+        """
+        left_key, right_key = self._get_neighbors(bucket_key)
+        if left_key is not None and isinstance(self.buckets[left_key], HashBucket):
+            # Case 1: There is a hash bucket to the left.
+            # Just delete this bucket; the gap is covered.
+            del self.buckets[bucket_key]
+        else:
+            # Case 2: The left neighbor is nonexistent, or is a DictBucket. Let's look right.
+            if right_key is not None and isinstance(right_key, HashBucket):
+                # Case 2a. The right neighbor is a hash bucket. We can expand it leftwards to cover the gap.
+                self.buckets[bucket_key] = self.buckets[right_key]
+                del self.buckets[right_key]
+                del self.buckets[bucket_key]
+            else:
+                # Case 2b. The right neighbor is nonexistent, or is a DictBucket.
+                # Deletion of this bucket is not allowed, even if empty.
+                pass
+
+    def bucket_report(self):
+        ls = []
+        for bkey in self.buckets:
+            bucket = self.buckets[bkey]
+            bset = set()
+            for obj_id in bucket.get_all_ids():
+                obj = self.obj_map.get(obj_id)
+                bset.add(get_field(obj, self.field))
+            ls.append((type(self.buckets[bkey]).__name__, bkey, "size:", len(bucket)))
+        return ls
+
+    def _add_bucket(self, hash_pos, bp: BucketPlan):
         """Adds a bucket. Only used during init."""
-        if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts > SIZE_THRESH:
+        if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts[0] > SIZE_THRESH:
             bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
             b = DictBucket(
                 bp.distinct_hashes[0],
@@ -193,16 +212,47 @@ class MutableFieldIndex:
                 zip(bp.distinct_hashes, bp.distinct_hash_counts)
             )
             b = HashBucket(bucket_obj_ids, val_hash_counts)
-        lowest_hash = min(bp.distinct_hashes)
-        self.buckets[lowest_hash] = b
+        self.buckets[hash_pos] = b
 
-    def bucket_report(self):
-        ls = []
-        for bkey in self.buckets:
-            bucket = self.buckets[bkey]
-            bset = set()
-            for obj_id in bucket.get_all_ids():
-                obj = self.obj_map.get(obj_id)
-                bset.add(get_field(obj, self.field))
-            ls.append((type(self.buckets[bkey]).__name__, bkey, "size:", len(bucket)))
-        return ls
+    def _apply_bucket_plan(self, bucket_plans: List[BucketPlan]):
+        """
+        Creates all buckets in bucket_plans.
+
+        Fills any gaps in the plans by adding or expanding HashBuckets. That ensures every possible int between
+        MIN_HASH and MAX_HASH is covered by exactly 1 bucket, with no gaps.
+        """
+        next_needed = HASH_MIN
+        for b in bucket_plans:
+            print(b)
+            mh = b.distinct_hashes[0]
+            btype = 'd' if sum(b.distinct_hash_counts) > SIZE_THRESH else 'h'
+            # resolve any gaps
+            if next_needed is not None and mh > next_needed:
+                if btype == 'h':
+                    # expand this bucket to the left
+                    mh = next_needed
+                else:  # btype == 'd'
+                    # this is a dictbucket; add a hashbucket to fill the empty space
+                    self._add_bucket(next_needed, empty_plan())
+            # add this bucket
+            self._add_bucket(mh, b)
+            if btype == 'd' and mh < HASH_MAX:
+                next_needed = mh + 1
+            else:
+                next_needed = None
+        # handle final gap, if needed
+        if next_needed is not None:
+            self._add_bucket(next_needed, empty_plan())
+
+    def _get_neighbors(self, bucket_key):
+        try:
+            left_idx = self.buckets.bisect_left(bucket_key-1)
+            left_key, _ = self.buckets.peekitem(left_idx)
+        except IndexError:
+            left_key = None
+        try:
+            right_idx = self.buckets.bisect_right(bucket_key)
+            right_key, _ = self.buckets.peekitem(right_idx)
+        except IndexError:
+            right_key = None
+        return left_key, right_key
