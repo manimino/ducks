@@ -145,11 +145,7 @@ class MutableFieldIndex:
         """
         Remove a single object from the index.
 
-        If a bucket ever gets empty, delete it unless it's the leftmost one.
-        There will always be at least one bucket.
-        TODO: What if a DictBucket is created on the min hash value?
-        TODO: What if a DictBucket is removed, and the bucket to the right of it is a HashBucket?
-        TODO: What if a DictBucket is removed, and the bucket to the right of it is another DictBucket?
+        If a bucket ever gets empty, remove it.
         """
         val = get_field(obj, self.field)
         val_hash = hash(val)
@@ -195,7 +191,7 @@ class MutableFieldIndex:
             ls.append((type(self.buckets[bkey]).__name__, bkey, "size:", len(bucket)))
         return ls
 
-    def _add_bucket(self, hash_pos, bp: BucketPlan):
+    def _add_bucket(self, hash_pos: int, bp: BucketPlan):
         """Adds a bucket. Only used during init."""
         if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts[0] > SIZE_THRESH:
             bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
@@ -230,7 +226,7 @@ class MutableFieldIndex:
                 if btype == 'h':
                     # expand this bucket to the left
                     mh = next_needed
-                else:  # btype == 'd'
+                else:
                     # this is a dictbucket; add a hashbucket to fill the empty space
                     self._add_bucket(next_needed, empty_plan())
             # add this bucket
@@ -239,7 +235,7 @@ class MutableFieldIndex:
                 next_needed = mh + 1
             else:
                 next_needed = None
-        # handle final gap, if needed
+        # handle final gap, if any
         if next_needed is not None:
             self._add_bucket(next_needed, empty_plan())
 

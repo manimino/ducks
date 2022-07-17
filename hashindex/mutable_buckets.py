@@ -51,7 +51,7 @@ class HashBucket:
         dumped_obj_ids = Int64Set()
         for obj_id in list(self.obj_ids):
             obj = obj_map.get(obj_id)
-            obj_val = getattr(obj, field, None)
+            obj_val = get_field(obj, field)
             if hash(obj_val) in dumped_hash_counts:
                 dumped_obj_ids.add(obj_id)
                 self.obj_ids.remove(obj_id)

@@ -15,8 +15,10 @@ class HashIndex:
         objs: Optional[Iterable[Any]] = None,
         on: Iterable[Union[str, Callable]] = None,
     ):
-
-        self.obj_map = dict()
+        if objs:
+            self.obj_map = {id(obj): obj for obj in objs}
+        else:
+            self.obj_map = dict()
 
         # Make an index for each field.
         self.indices = {}

@@ -26,8 +26,7 @@ class FrozenFieldIndex:
                 b = FDictBucket(bp, self.field)
             else:
                 b = FHashBucket(bp, self.field)
-            lowest_hash = min(bp.distinct_hashes)
-            self.bucket_min_hashes.append(lowest_hash)
+            self.bucket_min_hashes.append(bp.distinct_hashes[0])
             self.buckets.append(b)
 
     def get(self, val) -> ArrayPair:
