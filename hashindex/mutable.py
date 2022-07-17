@@ -136,3 +136,6 @@ class HashIndex:
 
     def __iter__(self, obj):
         return iter(self.obj_map.values())
+
+    def __len__(self):
+        return len(self.obj_map)

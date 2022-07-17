@@ -9,26 +9,6 @@ from hashindex.mutable_buckets import HashBucket, DictBucket
 from hashindex.utils import get_field
 
 
-def fill_in_gaps(bucket_plans: List[BucketPlan]) -> List[BucketPlan]:
-    # TODO, sigh
-    """
-    The planned buckets must meet the requirements:
-    1. A bucket must start at HASH_MIN
-    2. Every DictBucket must have a bucket starting at its val_hash+1.
-    """
-    """
-    fixed_plans = []
-    if min(bucket_plans[0].distinct_hashes) != HASH_MIN:
-        if len(bucket_plans[0].obj_arr) > SIZE_THRESH:
-            # create an empty HashBucket left of this DictBucket
-            fixed_plans.append()
-        else:
-            # extend the leftmost HashBucket to the left
-            pass
-    """
-    return bucket_plans
-
-
 class MutableFieldIndex:
     """
     Stores the possible values of this field in a collection of buckets.
@@ -172,9 +152,9 @@ class MutableFieldIndex:
             # Case 2: The left neighbor is nonexistent, or is a DictBucket. Let's look right.
             if right_key is not None and isinstance(right_key, HashBucket):
                 # Case 2a. The right neighbor is a hash bucket. We can expand it leftwards to cover the gap.
-                self.buckets[bucket_key] = self.buckets[right_key]
+                b = self.buckets[right_key]
                 del self.buckets[right_key]
-                del self.buckets[bucket_key]
+                self.buckets[bucket_key] = b
             else:
                 # Case 2b. The right neighbor is nonexistent, or is a DictBucket.
                 # Deletion of this bucket is not allowed, even if empty.
@@ -240,11 +220,14 @@ class MutableFieldIndex:
             self._add_bucket(next_needed, empty_plan())
 
     def _get_neighbors(self, bucket_key):
-        try:
-            left_idx = self.buckets.bisect_left(bucket_key-1)
-            left_key, _ = self.buckets.peekitem(left_idx)
-        except IndexError:
+        if bucket_key == HASH_MIN:
             left_key = None
+        else:
+            try:
+                left_idx = self.buckets.bisect_left(bucket_key-1)
+                left_key, _ = self.buckets.peekitem(left_idx)
+            except IndexError:
+                left_key = None
         try:
             right_idx = self.buckets.bisect_right(bucket_key)
             right_key, _ = self.buckets.peekitem(right_idx)
