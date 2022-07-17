@@ -96,7 +96,6 @@ hi.find({e_count: 2})  # returns ['three']
 
 ### Bigger examples
  
- - [Document search]()
  - [Wordle solver]()
  - [HashIndex plus vector index]()
 

@@ -19,9 +19,8 @@ Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-
 
 import numpy as np
 from dataclasses import dataclass
-from typing import Tuple, List, Union, Callable, Any, Iterable
+from typing import Tuple, List, Union, Callable, Any
 from hashindex.utils import get_field
-from hashindex.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 
 
 def get_sorted_hashes(
@@ -76,7 +75,7 @@ def find_bucket_starts(counts, limit):
 
     Note: This function is ridiculously faster (like 300x) if decorated with @numba.njit.
     However, numba is a difficult dependency to add, as it conflicts with recent numpy. And numpy updates
-    are constantly required due to security updates. So, we can't use numba here despite its amazing performance.
+    are constantly required due to security updates. So, we can't use numba here, despite its amazing performance.
     """
     result = np.empty(len(counts), dtype=np.uint64)
     idx = 0
@@ -116,6 +115,7 @@ def empty_plan():
         hash_arr=np.array([]),
         val_arr=np.array([]),
     )
+
 
 def compute_buckets(objs, field, bucket_size_limit):
     sorted_vals, sorted_hashes, sorted_objs = get_sorted_hashes(objs, field)
