@@ -14,10 +14,17 @@ def test_get_zero(index_type):
     def _f(x):
         return x[0]
 
-    hi = HashIndex(["a", "b", "c"], on=[_f])
+    hi = index_type(["a", "b", "c"], on=[_f])
     assert hi.find({_f: "c"}) == ["c"]
     assert hi.find({_f: "d"}) == []
 
+
+def test_add_none():
+    hi = HashIndex(on='s')
+    hi.add(None)
+    result = hi.find({'s': None})
+    assert result[0] is None
+    
 
 def test_empty_mutable_index():
     hi = HashIndex([], on=["stuff"])

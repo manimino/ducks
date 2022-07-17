@@ -26,8 +26,6 @@ class HashIndex:
             else:
                 bucket_plans = None
             self.indices[field] = MutableFieldIndex(field, self.obj_map, bucket_plans)
-        for obj in objs:
-            self.add(obj)
 
     def find(
         self,

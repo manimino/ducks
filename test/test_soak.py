@@ -40,3 +40,4 @@ class SoakTest:
         pass
 
     def remove(self):
+        pass

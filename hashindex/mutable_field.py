@@ -223,7 +223,6 @@ class MutableFieldIndex:
         """
         next_needed = HASH_MIN
         for b in bucket_plans:
-            print(b)
             mh = b.distinct_hashes[0]
             btype = 'd' if sum(b.distinct_hash_counts) > SIZE_THRESH else 'h'
             # resolve any gaps
