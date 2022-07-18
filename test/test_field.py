@@ -88,9 +88,15 @@ def data_class(request):
 def test_get_objs(idx_and_init, data_class):
     idx_class, init_fn = idx_and_init
     things, fw = init_fn(idx_class, data_class)
-    result = fw.idx.get_objs(things[0].s)
-    print(fw.idx.bucket_report())
-    assert things[0] in result
+    isin = []
+    for t in things:
+        r = id(t) in fw.idx.get_obj_ids(t.s)
+        isin.append(r)
+        if not r:
+            print('could not find ', hash(t.s), t.s)
+    print("\n".join(str(x) for x in fw.idx.bucket_report()))
+    print(len([x for x in isin if x]), '/', len(isin))
+    assert all(isin)
 
 
 def test_get_obj_ids(idx_and_init, data_class):
@@ -100,7 +106,7 @@ def test_get_obj_ids(idx_and_init, data_class):
     for t in things:
         isin.append(id(t) in fw.idx.get_obj_ids(t.s))
     print("\n".join(str(x) for x in fw.idx.bucket_report()))
-    print(len([x for x in isin if x]) / len(isin))
+    print(len([x for x in isin if x]), '/', len(isin))
     assert all(isin)
 
 
@@ -108,3 +114,4 @@ def test_create_and_remove(data_class):
     things, fw = initialize_with_objs(MutableFieldIndex, data_class)
     for t in things:
         fw.idx.remove(id(t), t)
+        fw.obj_map.pop(id(t))

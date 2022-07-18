@@ -1,4 +1,6 @@
 import pytest
+import random
+from sortedcontainers import SortedDict
 from hashindex.mutable_bucket_manager import MutableBucketManager
 from hashindex.constants import HASH_MIN, HASH_MAX
 
@@ -37,4 +39,25 @@ def test_get_bucket_key_for(keys, query, result):
     mb = MutableBucketManager()
     for i, key in enumerate(keys):
         mb[key] = i
-    assert mb.get_bucket_key_for(query) == result
+    got = mb.get_bucket_key_for(query)
+    print(keys, query, got, result)
+    assert got == result
+
+
+@pytest.mark.parametrize(
+    "keys,query,result", [
+        ([1], 2, 1),
+        ([1], 1, 1),
+        ([1, 3, 4], 2, 1),
+        ([1, 3, 4], 1, 1),
+        ([1, 3, 4], 4, 4),
+        ([1, 3, 4], 5, 4),
+    ])
+def test_sorted_dict_bisect(keys, query, result):
+    sd = SortedDict()
+    for i, k in enumerate(keys):
+        sd[k] = random.random()
+    idx = sd.bisect_right(query)-1
+    item, _ = sd.peekitem(idx)
+    print(f'{keys}.bisect_right({query})-1 = {item}, expected {result})')
+    assert item == result

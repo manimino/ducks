@@ -33,8 +33,11 @@ class HashBucket:
         return self.obj_ids
 
     def remove(self, val_hash, obj_id):
-        # todo handle exceptions
+        if val_hash not in self.val_hash_counts or self.val_hash_counts[val_hash] <= 0:
+            raise KeyError(f'hash {val_hash} not found in HashBucket')
         self.val_hash_counts[val_hash] -= 1
+        if self.val_hash_counts[val_hash] == 0:
+            del self.val_hash_counts[val_hash]
         self.obj_ids.remove(obj_id)
 
     def split(self, field, obj_map: Dict[int, Any]):
@@ -42,14 +45,14 @@ class HashBucket:
         # dump out the upper half of our hashes
         half_point = len(my_hashes) // 2
         dumped_hash_counts = {
-            v: self.val_hash_counts[v] for v in my_hashes[half_point:]
+            h: self.val_hash_counts[h] for h in my_hashes[half_point:]
         }
 
         # dereference each object
         # Find the objects with field_vals that hash to any of dumped_hashes
         # we will move their ids to the new bucket
         dumped_obj_ids = Int64Set()
-        for obj_id in list(self.obj_ids):
+        for obj_id in self.obj_ids:
             obj = obj_map.get(obj_id)
             obj_val = get_field(obj, field)
             if hash(obj_val) in dumped_hash_counts:
@@ -99,9 +102,9 @@ class DictBucket:
 
     def remove(self, val, obj_id):
         if val not in self.d:
-            raise KeyError("Object value not in here")
+            raise KeyError("Object value not found in DictBucket")
         if obj_id not in self.d[val]:
-            raise KeyError("Object ID not in here")
+            raise KeyError("Object ID not found in DictBucket")
         self.d[val].remove(obj_id)
         if len(self.d[val]) == 0:
             del self.d[val]
@@ -110,7 +113,10 @@ class DictBucket:
         return self.d[val]
 
     def get_all_ids(self):
-        return Int64Set.union(*self.d.values())
+        if self.d:
+            return Int64Set.union(*self.d.values())
+        else:
+            return Int64Set()
 
     def __len__(self):
         return sum(len(s) for s in self.d.values())

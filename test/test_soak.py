@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 import random
 from hashindex import HashIndex
+from hashindex.utils import get_field
 
 
 PLANETS = ['mercury'] * 1 + \
@@ -30,26 +31,52 @@ class Thing:
             self.sometimes = True
 
 
+def planet_len(obj):
+    if isinstance(obj, dict):
+        return len(obj['planet'])
+    else:
+        return len(obj.planet)
+
+
+def make_dict_thing(id_num):
+    t = Thing(id_num)
+    return {
+        'id_num': t.id_num,
+        'ts_sec': t.ts_sec,
+        'ts': t.ts,
+        'planet': t.planet,
+        'n': t.n,
+        planet_len: planet_len(t)
+    }
+
+
 class SoakTest:
 
     def __init__(self):
         self.t0 = time.time()
         self.seed = random.choice(range(1000))
         random.seed(self.seed)
-        self.fp = lambda x: len(x.planet)
-        self.hi = HashIndex(on=['ts_sec', 'ts', 'planet', 'n', 'sometimes', self.fp])
+        self.hi = HashIndex(on=['ts_sec', 'ts', 'planet', 'n', 'sometimes', planet_len])
+        #  self.hi = HashIndex(on=[planet_len])
         self.objs = dict()
         self.max_id_num = 0
 
     def run(self, duration):
         while time.time() - self.t0 < duration:
             op = random.choice([self.add, self.add_many, self.remove, self.remove_all, self.check_equal])
-            print(op)
-            op()
+            try:
+                op()
+            except KeyError as e:
+                print(len(self.objs), 'remaining')
+                raise e
 
     def add(self):
         self.max_id_num += 1
-        t = Thing(self.max_id_num)
+        # randomly pick between a dict and a class instance
+        if random.random() < 0.5:
+            t = Thing(self.max_id_num)
+        else:
+            t = make_dict_thing(self.max_id_num)
         self.objs[self.max_id_num] = t
         self.hi.add(t)
 
@@ -70,12 +97,14 @@ class SoakTest:
         self.objs = dict()
 
     def check_equal(self):
-        ls = [o for o in self.objs.values() if o.planet == 'saturn']
+        ls = [o for o in self.objs.values() if get_field(o, 'planet') == 'saturn']
         hi_ls = self.hi.find({'planet': 'saturn'})
         assert len(ls) == len(hi_ls)
-        # todo add id checking too
+        ls = [o for o in self.objs.values() if get_field(o, planet_len) == 6]
+        hi_ls = self.hi.find({planet_len: 6})
+        assert len(ls) == len(hi_ls)
 
 
 def test_soak():
     st = SoakTest()
-    st.run(5)
+    st.run(60)
