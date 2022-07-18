@@ -20,7 +20,8 @@ PLANETS = ['mercury'] * 1 + \
 
 
 class Thing:
-    def __init__(self):
+    def __init__(self, id_num):
+        self.id_num = id_num
         self.ts_sec = datetime.now().replace(microsecond=0)
         self.ts = datetime.now()
         self.planet = random.choice(PLANETS)
@@ -37,16 +38,19 @@ class SoakTest:
         random.seed(self.seed)
         self.fp = lambda x: len(x.planet)
         self.hi = HashIndex(on=['ts_sec', 'ts', 'planet', 'n', 'sometimes', self.fp])
-        self.objs = []
+        self.objs = dict()
+        self.max_id_num = 0
 
     def run(self, duration):
         while time.time() - self.t0 < duration:
             op = random.choice([self.add, self.add_many, self.remove, self.remove_all, self.check_equal])
+            print(op)
             op()
 
     def add(self):
-        t = Thing()
-        self.objs.append(t)
+        self.max_id_num += 1
+        t = Thing(self.max_id_num)
+        self.objs[self.max_id_num] = t
         self.hi.add(t)
 
     def add_many(self):
@@ -55,19 +59,21 @@ class SoakTest:
 
     def remove(self):
         if self.objs:
-            obj = random.choice(self.objs)
-            self.objs.remove(obj)
+            key = random.choice(list(self.objs.keys()))
+            obj = self.objs[key]
             self.hi.remove(obj)
+            del self.objs[key]
 
     def remove_all(self):
-        for t in self.objs:
+        for t in self.objs.values():
             self.hi.remove(t)
-        self.objs = []
+        self.objs = dict()
 
     def check_equal(self):
-        ls = [o for o in self.objs if o.planet == 'saturn']
+        ls = [o for o in self.objs.values() if o.planet == 'saturn']
         hi_ls = self.hi.find({'planet': 'saturn'})
         assert len(ls) == len(hi_ls)
+        # todo add id checking too
 
 
 def test_soak():

@@ -6,6 +6,7 @@ from cykhash import Int64Set, Int64toInt64Map
 from hashindex.constants import SIZE_THRESH, HASH_MIN, HASH_MAX
 from hashindex.init_helpers import BucketPlan, empty_plan
 from hashindex.mutable_buckets import HashBucket, DictBucket
+from hashindex.mutable_bucket_manager import MutableBucketManager
 from hashindex.utils import get_field
 
 
@@ -23,17 +24,17 @@ class MutableFieldIndex:
     ):
         self.field = field
         self.obj_map = obj_map
-        self.buckets = SortedDict()
+        self.mbm = MutableBucketManager()
         if bucket_plans:
             self._apply_bucket_plan(bucket_plans)
         else:
             # create a single HashBucket to cover the whole range.
-            self.buckets[HASH_MIN] = HashBucket()
+            self.mbm[HASH_MIN] = HashBucket()
 
     def get_objs(self, val):
         val_hash = hash(val)
-        k = self._get_bucket_key_for(val_hash)
-        bucket = self.buckets[k]
+        k = self.mbm.get_bucket_key_for(val_hash)
+        bucket = self.mbm[k]
 
         if isinstance(bucket, DictBucket):
             return [self.obj_map.get(obj_id) for obj_id in bucket.get_matching_ids(val)]
@@ -49,11 +50,20 @@ class MutableFieldIndex:
 
     def get_obj_ids(self, val):
         val_hash = hash(val)
-        k = self._get_bucket_key_for(val_hash)
-        bucket = self.buckets[k]
+        k = self.mbm.get_bucket_key_for(val_hash)
+        bucket = self.mbm[k]
 
         if isinstance(bucket, DictBucket):
-            return bucket.get_matching_ids(val)
+            try:
+                return bucket.get_matching_ids(val)
+            except KeyError as e:
+                for ki in sorted(self.mbm):
+                    if isinstance(self.mbm[ki], DictBucket):
+                        print(ki, self.mbm[ki], list(self.mbm[ki].d.keys()), len(self.mbm[ki]))
+                    else:
+                        print(ki, self.mbm[ki])
+                print('---', val, val_hash)
+                raise e
         else:
             # get everything in this HashBucket, and filter to just the obj_ids where val matches
             matched_ids = Int64Set()
@@ -67,16 +77,11 @@ class MutableFieldIndex:
     def get_all_objs(self):
         return list(self.obj_map.values())
 
-    def _get_bucket_key_for(self, val_hash):
-        list_idx = self.buckets.bisect_right(val_hash) - 1
-        k, _ = self.buckets.peekitem(list_idx)
-        return k
-
     def _handle_big_hash_bucket(self, k):
         # A HashBucket is over threshold.
         # If it contains values that all hash to the same thing, make it a DictBucket.
         # If it has many val_hashes, split it into two HashBuckets.
-        hb = self.buckets[k]
+        hb = self.mbm[k]
         if len(hb.val_hash_counts) == 1:
             # convert it to a dictbucket
             hb_objs = [self.obj_map[obj_id] for obj_id in hb.obj_ids]
@@ -87,37 +92,49 @@ class MutableFieldIndex:
                 None,
                 self.field,
             )
-            del self.buckets[k]
-            self.buckets[db.val_hash] = db
+            self.mbm.remove_bucket(k)
+            self.mbm[db.val_hash] = db
+            # The HashBucket we removed previously spanned a range of hash values,
+            # but the new DictBucket only covers 1 hash value. We may need to create HashBuckets on the
+            # left and right sides.
+            print('caller split')
+            left_key, right_key = self.mbm.get_neighbors(k)
+            if right_key is None or right_key > db.val_hash + 1:
+                self.mbm[db.val_hash + 1] = HashBucket()
+            if db.val_hash > HASH_MIN:
+                if left_key is None:
+                    self.mbm[HASH_MIN] = HashBucket()
+                elif left_key < db.val_hash - 1 and isinstance(self.mbm[left_key], DictBucket):
+                    self.mbm[HASH_MIN] = HashBucket
         else:
             # split it into two hashbuckets
-            new_hash_counts, new_obj_ids = self.buckets[k].split(
+            new_hash_counts, new_obj_ids = self.mbm[k].split(
                 self.field, self.obj_map
             )
             new_bucket = HashBucket()
             new_bucket.update(new_hash_counts, new_obj_ids)
-            self.buckets[min(new_hash_counts.keys())] = new_bucket
+            self.mbm[min(new_hash_counts.keys())] = new_bucket
 
     def add(self, obj_id, obj):
         val = get_field(obj, self.field)
         val_hash = hash(val)
-        k = self._get_bucket_key_for(val_hash)
-        if isinstance(self.buckets[k], DictBucket):
-            if val_hash == self.buckets[k].val_hash:
+        k = self.mbm.get_bucket_key_for(val_hash)
+        if isinstance(self.mbm[k], DictBucket):
+            if val_hash == self.mbm[k].val_hash:
                 # add to dictbucket
-                self.buckets[k].add(val, obj_id)
+                self.mbm[k].add(val, obj_id)
             else:
                 # can't put it in this dictbucket, the val_hash doesn't match.
                 # Make a new hashbucket to hold this item.
-                self.buckets[k + 1] = HashBucket()
-                self.buckets[k + 1].add(val_hash, obj_id)
+                self.mbm[k + 1] = HashBucket()
+                self.mbm[k + 1].add(val_hash, obj_id)
         else:
             # add to hashbucket
-            self.buckets[k].add(val_hash, obj_id)
+            self.mbm[k].add(val_hash, obj_id)
 
         if (
-            isinstance(self.buckets[k], HashBucket)
-            and len(self.buckets[k]) > SIZE_THRESH
+            isinstance(self.mbm[k], HashBucket)
+            and len(self.mbm[k]) > SIZE_THRESH
         ):
             self._handle_big_hash_bucket(k)
 
@@ -129,49 +146,26 @@ class MutableFieldIndex:
         """
         val = get_field(obj, self.field)
         val_hash = hash(val)
-        k = self._get_bucket_key_for(val_hash)
-        if isinstance(self.buckets[k], HashBucket):
-            self.buckets[k].remove(val_hash, obj_id)
+        k = self.mbm.get_bucket_key_for(val_hash)
+        if isinstance(self.mbm[k], HashBucket):
+            self.mbm[k].remove(val_hash, obj_id)
         else:
-            self.buckets[k].remove(val, obj_id)
-        if len(self.buckets[k]) == 0:
-            self._remove_bucket(k)
-
-    def _remove_bucket(self, bucket_key: int):
-        """
-        Remove a bucket.
-
-        If this creates a gap in the [HASH_MIN..HASH_MAX] space that is not covered by a bucket, fix that.
-        """
-        left_key, right_key = self._get_neighbors(bucket_key)
-        if left_key is not None and isinstance(self.buckets[left_key], HashBucket):
-            # Case 1: There is a hash bucket to the left.
-            # Just delete this bucket; the gap is covered.
-            del self.buckets[bucket_key]
-        else:
-            # Case 2: The left neighbor is nonexistent, or is a DictBucket. Let's look right.
-            if right_key is not None and isinstance(right_key, HashBucket):
-                # Case 2a. The right neighbor is a hash bucket. We can expand it leftwards to cover the gap.
-                b = self.buckets[right_key]
-                del self.buckets[right_key]
-                self.buckets[bucket_key] = b
-            else:
-                # Case 2b. The right neighbor is nonexistent, or is a DictBucket.
-                # Deletion of this bucket is not allowed, even if empty.
-                pass
+            self.mbm[k].remove(val, obj_id)
+        if len(self.mbm[k]) == 0:
+            self.mbm.remove_bucket(k)
 
     def bucket_report(self):
         ls = []
-        for bkey in self.buckets:
-            bucket = self.buckets[bkey]
+        for bkey in self.mbm:
+            bucket = self.mbm[bkey]
             bset = set()
             for obj_id in bucket.get_all_ids():
                 obj = self.obj_map.get(obj_id)
                 bset.add(get_field(obj, self.field))
-            ls.append((type(self.buckets[bkey]).__name__, bkey, "size:", len(bucket)))
+            ls.append((type(self.mbm[bkey]).__name__, bkey, "size:", len(bucket)))
         return ls
 
-    def _add_bucket(self, hash_pos: int, bp: BucketPlan):
+    def _add_plan_bucket(self, hash_pos: int, bp: BucketPlan):
         """Adds a bucket. Only used during init."""
         if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts[0] > SIZE_THRESH:
             bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
@@ -188,7 +182,7 @@ class MutableFieldIndex:
                 zip(bp.distinct_hashes, bp.distinct_hash_counts)
             )
             b = HashBucket(bucket_obj_ids, val_hash_counts)
-        self.buckets[hash_pos] = b
+        self.mbm[hash_pos] = b
 
     def _apply_bucket_plan(self, bucket_plans: List[BucketPlan]):
         """
@@ -208,29 +202,13 @@ class MutableFieldIndex:
                     mh = next_needed
                 else:
                     # this is a dictbucket; add a hashbucket to fill the empty space
-                    self._add_bucket(next_needed, empty_plan())
+                    self._add_plan_bucket(next_needed, empty_plan())
             # add this bucket
-            self._add_bucket(mh, b)
+            self._add_plan_bucket(mh, b)
             if btype == 'd' and mh < HASH_MAX:
                 next_needed = mh + 1
             else:
                 next_needed = None
         # handle final gap, if any
         if next_needed is not None:
-            self._add_bucket(next_needed, empty_plan())
-
-    def _get_neighbors(self, bucket_key):
-        if bucket_key == HASH_MIN:
-            left_key = None
-        else:
-            try:
-                left_idx = self.buckets.bisect_left(bucket_key-1)
-                left_key, _ = self.buckets.peekitem(left_idx)
-            except IndexError:
-                left_key = None
-        try:
-            right_idx = self.buckets.bisect_right(bucket_key)
-            right_key, _ = self.buckets.peekitem(right_idx)
-        except IndexError:
-            right_key = None
-        return left_key, right_key
+            self._add_plan_bucket(next_needed, empty_plan())
