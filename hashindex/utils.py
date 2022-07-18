@@ -18,7 +18,7 @@ def set_field(obj, field, new_value):
     if callable(field):
         return  # field is derived from some object property, nothing to update
     elif isinstance(obj, dict):
-        dict[field] = new_value
+        obj[field] = new_value
     else:
         setattr(obj, field, new_value)
 

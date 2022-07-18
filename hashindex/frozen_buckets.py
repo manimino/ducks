@@ -90,12 +90,14 @@ class FDictBucket:
         else:
             # Building a dict requires hashing every value, so there's some time cost here (~1s per 1M items).
             # Maybe worse since, as we know, the value hashes collide.
+            # We want to make self.d = {val: numpy object array} here. Make a dict of {val: [idx]} first.
             d_idx = dict()
             for i, val in enumerate(bp.val_arr):
-                if val not in self.d:
+                if val not in d_idx:
                     d_idx[val] = []
                 d_idx[val].append(i)
-            for val in self.d_idx:
+            self.d = dict()
+            for val in d_idx:
                 self.d[val] = bp.obj_arr[d_idx[val]]
 
     def get_all(self):

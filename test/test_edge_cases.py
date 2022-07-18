@@ -46,3 +46,4 @@ class TestExceptions(unittest.TestCase):
     def test_empty_frozen(self):
         with self.assertRaises(ValueError):
             FrozenHashIndex([], on=["stuff"])
+

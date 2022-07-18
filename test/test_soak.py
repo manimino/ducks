@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 import random
 from hashindex import HashIndex
-from hashindex.utils import get_field
+from hashindex.utils import get_field, set_field
 
 
 PLANETS = ['mercury'] * 1 + \
@@ -51,10 +51,16 @@ def make_dict_thing(id_num):
 
 
 class SoakTest:
-
+    """
+    Keep running insert / update / remove operations at random for a long time.
+    Check periodically to make sure find() results are correct.
+    """
     def __init__(self):
         self.t0 = time.time()
-        self.seed = random.choice(range(1000))
+        self.t_report = set([5*i for i in range(1000)])
+        random.seed(time.time())
+        self.seed = random.choice(range(10**6))
+        print(self.seed)
         random.seed(self.seed)
         self.hi = HashIndex(on=['ts_sec', 'ts', 'planet', 'n', 'sometimes', planet_len])
         #  self.hi = HashIndex(on=[planet_len])
@@ -63,7 +69,7 @@ class SoakTest:
 
     def run(self, duration):
         while time.time() - self.t0 < duration:
-            op = random.choice([self.add, self.add_many, self.remove, self.remove_all, self.check_equal])
+            op = random.choice([self.add, self.add_many, self.update, self.remove, self.remove_all, self.check_equal])
             op()
 
     def add(self):
@@ -92,6 +98,22 @@ class SoakTest:
             self.hi.remove(t)
         self.objs = dict()
 
+    def update(self):
+        t = self.random_obj()
+        if t is not None:
+            t_new = Thing(-1)
+            self.hi.update(t, {
+                'planet': t_new.planet,
+                planet_len: planet_len(t_new),
+                'ts': t_new.ts,
+                'ts_sec': t_new.ts_sec,
+            })
+
+    def random_obj(self):
+        if not len(self.objs):
+            return None
+        return random.choice(list(self.objs.values()))
+
     def check_equal(self):
         # check a string key
         ls = [o for o in self.objs.values() if get_field(o, 'planet') == 'saturn']
@@ -106,13 +128,14 @@ class SoakTest:
         hi_ls = self.hi.find({'sometimes': None})
         assert len(ls) == len(hi_ls)
         # check an object-ish key
-        if len(self.objs):
-            t = random.choice(list(self.objs.keys()))
-            ls = [o for o in self.objs.values() if get_field(o, 'ts') == t.ts]
-            hi_ls = self.hi.find({'ts': t.ts})
-            assert len(ls) == hi_ls
-        
+        t = self.random_obj()
+        if t is not None:
+            target_ts = get_field(t, 'ts_sec')
+            ls = [o for o in self.objs.values() if get_field(o, 'ts_sec') == target_ts]
+            hi_ls = self.hi.find({'ts_sec': target_ts})
+            assert len(ls) == len(hi_ls)
+
 
 def test_soak():
     st = SoakTest()
-    st.run(60)
+    st.run(10)
