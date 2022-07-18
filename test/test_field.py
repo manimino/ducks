@@ -92,10 +92,6 @@ def test_get_objs(idx_and_init, data_class):
     for t in things:
         r = id(t) in fw.idx.get_obj_ids(t.s)
         isin.append(r)
-        if not r:
-            print('could not find ', hash(t.s), t.s)
-    print("\n".join(str(x) for x in fw.idx.bucket_report()))
-    print(len([x for x in isin if x]), '/', len(isin))
     assert all(isin)
 
 
@@ -105,8 +101,6 @@ def test_get_obj_ids(idx_and_init, data_class):
     isin = []
     for t in things:
         isin.append(id(t) in fw.idx.get_obj_ids(t.s))
-    print("\n".join(str(x) for x in fw.idx.bucket_report()))
-    print(len([x for x in isin if x]), '/', len(isin))
     assert all(isin)
 
 

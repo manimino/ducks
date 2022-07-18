@@ -64,11 +64,7 @@ class SoakTest:
     def run(self, duration):
         while time.time() - self.t0 < duration:
             op = random.choice([self.add, self.add_many, self.remove, self.remove_all, self.check_equal])
-            try:
-                op()
-            except KeyError as e:
-                print(len(self.objs), 'remaining')
-                raise e
+            op()
 
     def add(self):
         self.max_id_num += 1
@@ -97,13 +93,25 @@ class SoakTest:
         self.objs = dict()
 
     def check_equal(self):
+        # check a string key
         ls = [o for o in self.objs.values() if get_field(o, 'planet') == 'saturn']
         hi_ls = self.hi.find({'planet': 'saturn'})
         assert len(ls) == len(hi_ls)
+        # check a functional key
         ls = [o for o in self.objs.values() if get_field(o, planet_len) == 6]
         hi_ls = self.hi.find({planet_len: 6})
         assert len(ls) == len(hi_ls)
-
+        # check a null-ish key
+        ls = [o for o in self.objs.values() if get_field(o, 'sometimes') is None]
+        hi_ls = self.hi.find({'sometimes': None})
+        assert len(ls) == len(hi_ls)
+        # check an object-ish key
+        if len(self.objs):
+            t = random.choice(list(self.objs.keys()))
+            ls = [o for o in self.objs.values() if get_field(o, 'ts') == t.ts]
+            hi_ls = self.hi.find({'ts': t.ts})
+            assert len(ls) == hi_ls
+        
 
 def test_soak():
     st = SoakTest()

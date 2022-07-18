@@ -40,7 +40,6 @@ def test_get_bucket_key_for(keys, query, result):
     for i, key in enumerate(keys):
         mb[key] = i
     got = mb.get_bucket_key_for(query)
-    print(keys, query, got, result)
     assert got == result
 
 
@@ -59,5 +58,4 @@ def test_sorted_dict_bisect(keys, query, result):
         sd[k] = random.random()
     idx = sd.bisect_right(query)-1
     item, _ = sd.peekitem(idx)
-    print(f'{keys}.bisect_right({query})-1 = {item}, expected {result})')
     assert item == result
