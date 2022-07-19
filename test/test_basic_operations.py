@@ -58,6 +58,23 @@ def test_another(index_type):
     assert result[1].name == "Pikachu"
 
 
+def test_iter(index_type):
+    ls = [{'i': i} for i in range(5)]
+    hi = index_type(ls, ['i'])
+    assert len(hi) == len(ls)
+    hi_ls = list(hi)
+    for item in ls:
+        assert item in hi_ls
+    assert len(hi_ls) == ls
+
+
+def test_contains(index_type):
+    ls = [{'i': i} for i in range(5)]
+    hi = index_type(ls, ['i'])
+    for item in ls:
+        assert item in hi
+
+
 class TestMutations(unittest.TestCase):
     def test_remove(self):
         for index_type in [HashIndex, FrozenHashIndex]:
@@ -98,3 +115,4 @@ class TestMutations(unittest.TestCase):
                 hi.add(glaceon)
                 res = hi.find({"name": "Glaceon"})
                 assert res == [glaceon]
+

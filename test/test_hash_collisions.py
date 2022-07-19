@@ -14,7 +14,9 @@ def test_dict_bucket_collision(index_type):
     """
     Ensure the DictBuckets still work properly under hash collision.
     """
-    items = [{'n': -1}] * SIZE_THRESH * 2 + [{'n': -2}] * SIZE_THRESH * 3
+    size_n1 = SIZE_THRESH * 2
+    size_n2 = SIZE_THRESH * 3
+    items = [{'n': -1} for _ in range(size_n1)] + [{'n': -2} for _ in range(size_n2)]
     hi = index_type(items, ['n'])
-    assert len(hi.find({'n': -1})) == SIZE_THRESH * 2
-    assert len(hi.find({'n': -2})) == SIZE_THRESH * 3
+    assert len(hi.find({'n': -1})) == size_n1
+    assert len(hi.find({'n': -2})) == size_n2

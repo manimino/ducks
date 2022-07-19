@@ -98,14 +98,6 @@ class BucketPlan:
     hash_arr: np.ndarray
     val_arr: np.ndarray
 
-    def __str__(self):
-        d = dict(zip(self.distinct_hashes, self.distinct_hash_counts))
-        l1 = len(self.obj_arr)
-        l2 = len(self.hash_arr)
-        l3 = len(self.val_arr)
-        mh = min(self.hash_arr)
-        return f"{mh}: {l1}={l2}={l3}; " + str(d)
-
 
 def empty_plan():
     return BucketPlan(

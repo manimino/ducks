@@ -79,9 +79,6 @@ class MutableBucketManager:
     def __setitem__(self, bkey, value):
         self.buckets[bkey] = value
 
-    def __iter__(self):
-        return iter(self.buckets)
-
     def __delitem__(self, bkey):
         del self.buckets[bkey]
 
@@ -89,6 +86,3 @@ class MutableBucketManager:
         b = self.buckets[bkey]
         del self.buckets[bkey]
         return b
-
-    def __contains__(self, bkey):
-        return bkey in self.buckets

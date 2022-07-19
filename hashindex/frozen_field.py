@@ -39,18 +39,8 @@ class FrozenFieldIndex:
     def get_obj_ids(self, val) -> np.ndarray:
         return self.get(val).id_arr
 
-    def get_objs(self, val) -> np.ndarray:
-        return self.get(val).obj_arr
-
     def get_all(self) -> ArrayPair:
         arrs = empty_array_pair()
         for b in self.buckets:
             arrs.apply_union(b.get_all())
         return arrs
-
-    def bucket_report(self):
-        ls = []
-        for i, min_hash in enumerate(self.bucket_min_hashes):
-            bucket = self.buckets[i]
-            ls.append((min_hash, "size:", len(bucket), type(self.buckets[i]).__name__))
-        return ls

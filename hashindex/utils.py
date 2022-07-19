@@ -23,11 +23,6 @@ def set_field(obj, field, new_value):
         setattr(obj, field, new_value)
 
 
-def int_arr():
-    """Shorthand function for making an empty int array"""
-    return np.array([], dtype="uint64")
-
-
 def get_attributes(cls) -> List[str]:
     """Helper function to grab the attributes of a class"""
     return list(cls.__annotations__.keys())

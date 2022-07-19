@@ -31,23 +31,6 @@ class MutableFieldIndex:
             # create a single HashBucket to cover the whole range.
             self.mbm[HASH_MIN] = HashBucket()
 
-    def get_objs(self, val):
-        val_hash = hash(val)
-        k = self.mbm.get_bucket_key_for(val_hash)
-        bucket = self.mbm[k]
-
-        if isinstance(bucket, DictBucket):
-            return [self.obj_map.get(obj_id) for obj_id in bucket.get_matching_ids(val)]
-        else:
-            # filter to just the objs that match val
-            matched_objs = []
-            for obj_id in bucket.get_all_ids():
-                obj = self.obj_map.get(obj_id)
-                obj_val = get_field(obj, self.field)
-                if obj_val is val or obj_val == val:
-                    matched_objs.append(obj)
-            return matched_objs
-
     def get_obj_ids(self, val):
         val_hash = hash(val)
         k = self.mbm.get_bucket_key_for(val_hash)
@@ -64,9 +47,6 @@ class MutableFieldIndex:
                 if obj_val is val or obj_val == val:
                     matched_ids.add(obj_id)
             return matched_ids
-
-    def get_all_objs(self):
-        return list(self.obj_map.values())
 
     def _handle_big_hash_bucket(self, k):
         assert HASH_MIN in self.mbm.buckets
@@ -140,19 +120,6 @@ class MutableFieldIndex:
             self.mbm[k].remove(val, obj_id)
         if len(self.mbm[k]) == 0:
             self.mbm.remove_bucket(k)
-
-    def bucket_report(self):
-        ls = []
-        for bkey in self.mbm:
-            bucket = self.mbm[bkey]
-            bset = set()
-            for obj_id in bucket.get_all_ids():
-                obj = self.obj_map.get(obj_id)
-                bset.add(get_field(obj, self.field))
-            ls.append(str(
-                (type(self.mbm[bkey]).__name__, bkey, "size:", len(bucket), bset)
-            ))
-        return ls
 
     def _add_plan_bucket(self, hash_pos: int, bp: BucketPlan):
         """Adds a bucket. Only used during init."""

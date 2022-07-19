@@ -26,7 +26,7 @@ class Thing:
         self.ts_sec = datetime.now().replace(microsecond=0)
         self.ts = datetime.now()
         self.planet = random.choice(PLANETS)
-        self.n = random.random()
+        self.collider = random.choice([-1, -2, -3, -4])  # hash(-1) == hash(-2) in cpython
         if random.random() > 0.5:
             self.sometimes = True
 
@@ -45,7 +45,7 @@ def make_dict_thing(id_num):
         'ts_sec': t.ts_sec,
         'ts': t.ts,
         'planet': t.planet,
-        'n': t.n,
+        'collider': t.collider,
         planet_len: planet_len(t)
     }
 
@@ -60,9 +60,9 @@ class SoakTest:
         self.t_report = set([5*i for i in range(1000)])
         random.seed(time.time())
         self.seed = random.choice(range(10**6))
-        print(self.seed)
+        print('running soak test with seed:', self.seed)
         random.seed(self.seed)
-        self.hi = HashIndex(on=['ts_sec', 'ts', 'planet', 'n', 'sometimes', planet_len])
+        self.hi = HashIndex(on=['ts_sec', 'ts', 'planet', 'collider', 'sometimes', planet_len])
         #  self.hi = HashIndex(on=[planet_len])
         self.objs = dict()
         self.max_id_num = 0
@@ -127,6 +127,11 @@ class SoakTest:
         ls = [o for o in self.objs.values() if get_field(o, 'sometimes') is None]
         hi_ls = self.hi.find({'sometimes': None})
         assert len(ls) == len(hi_ls)
+        # check a colliding key
+        k = random.choice([-1, -2, -3])
+        ls = [o for o in self.objs.values() if get_field(o, 'collider') == k]
+        hi_ls = self.hi.find({'collider': k})
+        assert len(ls) == len(hi_ls)
         # check an object-ish key
         t = self.random_obj()
         if t is not None:
@@ -138,4 +143,4 @@ class SoakTest:
 
 def test_soak():
     st = SoakTest()
-    st.run(10)
+    st.run(5)

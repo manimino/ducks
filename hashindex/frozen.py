@@ -70,7 +70,7 @@ class FrozenHashIndex:
 
         return hits
 
-    def _match_any_of(self, field: str, value: Any):
+    def _match_any_of(self, field: str, value: Any) -> ArrayPair:
         """Get matches for a single field during a find(). If multiple values specified, handle union logic."""
         if isinstance(value, list):
             # take the union of all matches
@@ -94,3 +94,6 @@ class FrozenHashIndex:
 
     def __iter__(self):
         pass
+
+    def __len__(self):
+        idx = next(self.indices.values())

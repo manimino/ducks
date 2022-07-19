@@ -98,7 +98,7 @@ class FDictBucket:
                 d_idx[val].append(i)
             self.d = dict()
             for val in d_idx:
-                self.d[val] = bp.obj_arr[d_idx[val]]
+                self.d[val] = make_array_pair(bp.obj_arr[d_idx[val]])
 
     def get_all(self):
         arrs = empty_array_pair()
