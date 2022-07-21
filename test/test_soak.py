@@ -157,4 +157,4 @@ class SoakTest:
 
 def test_soak():
     st = SoakTest()
-    # st.run(5)
+    st.run(5)

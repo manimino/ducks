@@ -107,20 +107,37 @@ At a high level, you can think of each attribute index as a dict of set of objec
 returns a set of object IDs. Then union / intersection / difference operations are performed on the results of those
 lookups to find the object IDs matching the query constraints. Finally, the object corresponding to each ID is returned. 
 
-In practice, HashIndex uses specialized data structures to achieve this in a fast, memory-efficient way. HashIndex
-can store a billion objects on a decent computer.
+In practice, HashIndex uses specialized data structures to achieve this in a fast, memory-efficient way.
 
-[Would you like to know more?](docs/design.md)
+[Data structures](docs/design.md)
 
 ____
 
-## Notes
+## Object changes
 
- - Objects are not serialized, copied, or persisted. HashIndex is just a container, it's not a database.
+HashIndex assumes that indexed object attributes do not change. Breaking that assumption unleashes ancient evils and tax
+audits. So never do this:
+
+```
+# don't do this
+hi = HashIndex([obj], on='attr')
+obj.attr = some_other_thing
+# really, don't
+```
+
+Instead do this:
+```
+hi = HashIndex(on='attr')
+hi.remove(obj)
+obj.attr = new_value
+hi.add(obj)
+```
 
 ____
 
 ## HashIndex Methods
+
+WIP.
 
 ### Init
 
