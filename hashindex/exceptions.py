@@ -22,7 +22,6 @@ class MissingObjectError(Exception):
     pass
 
 
-class ImmutableUpdateError(Exception):
-    """Raised when someone attempts to update an immutable object such as a string."""
-
+class StaleObjectRemovalError(Exception):
+    """Raised when attempting to remove an object that was modified elsewhere."""
     pass

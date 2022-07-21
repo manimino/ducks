@@ -29,3 +29,11 @@ class BadHash:
 
     def __hash__(self):
         return 42
+
+
+class TwoHash:
+    def __init__(self, n):
+        self.n = n
+
+    def __hash__(self):
+        return self.n % 2

@@ -1,8 +1,8 @@
 import pytest
 
 from hashindex.constants import SIZE_THRESH
-from .conftest import BadHash
-
+from .conftest import BadHash, TwoHash
+from hashindex import HashIndex
 
 def test_dict_bucket_collision(index_type):
     """
@@ -44,3 +44,13 @@ def test_get_missing_value(index_type, n_items):
     hi = index_type(data, ['n'])
     assert len(hi.find({'n': -1})) == 0
 
+
+@pytest.mark.parametrize('n_items', [5, SIZE_THRESH+1])
+def test_add_remove_two_hashes_uneven(n_items):
+    data = [TwoHash(0) for _ in range(n_items)] + [TwoHash(1) for _ in range(5)]
+    hi = HashIndex(on=['n'])
+    for d in data:
+        hi.add(d)
+    for d in data:
+        hi.remove(d)
+    assert len(hi) == 0

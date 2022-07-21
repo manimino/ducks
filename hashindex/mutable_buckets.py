@@ -4,6 +4,8 @@ from cykhash import Int64Set, Int64toInt64Map
 
 from hashindex.utils import get_field
 
+from hashindex.exceptions import StaleObjectRemovalError
+
 
 class HashBucket:
     """
@@ -34,7 +36,7 @@ class HashBucket:
 
     def remove(self, val_hash, obj_id):
         if val_hash not in self.val_hash_counts or self.val_hash_counts[val_hash] <= 0:
-            raise KeyError(f'hash {val_hash} not found in HashBucket')
+            raise StaleObjectRemovalError(f'Cannot remove object (not found). Object was changed without using update().')
         self.val_hash_counts[val_hash] -= 1
         if self.val_hash_counts[val_hash] == 0:
             del self.val_hash_counts[val_hash]
@@ -101,16 +103,19 @@ class DictBucket:
         obj_ids.add(obj_id)
 
     def remove(self, val, obj_id):
-        if val not in self.d:
-            raise KeyError("Object value not found in DictBucket")
-        if obj_id not in self.d[val]:
-            raise KeyError("Object ID not found in DictBucket")
+        if val not in self.d or obj_id not in self.d[val]:
+            raise StaleObjectRemovalError("Cannot remove object (not found). Object was changed without using update().")
         self.d[val].remove(obj_id)
         if len(self.d[val]) == 0:
             del self.d[val]
 
     def get_matching_ids(self, val):
-        return self.d[val]
+        if val in self.d:
+            return self.d[val]
+        else:
+            # Happens in the extremely rare case where an object's field is changed to a different
+            # value that has the same hash.
+            return Int64Set()
 
     def __len__(self):
         return sum(len(s) for s in self.d.values())
