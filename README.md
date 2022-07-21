@@ -21,6 +21,16 @@ In addition to attributes, HashIndex can find objects by user-defined functions.
 This allows for finding by nested attributes and many more applications. 
 
 
+## Project Status
+
+Extensively tested. It'll work well.
+
+Could use more real-world use cases and validation. Next release will focus mainly on 
+documentation. `update()` method is deprecated; it will be removed or changed soon.
+
+Would be good to nail down the failure modes of mutating object attributes, if possible. That's a real
+footgun at the moment.
+
 ____
 
 ## Examples
