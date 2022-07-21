@@ -20,3 +20,8 @@ class MissingObjectError(Exception):
     """Raised when removing or updating an object we don't have."""
 
     pass
+
+
+class StaleObjectRemovalError(Exception):
+    """Raised when attempting to remove an object that was modified elsewhere."""
+    pass

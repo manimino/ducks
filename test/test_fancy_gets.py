@@ -4,49 +4,47 @@ e.g. getting dict attributes, or applying functions, or getting properties from 
 """
 
 from hashindex import HashIndex
+from hashindex.constants import SIZE_THRESH
+import pytest
 
 
 def make_dict_data():
     dicts = [
-        {
-            't0': 0.1,
-            't1': 0.2,
-            's': 'ABC',
-        },
-        {
-            't0': 0.3,
-            't1': 0.4,
-            's': 'DEF',
-        },
-        {
-            't0': 0.5,
-            't1': 0.6,
-            's': 'GHI',
-        }
+        {"t0": 0.1, "t1": 0.2, "s": "ABC"},
+        {"t0": 0.3, "t1": 0.4, "s": "DEF"},
+        {"t0": 0.5, "t1": 0.6, "s": "GHI"},
     ]
     return dicts
 
 
-def test_dicts(freeze):
+def test_dicts(index_type):
     dicts = make_dict_data()
-    hi = HashIndex(['t0', 't1', 's'])
-    for d in dicts:
-        hi.add(d)
-    if freeze:
-        hi.freeze()
-    result = hi.find(match={'t0': [0.1, 0.3], 's': ['ABC', 'DEF']}, exclude={'t1': 0.4})
+    hi = HashIndex(dicts, ["t0", "t1", "s"])
+    result = hi.find(match={"t0": [0.1, 0.3], "s": ["ABC", "DEF"]}, exclude={"t1": 0.4})
     assert result == [dicts[0]]
 
 
-def test_getter_fn(freeze):
+def test_getter_fn(index_type):
     def _middle_letter(obj):
-        return obj['s'][1]
+        return obj["s"][1]
 
     dicts = make_dict_data()
-    hi = HashIndex([_middle_letter])
-    for d in dicts:
-        hi.add(d)
-    if freeze:
-        hi.freeze()
-    result = hi.find({_middle_letter: 'H'})
+    hi = index_type(dicts, on=[_middle_letter])
+    result = hi.find({_middle_letter: "H"})
     assert result == [dicts[2]]
+
+
+@pytest.mark.parametrize('n', [SIZE_THRESH + 1, 5])
+def test_get_all(index_type, n):
+    """There's a special fast-path when all items are being retrieved."""
+    hi = index_type([{'a': 1} for _ in range(n)], ['a'])
+    result = hi.find()
+    assert len(result) == n
+
+
+@pytest.mark.parametrize('n', [SIZE_THRESH + 1, 5])
+def test_get_all_ids(index_type, n):
+    """There's a special fast-path when all ids are being retrieved."""
+    hi = index_type([{'a': 1} for _ in range(n)], ['a'])
+    result = hi.find_ids()
+    assert len(result) == n
