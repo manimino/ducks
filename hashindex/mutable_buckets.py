@@ -36,7 +36,9 @@ class HashBucket:
 
     def remove(self, val_hash, obj_id):
         if val_hash not in self.val_hash_counts or self.val_hash_counts[val_hash] <= 0:
-            raise StaleObjectRemovalError(f'Cannot remove object (not found). Object was changed without using update().')
+            raise StaleObjectRemovalError(
+                f"Cannot remove object (not found). Object was changed without using update()."
+            )
         self.val_hash_counts[val_hash] -= 1
         if self.val_hash_counts[val_hash] == 0:
             del self.val_hash_counts[val_hash]
@@ -104,7 +106,9 @@ class DictBucket:
 
     def remove(self, val, obj_id):
         if val not in self.d or obj_id not in self.d[val]:
-            raise StaleObjectRemovalError("Cannot remove object (not found). Object was changed without using update().")
+            raise StaleObjectRemovalError(
+                "Cannot remove object (not found). Object was changed without using update()."
+            )
         self.d[val].remove(obj_id)
         if len(self.d[val]) == 0:
             del self.d[val]

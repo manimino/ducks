@@ -71,7 +71,9 @@ class MutableFieldIndex:
             # left and right sides.
             left_key, right_key = self.mbm.get_neighbors(db.val_hash)
             if right_key is None or right_key > db.val_hash + 1:
-                if right_key is not None and isinstance(self.mbm[right_key], HashBucket):
+                if right_key is not None and isinstance(
+                    self.mbm[right_key], HashBucket
+                ):
                     # just extend that bucket leftward to here
                     b = self.mbm.pop(right_key)
                     self.mbm[db.val_hash + 1] = b
@@ -81,13 +83,13 @@ class MutableFieldIndex:
             if db.val_hash > HASH_MIN:
                 if left_key is None:
                     self.mbm[HASH_MIN] = HashBucket()
-                elif left_key < db.val_hash - 1 and isinstance(self.mbm[left_key], DictBucket):
-                    self.mbm[left_key+1] = HashBucket()
+                elif left_key < db.val_hash - 1 and isinstance(
+                    self.mbm[left_key], DictBucket
+                ):
+                    self.mbm[left_key + 1] = HashBucket()
         else:
             # split it into two hashbuckets
-            new_hash_counts, new_obj_ids = self.mbm[k].split(
-                self.field, self.obj_map
-            )
+            new_hash_counts, new_obj_ids = self.mbm[k].split(self.field, self.obj_map)
             new_bucket = HashBucket()
             new_bucket.update(new_hash_counts, new_obj_ids)
             new_key = min(new_hash_counts.keys())
@@ -123,7 +125,10 @@ class MutableFieldIndex:
 
     def _add_plan_bucket(self, hash_pos: int, bp: BucketPlan):
         """Adds a bucket. Only used during init."""
-        if len(bp.distinct_hash_counts) == 1 and bp.distinct_hash_counts[0] > SIZE_THRESH:
+        if (
+            len(bp.distinct_hash_counts) == 1
+            and bp.distinct_hash_counts[0] > SIZE_THRESH
+        ):
             bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
             b = DictBucket(
                 bp.distinct_hashes[0],
@@ -150,10 +155,10 @@ class MutableFieldIndex:
         next_needed = HASH_MIN
         for b in bucket_plans:
             mh = b.distinct_hashes[0]
-            btype = 'd' if sum(b.distinct_hash_counts) > SIZE_THRESH else 'h'
+            btype = "d" if sum(b.distinct_hash_counts) > SIZE_THRESH else "h"
             # resolve any gaps
             if next_needed is not None and mh > next_needed:
-                if btype == 'h':
+                if btype == "h":
                     # expand this bucket to the left
                     mh = next_needed
                 else:
@@ -161,7 +166,7 @@ class MutableFieldIndex:
                     self._add_plan_bucket(next_needed, empty_plan())
             # add this bucket
             self._add_plan_bucket(mh, b)
-            if btype == 'd' and mh < HASH_MAX:
+            if btype == "d" and mh < HASH_MAX:
                 next_needed = mh + 1
             else:
                 next_needed = None

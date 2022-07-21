@@ -34,17 +34,17 @@ def test_getter_fn(index_type):
     assert result == [dicts[2]]
 
 
-@pytest.mark.parametrize('n', [SIZE_THRESH + 1, 5])
+@pytest.mark.parametrize("n", [SIZE_THRESH + 1, 5])
 def test_get_all(index_type, n):
     """There's a special fast-path when all items are being retrieved."""
-    hi = index_type([{'a': 1} for _ in range(n)], ['a'])
+    hi = index_type([{"a": 1} for _ in range(n)], ["a"])
     result = hi.find()
     assert len(result) == n
 
 
-@pytest.mark.parametrize('n', [SIZE_THRESH + 1, 5])
+@pytest.mark.parametrize("n", [SIZE_THRESH + 1, 5])
 def test_get_all_ids(index_type, n):
     """There's a special fast-path when all ids are being retrieved."""
-    hi = index_type([{'a': 1} for _ in range(n)], ['a'])
+    hi = index_type([{"a": 1} for _ in range(n)], ["a"])
     result = hi.find_ids()
     assert len(result) == n

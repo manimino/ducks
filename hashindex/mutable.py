@@ -16,9 +16,7 @@ class HashIndex:
         on: Iterable[Union[str, Callable]] = None,
     ):
         if not on:
-            raise ValueError(
-                "Need at least one field to index on."
-            )
+            raise ValueError("Need at least one field to index on.")
         if objs:
             self.obj_map = {id(obj): obj for obj in objs}
         else:

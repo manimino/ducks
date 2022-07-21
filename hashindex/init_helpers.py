@@ -150,4 +150,3 @@ def compute_buckets(objs, field, bucket_size_limit):
         )
 
     return bucket_plans
-

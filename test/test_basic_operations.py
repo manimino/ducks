@@ -71,18 +71,14 @@ def test_three_fields(index_type):
 
 def test_exclude_all(index_type):
     hi = make_test_data(index_type)
-    result = hi.find(
-        exclude={"type1": ["Electric", "Normal"]}
-    )
+    result = hi.find(exclude={"type1": ["Electric", "Normal"]})
     assert len(result) == 0
 
 
 def test_find_ids(index_type):
-    data = [{'a': 1, 'b': 2}, {'a': 3, 'b': 4}]
-    hi = index_type(data, ['a', 'b'])
-    result = hi.find_ids(
-        {"b": 4}
-    )
+    data = [{"a": 1, "b": 2}, {"a": 3, "b": 4}]
+    hi = index_type(data, ["a", "b"])
+    result = hi.find_ids({"b": 4})
     res_id = next(iter(result))
     assert res_id == id(data[1])
 
@@ -125,4 +121,3 @@ def test_add(index_type):
         hi.add(glaceon)
         res = hi.find({"name": "Glaceon"})
         assert res == [glaceon]
-
