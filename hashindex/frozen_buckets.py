@@ -77,6 +77,9 @@ class FHashBucket:
     def __len__(self):
         return len(self.array_pair)
 
+    def __iter__(self):
+        return FHashBucketIterator(self)
+
 
 class FDictBucket:
     def __init__(self, bp: BucketPlan, field: Union[str, Callable]):
@@ -111,3 +114,39 @@ class FDictBucket:
 
     def __len__(self):
         return sum(len(self.d[val]) for val in self.d)
+
+    def __iter__(self):
+        return FDictBucketIterator(self)
+
+
+class FHashBucketIterator:
+
+    def __init__(self, fhb: FHashBucket):
+        self.arr = fhb.array_pair.obj_arr
+        self.i = 0
+
+    def __next__(self):
+        if self.i == len(self.arr):
+            raise StopIteration
+        obj = self.arr[self.i]
+        self.i += 1
+        return obj
+
+
+class FDictBucketIterator:
+
+    def __init__(self, fdb: FDictBucket):
+        self.arrs = list(arr_pair.obj_arr for arr_pair in fdb.d.values() if len(arr_pair) > 0)
+        self.i = 0
+        self.j = 0
+
+    def __next__(self):
+        try:
+            if self.j == len(self.arrs[self.i]):
+                self.i += 1
+                self.j = 0
+            obj = self.arrs[self.i][self.j]
+            self.j += 1
+            return obj
+        except IndexError:
+            raise StopIteration

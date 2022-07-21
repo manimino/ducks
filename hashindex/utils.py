@@ -16,7 +16,8 @@ def get_field(obj, field):
 
 def set_field(obj, field, new_value):
     if callable(field):
-        return  # field is derived from some object property, nothing to update
+        # update() removes and re-adds the object. Callables are re-evaluated during add(). So, nothing to do here.
+        return
     elif isinstance(obj, dict):
         obj[field] = new_value
     else:
@@ -30,8 +31,8 @@ def get_attributes(cls) -> List[str]:
 
 def validate_query(
     indices: Dict,
-    match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-    exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+    match: Optional[Dict[Union[str, Callable], Any]] = None,
+    exclude: Optional[Dict[Union[str, Callable], Any]] = None,
 ):
     for m in match, exclude:
         if m is not None:

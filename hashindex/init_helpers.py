@@ -1,6 +1,7 @@
 """
-When a large object list is provided in the constructor -- i.e., HashIndex(objs, on={...}) has lots of objs,
-adding the objs one at a time is naive and slow. Buckets will be created, overfilled, and split needlessly.
+When HashIndex is initialized with objects, it would be slow to add the objects one at a time. Instead, we can
+analyze the list of objects, plan out which buckets will be created, and put the objects in those buckets.
+
 There is a ~10X performance benefit to examining the objs and constructing all the needed buckets just once.
 
 The functions here provide that speedup. They have been squeezed pretty hard for performance. It matters here!
@@ -12,7 +13,7 @@ Workflow:
  - Sort the hashes
  - Get counts of each unique hash (via run-length encoding)
  - Use a cumulative sum-like algorithm to determine the span of each bucket
- - Return all information that init needs to create buckets
+ - Return all information that init needs to create buckets containing the objects (a list of `BucketPlan`)
 
 Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-cardinality case) on a 1M-item dataset.
 """
@@ -43,9 +44,18 @@ def get_sorted_hashes(
     pos = np.argsort(hashes)
     sorted_hashes = hashes[pos]
     sorted_objs = np.empty_like(hashes, dtype="O")
-    for i in pos:
-        sorted_objs[i] = objs[pos[i]]
     sorted_vals = vals[pos]
+
+    if isinstance(objs, list) or isinstance(objs, tuple):
+        # objs has get-by-index, so we can do this the quick way
+        for i in pos:
+            sorted_objs[i] = objs[pos[i]]
+    else:
+        # objs is a collection without get-by-index, we need a second sort
+        pos = np.argsort(pos)
+        for i, o in enumerate(objs):
+            sorted_objs[pos[i]] = o
+
     return sorted_vals, sorted_hashes, sorted_objs
 
 

@@ -1,6 +1,91 @@
-from hashindex import HashIndex, FrozenHashIndex
-from hashindex.exceptions import MissingObjectError
-import unittest
+from hashindex import HashIndex
+from hashindex.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
+import pytest
+
+
+class EdgeHash:
+    HASHES = [HASH_MIN, 0, HASH_MAX]
+
+    def __init__(self, x: int):
+        self.x = x
+
+    def __hash__(self):
+        return self.HASHES[self.x % 3]
+
+    def __eq__(self, other):
+        return self.x == other.x
+
+
+@pytest.mark.parametrize('n_items', [SIZE_THRESH*3+3, 15])
+def test_edge_hash(index_type, n_items):
+    hi = index_type([{'z': EdgeHash(i % 3)} for i in range(n_items)], ['z'])
+    assert len(hi.find({'z': EdgeHash(0)})) == n_items // 3
+    assert len(hi.find({'z': EdgeHash(1)})) == n_items // 3
+    assert len(hi.find({'z': EdgeHash(2)})) == n_items // 3
+
+
+@pytest.mark.parametrize('n_items,delete_bucket', [
+    (SIZE_THRESH*3+3, 0),
+    (SIZE_THRESH*3+3, 1),
+    (SIZE_THRESH*3+3, 2),
+    (15, 0),
+    (15, 1),
+    (15, 2),
+])
+def test_edge_hash_mutable(n_items, delete_bucket):
+    """Ensure there are no problems creating / destroying buckets at the extrema of the hash space."""
+    arrs = [list(), list(), list()]
+    for i in range(n_items):
+        arrs[i % 3].append({'z': EdgeHash(i % 3)})
+
+    hi = HashIndex(on=['z'])
+    for arr in arrs:
+        for obj in arr:
+            hi.add(obj)
+    for obj in arrs[delete_bucket]:
+        hi.remove(obj)
+    assert len(hi.find()) == int(n_items * 2 / 3)
+    for i in range(3):
+        if i == delete_bucket:
+            continue
+        for obj in arrs[i]:
+            hi.remove(obj)
+    assert len(hi) == 0
+
+
+class GroupedHash:
+    HASHES = [1, 2, 3]
+
+    def __init__(self, x: int):
+        self.x = x
+
+    def __hash__(self):
+        return self.HASHES[self.x % 3]
+
+    def __eq__(self, other):
+        return self.x == other.x
+
+
+@pytest.mark.parametrize('delete_bucket', [0, 1, 2])
+def test_grouped_hash(delete_bucket):
+    arrs = [list(), list(), list()]
+    for i in range(SIZE_THRESH*3+3):
+        arrs[i%3].append({'z': GroupedHash(i%3)})
+
+    hi = HashIndex(on=['z'])
+    for arr in arrs:
+        for gh in arr:
+            hi.add(gh)
+
+    # That created three adjacent DictBuckets. Now let's get rid of the delete_bucket.
+    for obj in arrs[delete_bucket]:
+        hi.remove(obj)
+
+    for b in range(3):
+        if b == delete_bucket:
+            assert len(hi.find({'z': GroupedHash(b)})) == 0
+        else:
+            assert len(hi.find({'z': GroupedHash(b)})) == SIZE_THRESH+1
 
 
 def test_get_zero(index_type):
@@ -37,13 +122,19 @@ def test_empty_mutable_index():
     assert len(result) == 0
 
 
-class TestExceptions(unittest.TestCase):
-    def test_remove_empty(self):
-        hi = HashIndex([], on=["stuff"])
-        with self.assertRaises(MissingObjectError):
-            hi.remove("nope")
+def test_update_callable():
+    """When using update(), Callable indices don't need updating. If you do, it'll just be ignored."""
+    data = [{'a': 1.2}]
+    f = lambda x: round(x['a'])
+    hi = HashIndex(data, [f])
+    hi.update(data[0], {'a': 2.2})
+    assert len(hi.find({f: 2})) == 1
+    hi.update(data[0], {'a': 3.2, f: 5})
+    assert len(hi.find({f: 3})) == 1
+    assert len(hi.find({f: 5})) == 0
 
-    def test_empty_frozen(self):
-        with self.assertRaises(ValueError):
-            FrozenHashIndex([], on=["stuff"])
 
+def test_arg_order():
+    data = [{'a': i % 5, 'b': i % 3} for i in range(100)]
+    hi = HashIndex(data, ['a', 'b'])
+    assert len(hi.find({'a': 1, 'b': 2})) == len(hi.find({'b': 2, 'a': 1}))

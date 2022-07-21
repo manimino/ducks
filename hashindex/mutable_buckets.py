@@ -112,11 +112,5 @@ class DictBucket:
     def get_matching_ids(self, val):
         return self.d[val]
 
-    def get_all_ids(self):
-        if self.d:
-            return Int64Set.union(*self.d.values())
-        else:
-            return Int64Set()
-
     def __len__(self):
         return sum(len(s) for s in self.d.values())

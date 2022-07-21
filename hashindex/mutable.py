@@ -15,6 +15,10 @@ class HashIndex:
         objs: Optional[Iterable[Any]] = None,
         on: Iterable[Union[str, Callable]] = None,
     ):
+        if not on:
+            raise ValueError(
+                "Need at least one field to index on."
+            )
         if objs:
             self.obj_map = {id(obj): obj for obj in objs}
         else:
@@ -31,8 +35,8 @@ class HashIndex:
 
     def find(
         self,
-        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> List:
         hits = self.find_ids(match, exclude)
         # itemgetter is about 10% faster than doing a comprehension like [self.objs[ptr] for ptr in hits]
@@ -49,8 +53,8 @@ class HashIndex:
 
     def find_ids(
         self,
-        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> Int64Set:
         """
         Perform lookup based on given values. Return a set of object IDs matching constraints.
@@ -132,9 +136,9 @@ class HashIndex:
             return self.indices[field].get_obj_ids(value)
 
     def __contains__(self, obj):
-        return self.obj_map.get(id(obj), None) is not None
+        return id(obj) in self.obj_map
 
-    def __iter__(self, obj):
+    def __iter__(self):
         return iter(self.obj_map.values())
 
     def __len__(self):

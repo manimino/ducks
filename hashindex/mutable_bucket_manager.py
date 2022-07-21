@@ -43,21 +43,23 @@ class MutableBucketManager:
                     self.buckets[bkey] = HashBucket()
 
     def get_neighbors(self, bkey):
-        if len(self.buckets) == 1:
+        """
+        Find the key of the buckets on the left and right of this one, if any.
+
+        Used when splitting or removing buckets, as part of ensuring there are no gaps in the hashspace.
+        """
+        if len(self.buckets) <= 1:
             return None, None
         if bkey == HASH_MIN:
             left_key = None
         else:
-            try:
-                left_idx = self.buckets.bisect_left(bkey)-1
-                if left_idx < 0:
-                    # this can happen if the bucket at HASH_MIN was just deleted and we're
-                    # about to make a new neighbor for it.
-                    left_key = None
-                else:
-                    left_key, _ = self.buckets.peekitem(left_idx)
-            except IndexError:
+            left_idx = self.buckets.bisect_left(bkey)-1
+            if left_idx < 0:
+                # this can happen if the bucket at HASH_MIN was just deleted and we're
+                # about to make a new neighbor for it.
                 left_key = None
+            else:
+                left_key, _ = self.buckets.peekitem(left_idx)
         if bkey == HASH_MAX:
             right_key = None
         else:

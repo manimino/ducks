@@ -44,3 +44,31 @@ class FrozenFieldIndex:
         for b in self.buckets:
             arrs.apply_union(b.get_all())
         return arrs
+
+    def __iter__(self):
+        return FrozenFieldIndexIterator(self)
+
+    def __len__(self):
+        return sum(len(b) for b in self.buckets)
+
+
+class FrozenFieldIndexIterator:
+
+    def __init__(self, ffi: FrozenFieldIndex):
+        self.buckets = ffi.buckets
+        self.i = 0
+        self.bucket_iter = iter(self.buckets[self.i])
+
+    def __next__(self):
+        while True:
+            got_obj = False
+            try:
+                obj = next(self.bucket_iter)
+                got_obj = True
+            except StopIteration:
+                self.i += 1
+                if self.i == len(self.buckets):
+                    raise StopIteration
+                self.bucket_iter = iter(self.buckets[self.i])
+            if got_obj:
+                return obj

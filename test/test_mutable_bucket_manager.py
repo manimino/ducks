@@ -3,6 +3,7 @@ import random
 from sortedcontainers import SortedDict
 from hashindex.mutable_bucket_manager import MutableBucketManager
 from hashindex.constants import HASH_MIN, HASH_MAX
+import pytest
 
 
 @pytest.mark.parametrize(
@@ -59,3 +60,17 @@ def test_sorted_dict_bisect(keys, query, result):
     idx = sd.bisect_right(query)-1
     item, _ = sd.peekitem(idx)
     assert item == result
+
+
+@pytest.mark.parametrize('buckets,query,result', [
+    ([], 0, (None, None)),
+    ([0], 0, (None, None)),
+    ([0, 1], 0, (None, 1)),
+    ([0, 1], 1, (0, None)),
+    ([0, 1, 2], 1, (0, 2)),
+])
+def test_get_neighbors(buckets, query, result):
+    mb = MutableBucketManager()
+    for b in buckets:
+        mb.buckets[b] = 'bucket'
+    assert mb.get_neighbors(query) == result

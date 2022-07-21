@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from typing import Optional
 
 import unittest
+import pytest
 
 from hashindex import HashIndex, FrozenHashIndex
 from hashindex.utils import get_attributes
+from .conftest import AssertRaises
 
 
 @dataclass
@@ -47,7 +49,7 @@ def test_find_exclude_only(index_type):
     assert result[0].name == "Zapdos"
 
 
-def test_another(index_type):
+def test_two_fields(index_type):
     hi = make_test_data(index_type)
     result = hi.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric"},
@@ -58,61 +60,69 @@ def test_another(index_type):
     assert result[1].name == "Pikachu"
 
 
-def test_iter(index_type):
-    ls = [{'i': i} for i in range(5)]
-    hi = index_type(ls, ['i'])
-    assert len(hi) == len(ls)
-    hi_ls = list(hi)
-    for item in ls:
-        assert item in hi_ls
-    assert len(hi_ls) == ls
+def test_three_fields(index_type):
+    hi = make_test_data(index_type)
+    result = hi.find(
+        match={"name": ["Pikachu", "Zapdos"], "type1": "Electric", "type2": "Flying"}
+    )
+    assert len(result) == 1
+    assert result[0].name == "Zapdos"
 
 
-def test_contains(index_type):
-    ls = [{'i': i} for i in range(5)]
-    hi = index_type(ls, ['i'])
-    for item in ls:
-        assert item in hi
+def test_exclude_all(index_type):
+    hi = make_test_data(index_type)
+    result = hi.find(
+        exclude={"type1": ["Electric", "Normal"]}
+    )
+    assert len(result) == 0
 
 
-class TestMutations(unittest.TestCase):
-    def test_remove(self):
-        for index_type in [HashIndex, FrozenHashIndex]:
-            hi = make_test_data(index_type)
-            two_chus = hi.find({"name": "Pikachu"})
-            assert len(two_chus) == 2
-            if index_type == FrozenHashIndex:
-                with self.assertRaises(AttributeError):
-                    hi.remove(two_chus[1])
-            else:
-                hi.remove(two_chus[1])
-                one_chu = hi.find({"name": "Pikachu"})
-                assert len(one_chu) == 1
+def test_find_ids(index_type):
+    data = [{'a': 1, 'b': 2}, {'a': 3, 'b': 4}]
+    hi = index_type(data, ['a', 'b'])
+    result = hi.find_ids(
+        {"b": 4}
+    )
+    res_id = next(iter(result))
+    assert res_id == id(data[1])
 
-    def test_update(self):
-        for index_type in [HashIndex, FrozenHashIndex]:
-            hi = make_test_data(index_type)
-            eevee = hi.find({"name": "Eevee"})[0]
-            update = {"name": "Glaceon", "type1": "Ice", "type2": None}
-            if index_type == FrozenHashIndex:
-                with self.assertRaises(AttributeError):
-                    hi.update(eevee, update)
-            else:
-                hi.update(eevee, update)
-                res_eevee = hi.find({"name": "Eevee"})
-                res_glaceon = hi.find({"name": "Glaceon"})
-                assert not res_eevee
-                assert res_glaceon
 
-    def test_add(self):
-        for index_type in [HashIndex, FrozenHashIndex]:
-            hi = make_test_data(index_type)
-            glaceon = Pokemon("Glaceon", "Ice", None)
-            if index_type == FrozenHashIndex:
-                with self.assertRaises(AttributeError):
-                    hi.add(glaceon)
-            else:
-                hi.add(glaceon)
-                res = hi.find({"name": "Glaceon"})
-                assert res == [glaceon]
+def test_remove(index_type):
+    hi = make_test_data(index_type)
+    two_chus = hi.find({"name": "Pikachu"})
+    assert len(two_chus) == 2
+    if index_type == FrozenHashIndex:
+        with AssertRaises(AttributeError):
+            hi.remove(two_chus[1])
+    else:
+        hi.remove(two_chus[1])
+        one_chu = hi.find({"name": "Pikachu"})
+        assert len(one_chu) == 1
+
+
+def test_update(index_type):
+    hi = make_test_data(index_type)
+    eevee = hi.find({"name": "Eevee"})[0]
+    update = {"name": "Glaceon", "type1": "Ice", "type2": None}
+    if index_type == FrozenHashIndex:
+        with AssertRaises(AttributeError):
+            hi.update(eevee, update)
+    else:
+        hi.update(eevee, update)
+        res_eevee = hi.find({"name": "Eevee"})
+        res_glaceon = hi.find({"name": "Glaceon"})
+        assert not res_eevee
+        assert res_glaceon
+
+
+def test_add(index_type):
+    hi = make_test_data(index_type)
+    glaceon = Pokemon("Glaceon", "Ice", None)
+    if index_type == FrozenHashIndex:
+        with AssertRaises(AttributeError):
+            hi.add(glaceon)
+    else:
+        hi.add(glaceon)
+        res = hi.find({"name": "Glaceon"})
+        assert res == [glaceon]
 

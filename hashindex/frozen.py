@@ -14,6 +14,10 @@ class FrozenHashIndex:
             raise ValueError(
                 "Cannot build an empty FrozenHashIndex; at least 1 object is required."
             )
+        if not on:
+            raise ValueError(
+                "Need at least one field to index on."
+            )
         self.on = on
         self.indices = {}
         for field in on:
@@ -29,15 +33,15 @@ class FrozenHashIndex:
 
     def find_ids(
         self,
-        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> np.ndarray:
         return self._do_find(match, exclude).id_arr
 
     def _do_find(
         self,
-        match: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
-        exclude: Optional[Dict[Optional[Union[str, Callable]], Any]] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> ArrayPair:
         validate_query(self.indices, match, exclude)
 
@@ -90,10 +94,14 @@ class FrozenHashIndex:
             return self.indices[f].get_all()
 
     def __contains__(self, obj):
-        pass
+        for idx in self.indices.values():
+            return obj in idx
 
     def __iter__(self):
-        pass
+        for idx in self.indices.values():
+            return iter(idx)
 
     def __len__(self):
-        idx = next(self.indices.values())
+        for idx in self.indices.values():
+            return len(idx)
+

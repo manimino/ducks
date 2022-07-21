@@ -10,7 +10,8 @@ from typing import List, Union, Callable, Any, Optional
 
 class FieldWrapper:
     """
-    A FieldIndex holds a reference an obj_map outside itself, so it needs a minimal wrapper for testing.
+    A MutableFieldIndex holds a reference an obj_map outside itself, so it needs a minimal wrapper for testing.
+    For convenience, we also test FrozenFieldIndex here, though it does not need the wrapper.
     """
 
     def __init__(

@@ -20,13 +20,27 @@ PLANETS = ['mercury'] * 1 + \
           ['neptune'] * 128
 
 
+class Collider:
+
+    VALS = list(range(10))
+
+    def __init__(self):
+        self.n = random.choice(self.VALS)
+
+    def __hash__(self):
+        return self.n % 2
+
+    def __eq__(self, other):
+        return self.n == other.n
+
+
 class Thing:
     def __init__(self, id_num):
         self.id_num = id_num
         self.ts_sec = datetime.now().replace(microsecond=0)
         self.ts = datetime.now()
         self.planet = random.choice(PLANETS)
-        self.collider = random.choice([-1, -2, -3, -4])  # hash(-1) == hash(-2) in cpython
+        self.collider = Collider()
         if random.random() > 0.5:
             self.sometimes = True
 
@@ -128,9 +142,9 @@ class SoakTest:
         hi_ls = self.hi.find({'sometimes': None})
         assert len(ls) == len(hi_ls)
         # check a colliding key
-        k = random.choice([-1, -2, -3])
-        ls = [o for o in self.objs.values() if get_field(o, 'collider') == k]
-        hi_ls = self.hi.find({'collider': k})
+        c = Collider()
+        ls = [o for o in self.objs.values() if get_field(o, 'collider') == c]
+        hi_ls = self.hi.find({'collider': c})
         assert len(ls) == len(hi_ls)
         # check an object-ish key
         t = self.random_obj()
@@ -143,4 +157,4 @@ class SoakTest:
 
 def test_soak():
     st = SoakTest()
-    st.run(5)
+    # st.run(5)
