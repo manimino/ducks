@@ -28,16 +28,6 @@ def test_remove_stale_objects_one_hash(n_items):
 
 
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH * 2 + 2])
-def test_remove_stale_objects_two_hash(n_items):
-    objs = [{"z": TwoHash(0)} for _ in range(n_items)]
-    hi = HashIndex(objs, ["z"])
-    for o in objs:
-        o["z"] = TwoHash(1)  # updated without calling update()
-    with AssertRaises(StaleObjectRemovalError):
-        hi.remove(objs[0])
-
-
-@pytest.mark.parametrize("n_items", [5, SIZE_THRESH * 2 + 2])
 def test_remove_missing_object(n_items):
     objs = [{"z": TwoHash(1)} for _ in range(n_items)]
     hi = HashIndex(objs, ["z"])

@@ -54,16 +54,19 @@ class MutableFieldIndex:
         # If it contains values that all hash to the same thing, make it a DictBucket.
         # If it has many val_hashes, split it into two HashBuckets.
         hb = self.mbm[k]
-        if len(hb.val_hash_counts) == 1:
+        dumped_obj_ids, dumped_min_hash, vals_to_ids = hb.dump_some_out_maybe(self.field, self.obj_map)
+        if dumped_obj_ids is None:
+            # can't dump any hashes -- only have 1 distinct hash
             # convert it to a dictbucket
-            hb_objs = [self.obj_map[obj_id] for obj_id in hb.obj_ids]
+            db_hash = hash(next(iter(vals_to_ids.keys())))
             db = DictBucket(
-                list(hb.val_hash_counts.keys())[0],
-                hb_objs,
-                hb.obj_ids,
+                db_hash,
+                [],
+                [],
                 None,
                 self.field,
             )
+            db.d = vals_to_ids
             del self.mbm[k]
             self.mbm[db.val_hash] = db
             # The HashBucket we removed previously spanned a range of hash values,
@@ -89,12 +92,9 @@ class MutableFieldIndex:
                     self.mbm[left_key + 1] = HashBucket()
         else:
             # split it into two hashbuckets
-            new_hash_counts, new_obj_ids = self.mbm[k].split(self.field, self.obj_map)
-            new_bucket = HashBucket()
-            new_bucket.update(new_hash_counts, new_obj_ids)
-            new_key = min(new_hash_counts.keys())
+            new_bucket = HashBucket(dumped_obj_ids)
+            new_key = dumped_min_hash
             self.mbm[new_key] = new_bucket
-        assert HASH_MIN in self.mbm.buckets
 
     def add(self, obj_id, obj):
         val = get_field(obj, self.field)
@@ -103,7 +103,7 @@ class MutableFieldIndex:
         if isinstance(self.mbm[k], DictBucket):
             self.mbm[k].add(val, obj_id)
         else:
-            self.mbm[k].add(val_hash, obj_id)
+            self.mbm[k].add(obj_id)
         if isinstance(self.mbm[k], HashBucket) and len(self.mbm[k]) > SIZE_THRESH:
             self._handle_big_hash_bucket(k)
 
@@ -139,10 +139,7 @@ class MutableFieldIndex:
             )
         else:
             bucket_obj_ids = Int64Set(id(obj) for obj in bp.obj_arr)
-            val_hash_counts = Int64toInt64Map(
-                zip(bp.distinct_hashes, bp.distinct_hash_counts)
-            )
-            b = HashBucket(bucket_obj_ids, val_hash_counts)
+            b = HashBucket(bucket_obj_ids)
         self.mbm[hash_pos] = b
 
     def _apply_bucket_plan(self, bucket_plans: List[BucketPlan]):
