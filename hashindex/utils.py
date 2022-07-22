@@ -14,16 +14,6 @@ def get_field(obj, field):
     return val
 
 
-def set_field(obj, field, new_value):
-    if callable(field):
-        # update() removes and re-adds the object. Callables are re-evaluated during add(). So, nothing to do here.
-        return
-    elif isinstance(obj, dict):
-        obj[field] = new_value
-    else:
-        setattr(obj, field, new_value)
-
-
 def get_attributes(cls) -> List[str]:
     """Helper function to grab the attributes of a class"""
     return list(cls.__annotations__.keys())

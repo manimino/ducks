@@ -24,4 +24,5 @@ class MissingObjectError(Exception):
 
 class StaleObjectRemovalError(Exception):
     """Raised when attempting to remove an object that was modified elsewhere."""
+
     pass

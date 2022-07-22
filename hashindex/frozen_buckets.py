@@ -120,7 +120,6 @@ class FDictBucket:
 
 
 class FHashBucketIterator:
-
     def __init__(self, fhb: FHashBucket):
         self.arr = fhb.array_pair.obj_arr
         self.i = 0
@@ -134,9 +133,10 @@ class FHashBucketIterator:
 
 
 class FDictBucketIterator:
-
     def __init__(self, fdb: FDictBucket):
-        self.arrs = list(arr_pair.obj_arr for arr_pair in fdb.d.values() if len(arr_pair) > 0)
+        self.arrs = list(
+            arr_pair.obj_arr for arr_pair in fdb.d.values() if len(arr_pair) > 0
+        )
         self.i = 0
         self.j = 0
 

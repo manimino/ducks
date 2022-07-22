@@ -13,7 +13,6 @@ So it's in a separate class to help manage the complexity and provide easy testi
 
 
 class MutableBucketManager:
-
     def __init__(self):
         self.buckets = SortedDict()
 
@@ -30,7 +29,9 @@ class MutableBucketManager:
             del self.buckets[bkey]
         else:
             # Case 2: The left neighbor is nonexistent, or is a DictBucket. Let's look right.
-            if right_key is not None and isinstance(self.buckets[right_key], HashBucket):
+            if right_key is not None and isinstance(
+                self.buckets[right_key], HashBucket
+            ):
                 # Case 2a. The right neighbor is a hash bucket. We can expand it leftwards to cover the gap.
                 b = self.buckets[right_key]
                 del self.buckets[right_key]
@@ -53,7 +54,7 @@ class MutableBucketManager:
         if bkey == HASH_MIN:
             left_key = None
         else:
-            left_idx = self.buckets.bisect_left(bkey)-1
+            left_idx = self.buckets.bisect_left(bkey) - 1
             if left_idx < 0:
                 # this can happen if the bucket at HASH_MIN was just deleted and we're
                 # about to make a new neighbor for it.

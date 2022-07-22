@@ -15,9 +15,7 @@ class FrozenHashIndex:
                 "Cannot build an empty FrozenHashIndex; at least 1 object is required."
             )
         if not on:
-            raise ValueError(
-                "Need at least one field to index on."
-            )
+            raise ValueError("Need at least one field to index on.")
         self.on = on
         self.indices = {}
         for field in on:
@@ -104,4 +102,3 @@ class FrozenHashIndex:
     def __len__(self):
         for idx in self.indices.values():
             return len(idx)
-

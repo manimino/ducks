@@ -53,7 +53,6 @@ class FrozenFieldIndex:
 
 
 class FrozenFieldIndexIterator:
-
     def __init__(self, ffi: FrozenFieldIndex):
         self.buckets = ffi.buckets
         self.i = 0

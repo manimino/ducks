@@ -1,35 +1,30 @@
 # HashIndex
 
-[![tests Actions Status](https://github.com/manimino/hashindex/workflows/tests/badge.svg)](https://github.com/manimino/hashindex/actions)
+Container for finding Python objects by combinations of attributes.
 
 `pip install hashindex`
 
-Usage:
+[![tests Actions Status](https://github.com/manimino/hashindex/workflows/tests/badge.svg)](https://github.com/manimino/hashindex/actions)
+[![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
+
+### Usage:
 
 ```
 from hashindex import HashIndex
 hi = HashIndex(objects, ['attr1', 'attr2', 'attr3'])
-hi.find(                                  # find objects
-    match={'attr1': a, 'attr2': [b, c]},  # where attr1 == a and attr2 in [b, c]
-    exclude={'attr3': d}                  # and attr3 != d
+hi.find(                                                # find objects
+    match={'attr1': a, 'attr2': [b, c]},                # where attr1 == a and attr2 in [b, c]
+    exclude={'attr3': d}                                # and attr3 != d
 )
 ```
 
-Any Python object can be indexed: class instances, namedtuples, dicts, strings, floats, ints, etc.
+Any Python object can go in a HashIndex: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
-In addition to attributes, HashIndex can find objects by user-defined functions.  
-This allows for finding by nested attributes and many more applications. 
+Nested attributes and derived attributes can be indexed using custom functions. See examples below.
 
-
-## Project Status
-
-Extensively tested. It'll work well.
-
-Could use more real-world use cases and validation. Next release will focus mainly on 
-documentation. `update()` method is deprecated; it will be removed or changed soon.
-
-Would be good to nail down the failure modes of mutating object attributes, if possible. That's a real
-footgun at the moment.
+There are two container classes available.
+ - HashIndex: allows addition / removal of objects after creation
+ - FrozenHashIndex: much faster performance, but objects cannot be added / removed after creation
 
 ____
 
@@ -59,9 +54,11 @@ hi.find(
 )
 ```
 
-### Find by nested attribute, using a function
+### Nested attributes
 
 ```
+from hashindex import FrozenHashIndex
+
 class Order:
     def __init__(self, num, size, toppings):
         self.num = num
@@ -78,18 +75,13 @@ objects = [
 def has_cheese(obj):
     return 'covered' in obj.toppings or 'all the way' in obj.toppings
     
-hi = HashIndex(objects, ['size', has_cheese])
+hi = FrozenHashIndex(objects, ['size', has_cheese])
 
 # returns orders 1, 2 and 4
 hi.find({has_cheese: True})  
 ```
 
-### Find string objects
-
-This example uses a FrozenHashIndex. A FrozenHashIndex works just like a HashIndex, but items cannot be added, removed, 
-or updated after initialization.
-
-FrozenHashIndex is faster than the regular HashIndex, and good for multithreaded use cases.
+### String objects
 
 ```
 from hashindex import FrozenHashIndex
@@ -104,10 +96,17 @@ hi.find({len: 3})       # returns ['one', 'two']
 hi.find({e_count: 2})  # returns ['three']
 ```
 
-### Bigger examples
- 
- - [Wordle solver]()
- - [HashIndex plus vector index]()
+____
+
+## Performance
+
+### FrozenHashIndex
+
+
+
+### HashIndex
+
+
 
 ____
 
@@ -119,33 +118,37 @@ lookups to find the object IDs matching the query constraints. Finally, the obje
 
 In practice, HashIndex uses specialized data structures to achieve this in a fast, memory-efficient way.
 
-[Data structures](docs/design.md)
+[Data structures](docs/data_structures.md)
 
 ____
 
-## Object changes
+## Updating indexed objects
 
-HashIndex assumes that indexed object attributes do not change. Breaking that assumption unleashes ancient evils and tax
-audits. So never do this:
+HashIndex and FrozenHashIndex assume that the indexed attributes of their objects do not change.
 
-```
-# don't do this
-hi = HashIndex([obj], on='attr')
-obj.attr = some_other_thing
-# really, don't
-```
+⚠ ️ Breaking this assumption will cause inaccurate results or exceptions.
 
-Instead do this:
+If you need to change an indexed attribute of an object, just remove it, apply the change, and add it back. 
+
+#### This works
 ```
-hi = HashIndex(on='attr')
+obj = {'attr': 1}
+hi = HashIndex([obj], on=['attr'])
 hi.remove(obj)
-obj.attr = new_value
+obj['attr'] = 2
 hi.add(obj)
 ```
 
+#### This will break index functions
+```
+obj = {'attr': 1}
+hi = HashIndex([obj], on=['attr'])
+obj.attr = some_other_thing   # don't do this
+```
+
 ____
 
-## HashIndex Methods
+## API
 
 WIP.
 
@@ -176,6 +179,3 @@ ____
 ### 
 
 ____
-
-## Performance
-
