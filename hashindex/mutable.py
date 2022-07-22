@@ -4,7 +4,7 @@ from cykhash import Int64Set
 from operator import itemgetter
 from hashindex.constants import SIZE_THRESH
 from hashindex.exceptions import MissingObjectError, MissingIndexError
-from hashindex.utils import set_field, validate_query
+from hashindex.utils import validate_query
 from hashindex.init_helpers import compute_buckets
 from hashindex.mutable_field import MutableFieldIndex
 
@@ -109,13 +109,6 @@ class HashIndex:
         for field in self.indices:
             self.indices[field].remove(ptr, obj)
         del self.obj_map[ptr]
-
-    def update(self, obj, new_values: dict):
-        """Change the indexed values for obj to the new values specified. Also updates the values of obj."""
-        self.remove(obj)
-        for field, new_value in new_values.items():
-            set_field(obj, field, new_value)
-        self.add(obj)
 
     def _match_any_of(self, field: str, value: Any):
         """Get matches for a single field during a find(). If multiple values specified, handle union logic."""

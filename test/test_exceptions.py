@@ -44,15 +44,3 @@ def test_remove_missing_value(n_items):
     with AssertRaises(MissingObjectError):
         hi.remove(BadHash(-1))
 
-
-@pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])
-def test_update_missing_value(n_items):
-    """
-    When the value hashes to a bucket, but the bucket does not contain the value, is
-    an empty result correctly retrieved?
-    """
-    data = [BadHash(i) for i in range(n_items)]
-    hi = HashIndex(data, ["n"])
-    assert len(hi.find({"n": -1})) == 0
-    with AssertRaises(MissingObjectError):
-        hi.update(BadHash(-1), {"n": 3})

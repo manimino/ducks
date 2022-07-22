@@ -125,18 +125,6 @@ def test_empty_mutable_index():
     assert len(result) == 0
 
 
-def test_update_callable():
-    """When using update(), Callable indices don't need updating. If you do, it'll just be ignored."""
-    data = [{"a": 1.2}]
-    f = lambda x: round(x["a"])
-    hi = HashIndex(data, [f])
-    hi.update(data[0], {"a": 2.2})
-    assert len(hi.find({f: 2})) == 1
-    hi.update(data[0], {"a": 3.2, f: 5})
-    assert len(hi.find({f: 3})) == 1
-    assert len(hi.find({f: 5})) == 0
-
-
 def test_arg_order():
     data = [{"a": i % 5, "b": i % 3} for i in range(100)]
     hi = HashIndex(data, ["a", "b"])

@@ -96,21 +96,6 @@ def test_remove(index_type):
         assert len(one_chu) == 1
 
 
-def test_update(index_type):
-    hi = make_test_data(index_type)
-    eevee = hi.find({"name": "Eevee"})[0]
-    update = {"name": "Glaceon", "type1": "Ice", "type2": None}
-    if index_type == FrozenHashIndex:
-        with AssertRaises(AttributeError):
-            hi.update(eevee, update)
-    else:
-        hi.update(eevee, update)
-        res_eevee = hi.find({"name": "Eevee"})
-        res_glaceon = hi.find({"name": "Glaceon"})
-        assert not res_eevee
-        assert res_glaceon
-
-
 def test_add(index_type):
     hi = make_test_data(index_type)
     glaceon = Pokemon("Glaceon", "Ice", None)

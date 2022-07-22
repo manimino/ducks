@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 import random
 from hashindex import HashIndex
-from hashindex.utils import get_field, set_field
+from hashindex.utils import get_field
 
 
 PLANETS = (
@@ -92,7 +92,6 @@ class SoakTest:
                 [
                     self.add,
                     self.add_many,
-                    self.update,
                     self.remove,
                     self.remove_all,
                     self.check_equal,
@@ -125,20 +124,6 @@ class SoakTest:
         for t in self.objs.values():
             self.hi.remove(t)
         self.objs = dict()
-
-    def update(self):
-        t = self.random_obj()
-        if t is not None:
-            t_new = Thing(-1)
-            self.hi.update(
-                t,
-                {
-                    "planet": t_new.planet,
-                    planet_len: planet_len(t_new),
-                    "ts": t_new.ts,
-                    "ts_sec": t_new.ts_sec,
-                },
-            )
 
     def random_obj(self):
         if not len(self.objs):
