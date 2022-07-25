@@ -139,9 +139,6 @@ class MutableBucketManager:
     def __setitem__(self, bkey, value):
         self.buckets[bkey] = value
 
-    def __delitem__(self, bkey):
-        del self.buckets[bkey]
-
     def pop(self, bkey) -> Union[HashBucket, DictBucket]:
         b = self.buckets[bkey]
         del self.buckets[bkey]

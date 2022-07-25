@@ -81,7 +81,7 @@ def idx_and_init(request):
     return request.param
 
 
-@pytest.fixture(params=[StringObj])  # FloatObj,
+@pytest.fixture(params=[FloatObj, StringObj])
 def data_class(request):
     return request.param
 
