@@ -25,11 +25,7 @@ class HashIndex:
         # Make an index for each field.
         self.indices = {}
         for field in on:
-            if objs:
-                bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
-            else:
-                bucket_plans = None
-            self.indices[field] = MutableFieldIndex(field, self.obj_map, bucket_plans)
+            self.indices[field] = MutableFieldIndex(field, self.obj_map, objs)
 
     def find(
         self,

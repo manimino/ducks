@@ -1,4 +1,4 @@
-from typing import Callable, Union, Dict, Any, List
+from typing import Callable, Union, Dict, Any, List, Iterable
 
 from cykhash import Int64Set
 
@@ -7,6 +7,8 @@ from hashindex.init_helpers import BucketPlan, empty_plan
 from hashindex.mutable.buckets import HashBucket, DictBucket
 from hashindex.mutable.bucket_manager import MutableBucketManager
 from hashindex.utils import get_field
+
+import numpy as np
 
 
 class MutableFieldIndex:
@@ -19,16 +21,15 @@ class MutableFieldIndex:
         self,
         field: Union[Callable, str],
         obj_map: Dict[int, Any],
-        bucket_plans: List[BucketPlan] = None,
+        sorted_vals: np.array[Any] = None,
+        val_sorted_objs: np.array[Any] = None,
     ):
         self.field = field
         self.obj_map = obj_map
-        self.mbm = MutableBucketManager()
-        if bucket_plans:
-            self._apply_bucket_plan(bucket_plans)
-        else:
-            # create a single HashBucket to cover the whole range.
-            self.mbm[HASH_MIN] = HashBucket()
+
+        if sorted_vals:
+            pass
+
 
     def get_obj_ids(self, val):
         val_hash = hash(val)

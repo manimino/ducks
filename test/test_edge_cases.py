@@ -1,3 +1,5 @@
+import random
+
 from hashindex import HashIndex
 from hashindex.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 import pytest
@@ -91,6 +93,7 @@ def test_grouped_hash(delete_bucket):
             assert len(hi.find({"z": GroupedHash(b)})) == SIZE_THRESH + 1
 
 
+
 def test_get_zero(index_type):
     def _f(x):
         return x[0]
@@ -129,3 +132,23 @@ def test_arg_order():
     data = [{"a": i % 5, "b": i % 3} for i in range(100)]
     hi = HashIndex(data, ["a", "b"])
     assert len(hi.find({"a": 1, "b": 2})) == len(hi.find({"b": 2, "a": 1}))
+
+
+class NoSort:
+    def __init__(self, n):
+        self.x = n
+
+    def __hash__(self):
+        return hash(self.x)
+
+
+def test_unsortable_values(index_type):
+    """We need to support values that are hashable, even if they cannot be sorted."""
+    objs = [{'a': NoSort(0)}, {'a': NoSort(1)}]
+    hi = index_type(objs, ['a'])
+    if isinstance(index_type, HashIndex):
+        objs.append(NoSort(2))
+        hi.add(objs[2])
+    assert len(hi) == len(objs)
+    for i, obj in enumerate(objs):
+        assert hi.find({'a': i}) == [obj]

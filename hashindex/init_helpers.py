@@ -19,16 +19,17 @@ Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-
 """
 
 import numpy as np
-from dataclasses import dataclass
-from typing import Tuple, List, Union, Callable, Any
+from typing import Tuple, Union, Callable, Any, Iterable
 from hashindex.utils import get_field
+from hashindex.constants import SIZE_THRESH
+from cykhash import Int64Set
 
 
-def get_sorted_hashes(
-    objs: List[Any], field: Union[Callable, str]
+def hash_and_sort(
+    objs: Iterable[Any], field: Union[Callable, str]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Hash the given attribute for all objs. Sort objs and hashes by the hashes.
+    Sort objs and vals by vals.
 
     Takes 450ms for 1M objs on a numeric field. May take longer if field is a Callable or is hard to hash.
     Breakdown:
@@ -37,116 +38,62 @@ def get_sorted_hashes(
      - 100ms to sort the hashes
      - 30ms of whatever
     """
-    vals = np.empty((len(objs,)), dtype="O")
-    for i, obj in enumerate(objs):
-        vals[i] = get_field(obj, field)
-    hashes = np.fromiter((hash(val) for val in vals), dtype="int64")
-    pos = np.argsort(hashes)
-    sorted_hashes = hashes[pos]
-    sorted_objs = np.empty_like(hashes, dtype="O")
-    sorted_vals = vals[pos]
-
-    if isinstance(objs, list) or isinstance(objs, tuple):
-        # objs has get-by-index, so we can do this the quick way
-        for i in pos:
-            sorted_objs[i] = objs[pos[i]]
-    else:
-        # objs is a collection without get-by-index, we need a second sort
-        pos = np.argsort(pos)
-        for i, o in enumerate(objs):
-            sorted_objs[pos[i]] = o
-
-    return sorted_vals, sorted_hashes, sorted_objs
+    hash_arr = np.empty(len(objs), dtype='int64')
+    val_arr = np.empty(len(objs), dtype='O')
+    obj_arr = np.array(objs, dtype='O')
+    for i, o in enumerate(objs):
+        val_arr[i] = get_field(o, field)
+        objs[i] = get_field(o, field)
+    sort_order = np.argsort(hash_arr)
+    val_arr = val_arr[sort_order]
+    obj_arr = obj_arr[sort_order]
+    return hash_arr, val_arr, obj_arr
 
 
-def run_length_encode(sorted_hashes: np.ndarray):
+def group_equal_vals(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray):
     """
-    Find counts of each hash in sorted_hashes via run-length encoding.
+    Normal tools for doing group_by fail here.
+    - We can't assume sortability, so can't sort 'em and find change points.
+    - We are grouping values that have the same hash, so we can't put them in a dict() either.
+    Luckily, we don't expect too many distinct values with the same hash. So just making a list for each
+    distinct value and appending the indices to it will be O(n*k) where k = num of distinct values. Not too too bad.
+    """
+    mismatch_hash = hash_arr[1:] != hash_arr[:-1]
+    change_pts = np.append(np.where(mismatch_hash), len(val_arr) - 1)
+
+
+
+def run_length_encode(val_arr: np.ndarray):
+    """
+    Find counts of each val in the val_arr (sorted) via run-length encoding.
 
     Takes 10ms for 1M objs.
     """
-    mismatch = sorted_hashes[1:] != sorted_hashes[:-1]
-    i = np.append(np.where(mismatch), len(sorted_hashes) - 1)
-    counts = np.diff(np.append(-1, i))
+    mismatch_val = val_arr[1:] != val_arr[:-1]
+    change_pts = np.append(np.where(mismatch_val), len(val_arr) - 1)
+    counts = np.diff(np.append(-1, change_pts))
     starts = np.cumsum(np.append(0, counts))[:-1]
-    return starts, counts, sorted_hashes[i]
+    return starts, counts, val_arr[change_pts]
 
 
-def find_bucket_starts(counts, limit):
-    """
-    Find the start positions for each bucket via a cumulative sum that resets when limit is exceeded.
-
-    inputs:
-        counts, a histogram of the number of values with each hash, e.g. [1 1000 1 1 1 1]
-        limit, a maximum of how many items can fit in a multi-item bucket
-    output:
-        an array of start positions such that each bucket multi-item bucket contains <= limit values
-        e.g. [0, 1, 2] for the example input
-
-    Note: This function is ridiculously faster (like 300x) if decorated with @numba.njit.
-    However, numba is a difficult dependency to add, as it conflicts with recent numpy. And numpy updates
-    are constantly required due to security updates. So, we can't use numba here, despite its amazing performance.
-    """
-    result = np.empty(len(counts), dtype=np.uint64)
-    idx = 0
-    total = 0
-    for i, count in enumerate(counts):
-        total += count
-        if total > limit or idx == 0:
-            # we're overfilled; start a new bucket at this position to hold the current count
-            total = count
-            result[idx] = i
-            idx += 1
-    return result[:idx]
-
-
-@dataclass
-class BucketPlan:
-    distinct_hashes: np.ndarray
-    distinct_hash_counts: np.ndarray
-    obj_arr: np.ndarray
-    hash_arr: np.ndarray
-    val_arr: np.ndarray
-
-
-def empty_plan():
-    return BucketPlan(
-        distinct_hashes=np.array([]),
-        distinct_hash_counts=np.array([]),
-        obj_arr=np.array([]),
-        hash_arr=np.array([]),
-        val_arr=np.array([]),
-    )
-
-
-def compute_buckets(objs, field, bucket_size_limit):
-    sorted_vals, sorted_hashes, sorted_objs = get_sorted_hashes(objs, field)
-    starts, counts, val_hashes = run_length_encode(sorted_hashes)
-    bucket_starts = find_bucket_starts(counts, bucket_size_limit)
-
-    bucket_plans = []
-    for i, s in enumerate(bucket_starts):
-        if i + 1 == len(bucket_starts):
-            distinct_hashes = val_hashes[s:]
-            distinct_hash_counts = counts[s:]
-            obj_arr = sorted_objs[starts[s]:]
-            hash_arr = sorted_hashes[starts[s]:]
-            val_arr = sorted_vals[starts[s]:]
+def compute_dict(objs, field):
+    """Create a dict of {val: obj_ids}. Used when creating a mutable index."""
+    sorted_hashes, sorted_vals, sorted_objs = hash_and_sort(objs, field)
+    starts, counts, unique_hashes = run_length_encode(sorted_hashes)
+    d = dict()
+    for i, v in enumerate(unique_vals):
+        start = starts[i]
+        count = counts[i]
+        if counts[i] > SIZE_THRESH:
+            d[v] = Int64Set(id(obj) for obj in sorted_objs[start:start+count])
         else:
-            t = bucket_starts[i + 1]
-            distinct_hashes = val_hashes[s:t]
-            distinct_hash_counts = counts[s:t]
-            obj_arr = sorted_objs[starts[s]:starts[t]]
-            hash_arr = sorted_hashes[starts[s]:starts[t]]
-            val_arr = sorted_vals[starts[s]:starts[t]]
-        bucket_plans.append(
-            BucketPlan(
-                distinct_hashes=distinct_hashes,
-                distinct_hash_counts=distinct_hash_counts,
-                obj_arr=obj_arr,
-                hash_arr=hash_arr,
-                val_arr=val_arr,
-            )
-        )
+            d[v] = tuple(id(obj) for obj in sorted_objs[start:start+count])
+    return d
 
-    return bucket_plans
+
+def compute_frozen_data(objs, field):
+    sorted_hashes, sorted_vals, sorted_objs = hash_and_sort(objs, field)
+    sorted_obj_ids = np.empty_like(sorted_objs, dtype='int64')
+    for i, obj in enumerate(sorted_objs):
+        sorted_obj_ids[i] = id(obj)
+    starts, counts, unique_vals = run_length_encode(sorted_vals)
