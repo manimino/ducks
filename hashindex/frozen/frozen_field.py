@@ -56,6 +56,9 @@ class FrozenFieldIndex:
                 self.small_vals_to_pos[v] = n
                 n += 1
                 small_idx += run_lengths[i]
+        self.small_ids = np.fromiter((id(obj) for obj in self.small_objs), dtype='int64')
+        self.small_sort_order = np.argsort(self.small_ids)
+
 
     def get(self, val) -> ArrayPair:
         if val in self.big_vals:
@@ -65,7 +68,7 @@ class FrozenFieldIndex:
             pos = self.small_vals_to_pos[val]
             start = self.small_starts[pos]
             end = self.small_starts[pos] + self.small_lengths[pos]
-            ap, _ = make_array_pair(self.small_objs[start:end])
+            ap, _ = make_array_pair(self.small_objs[start:end], self.small_ids[start:end])
             print(ap)
             return ap
 
@@ -77,7 +80,7 @@ class FrozenFieldIndex:
         arrs = make_empty_array_pair()
         for v in self.big_vals:
             arrs.apply_union(self.big_vals[v])
-        small, _ = make_array_pair(self.small_objs)
+        small, _ = make_array_pair(self.small_objs, self.small_ids, self.small_sort_order)
         arrs.apply_union(small)
         return arrs
 

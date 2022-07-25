@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import sortednp as snp
+from typing import Optional
 
 
 @dataclass
@@ -39,12 +40,14 @@ class ArrayPair:
         return len(self.id_arr)
 
 
-def make_array_pair(obj_arr: np.ndarray):
-    """Finds obj_ids and sorts obj_arr by the ids. Returns an ArrayPair."""
-    obj_ids = np.empty_like(obj_arr, dtype="int64")
-    for i, obj in enumerate(obj_arr):
-        obj_ids[i] = id(obj)
-    sort_order = np.argsort(obj_ids)
+def make_array_pair(obj_arr: np.ndarray, obj_ids: Optional[np.ndaray], sort_order: Optional[np.ndaray]):
+    """Creates an ArrayPair. Finds obj_ids and sort_order if not provided."""
+    if not obj_ids:
+        obj_ids = np.empty_like(obj_arr, dtype="int64")
+        for i, obj in enumerate(obj_arr):
+            obj_ids[i] = id(obj)
+    if not sort_order:
+        sort_order = np.argsort(obj_ids)
     return ArrayPair(id_arr=obj_ids[sort_order], obj_arr=obj_arr[sort_order]), sort_order
 
 
