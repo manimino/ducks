@@ -108,7 +108,6 @@ class MutableBucketManager:
         Called when a HashBucket goes over SIZE_THRESH items.
         """
         hb = self.buckets[k]
-        ln = len(hb)
         dumped_obj_ids, dumped_vals, dumped_min_hash, vals_to_ids = hb.dump_some_out_maybe()
 
         if dumped_obj_ids is None:
@@ -125,10 +124,8 @@ class MutableBucketManager:
             del self.buckets[k]
             self.buckets[db.val_hash] = db
             self._make_dict_bucket_neighbors(db)
-            print('made db at', db_hash)
         else:
             # split it into two hashbuckets
-            print(ln, 'split into', len(hb), len(dumped_obj_ids))
             new_bucket = HashBucket(dumped_vals, dumped_obj_ids)
             new_key = dumped_min_hash
             self.buckets[new_key] = new_bucket

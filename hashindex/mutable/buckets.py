@@ -65,7 +65,6 @@ class HashBucket:
 
         # dump out the upper half the hash values
         half_point = len(my_hashes) // 2
-        print(my_hashes[:half_point], '|', my_hashes[half_point:])
 
         # we will move their ids and vals to the new bucket
         dumped_obj_ids = []
