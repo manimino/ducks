@@ -129,16 +129,16 @@ def compute_buckets(objs, field, bucket_size_limit):
         if i + 1 == len(bucket_starts):
             distinct_hashes = val_hashes[s:]
             distinct_hash_counts = counts[s:]
-            obj_arr = sorted_objs[starts[s] :]
-            hash_arr = sorted_hashes[starts[s] :]
-            val_arr = sorted_vals[starts[s] :]
+            obj_arr = sorted_objs[starts[s]:]
+            hash_arr = sorted_hashes[starts[s]:]
+            val_arr = sorted_vals[starts[s]:]
         else:
             t = bucket_starts[i + 1]
             distinct_hashes = val_hashes[s:t]
             distinct_hash_counts = counts[s:t]
-            obj_arr = sorted_objs[starts[s] : starts[t]]
-            hash_arr = sorted_hashes[starts[s] : starts[t]]
-            val_arr = sorted_vals[starts[s] : starts[t]]
+            obj_arr = sorted_objs[starts[s]:starts[t]]
+            hash_arr = sorted_hashes[starts[s]:starts[t]]
+            val_arr = sorted_vals[starts[s]:starts[t]]
         bucket_plans.append(
             BucketPlan(
                 distinct_hashes=distinct_hashes,

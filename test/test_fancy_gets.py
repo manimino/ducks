@@ -19,7 +19,7 @@ def make_dict_data():
 
 def test_dicts(index_type):
     dicts = make_dict_data()
-    hi = HashIndex(dicts, ["t0", "t1", "s"])
+    hi = index_type(dicts, ["t0", "t1", "s"])
     result = hi.find(match={"t0": [0.1, 0.3], "s": ["ABC", "DEF"]}, exclude={"t1": 0.4})
     assert result == [dicts[0]]
 
@@ -39,12 +39,4 @@ def test_get_all(index_type, n):
     """There's a special fast-path when all items are being retrieved."""
     hi = index_type([{"a": 1} for _ in range(n)], ["a"])
     result = hi.find()
-    assert len(result) == n
-
-
-@pytest.mark.parametrize("n", [SIZE_THRESH + 1, 5])
-def test_get_all_ids(index_type, n):
-    """There's a special fast-path when all ids are being retrieved."""
-    hi = index_type([{"a": 1} for _ in range(n)], ["a"])
-    result = hi.find_ids()
     assert len(result) == n

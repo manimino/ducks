@@ -1,2 +1,2 @@
-from hashindex.mutable import HashIndex
-from hashindex.frozen import FrozenHashIndex
+from hashindex.mutable.main import HashIndex
+from hashindex.frozen.main import FrozenHashIndex

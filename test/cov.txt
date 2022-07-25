@@ -2,19 +2,19 @@
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
 rootdir: /home/theo/repos
 plugins: anyio-2.2.0, cov-3.0.0
-collected 127 items
+collected 114 items
 
-test/test_basic_operations.py ..................                         [ 14%]
-test/test_container_ops.py ............                                  [ 23%]
-test/test_edge_cases.py ...................                              [ 38%]
-test/test_examples.py ..                                                 [ 40%]
-test/test_exceptions.py ........                                         [ 46%]
-test/test_fancy_gets.py ............                                     [ 55%]
-test/test_field.py ..............                                        [ 66%]
-test/test_hash_collisions.py ..........                                  [ 74%]
-test/test_init_helpers.py .....                                          [ 78%]
-test/test_mutable_bucket_manager.py ...................                  [ 93%]
-test/test_soak.py .                                                      [ 94%]
+test/test_basic_operations.py ................                           [ 14%]
+test/test_container_ops.py ............                                  [ 24%]
+test/test_edge_cases.py ...................                              [ 41%]
+test/test_examples.py ..                                                 [ 42%]
+test/test_exceptions.py .......                                          [ 49%]
+test/test_fancy_gets.py ........                                         [ 56%]
+test/test_field.py ........                                              [ 63%]
+test/test_hash_collisions.py ..........                                  [ 71%]
+test/test_init_helpers.py .....                                          [ 76%]
+test/test_mutable_bucket_manager.py ...................                  [ 92%]
+test/test_soak.py .                                                      [ 93%]
 test/test_stale_objects.py .......                                       [100%]
 
 ----------- coverage: platform linux, python 3.9.7-final-0 -----------
@@ -23,17 +23,20 @@ Name                                  Stmts   Miss  Cover
 hashindex/__init__.py                     2      0   100%
 hashindex/constants.py                    5      0   100%
 hashindex/exceptions.py                  10      0   100%
-hashindex/frozen.py                      63      0   100%
-hashindex/frozen_buckets.py             104      0   100%
-hashindex/frozen_field.py                50      0   100%
+hashindex/frozen/__init__.py              0      0   100%
+hashindex/frozen/array_pair.py           34      0   100%
+hashindex/frozen/buckets.py              71      0   100%
+hashindex/frozen/frozen_field.py         51      0   100%
+hashindex/frozen/main.py                 58      0   100%
 hashindex/init_helpers.py                66      0   100%
-hashindex/mutable.py                     77      0   100%
-hashindex/mutable_bucket_manager.py      48      0   100%
-hashindex/mutable_buckets.py             63      0   100%
-hashindex/mutable_field.py               93      0   100%
+hashindex/mutable/__init__.py             0      0   100%
+hashindex/mutable/bucket_manager.py      74      0   100%
+hashindex/mutable/buckets.py             67      0   100%
+hashindex/mutable/field_index.py         57      0   100%
+hashindex/mutable/main.py                77      0   100%
 hashindex/utils.py                       25      0   100%
 ---------------------------------------------------------
-TOTAL                                   606      0   100%
+TOTAL                                   597      0   100%
 
 
-============================= 127 passed in 6.18s ==============================
+============================= 114 passed in 5.61s ==============================

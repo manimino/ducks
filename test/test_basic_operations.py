@@ -75,14 +75,6 @@ def test_exclude_all(index_type):
     assert len(result) == 0
 
 
-def test_find_ids(index_type):
-    data = [{"a": 1, "b": 2}, {"a": 3, "b": 4}]
-    hi = index_type(data, ["a", "b"])
-    result = hi.find_ids({"b": 4})
-    res_id = next(iter(result))
-    assert res_id == id(data[1])
-
-
 def test_remove(index_type):
     hi = make_test_data(index_type)
     two_chus = hi.find({"name": "Pikachu"})

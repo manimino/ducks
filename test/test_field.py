@@ -1,8 +1,8 @@
 import random
 import pytest
 from hashindex.constants import SIZE_THRESH
-from hashindex.mutable_field import MutableFieldIndex
-from hashindex.frozen_field import FrozenFieldIndex
+from hashindex.mutable.field_index import MutableFieldIndex
+from hashindex.frozen.frozen_field import FrozenFieldIndex
 from hashindex.init_helpers import compute_buckets
 
 from typing import List, Union, Callable, Any, Optional
@@ -86,23 +86,14 @@ def data_class(request):
     return request.param
 
 
-def test_get_objs(idx_and_init, data_class):
-    idx_class, init_fn = idx_and_init
-    things, fw = init_fn(idx_class, data_class)
-    isin = []
-    for t in things:
-        r = id(t) in fw.idx.get_obj_ids(t.s)
-        isin.append(r)
-    assert all(isin)
-
-
 def test_get_obj_ids(idx_and_init, data_class):
     idx_class, init_fn = idx_and_init
     things, fw = init_fn(idx_class, data_class)
-    isin = []
+    count = 0
     for t in things:
-        isin.append(id(t) in fw.idx.get_obj_ids(t.s))
-    assert all(isin)
+        if id(t) in fw.idx.get_obj_ids(t.s):
+            count += 1
+    assert count == len(things)
 
 
 def test_create_and_remove(data_class):

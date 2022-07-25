@@ -17,9 +17,9 @@ def test_empty_frozen():
         FrozenHashIndex([], on=["stuff"])
 
 
-def test_no_index_mutable(index_type):
+def test_no_index_mutable():
     with AssertRaises(ValueError):
-        index_type(["a"])
+        HashIndex(["a"])
 
 
 def test_bad_query(index_type):

@@ -1,12 +1,11 @@
-from sortedcontainers import SortedDict
 from typing import Callable, Union, Dict, Any, List
 
-from cykhash import Int64Set, Int64toInt64Map
+from cykhash import Int64Set
 
 from hashindex.constants import SIZE_THRESH, HASH_MIN, HASH_MAX
 from hashindex.init_helpers import BucketPlan, empty_plan
-from hashindex.mutable_buckets import HashBucket, DictBucket
-from hashindex.mutable_bucket_manager import MutableBucketManager
+from hashindex.mutable.buckets import HashBucket, DictBucket
+from hashindex.mutable.bucket_manager import MutableBucketManager
 from hashindex.utils import get_field
 
 
@@ -35,77 +34,15 @@ class MutableFieldIndex:
         val_hash = hash(val)
         k = self.mbm.get_bucket_key_for(val_hash)
         bucket = self.mbm[k]
-
-        if isinstance(bucket, DictBucket):
-            return bucket.get_matching_ids(val)
-        else:
-            # get everything in this HashBucket, and filter to just the obj_ids where val matches
-            matched_ids = Int64Set()
-            for obj_id in bucket.get_all_ids():
-                obj = self.obj_map.get(obj_id)
-                obj_val = get_field(obj, self.field)
-                if obj_val is val or obj_val == val:
-                    matched_ids.add(obj_id)
-            return matched_ids
-
-    def _handle_big_hash_bucket(self, k):
-        assert HASH_MIN in self.mbm.buckets
-        # A HashBucket is over threshold.
-        # If it contains values that all hash to the same thing, make it a DictBucket.
-        # If it has many val_hashes, split it into two HashBuckets.
-        hb = self.mbm[k]
-        dumped_obj_ids, dumped_min_hash, vals_to_ids = hb.dump_some_out_maybe(self.field, self.obj_map)
-        if dumped_obj_ids is None:
-            # can't dump any hashes -- only have 1 distinct hash
-            # convert it to a dictbucket
-            db_hash = hash(next(iter(vals_to_ids.keys())))
-            db = DictBucket(
-                db_hash,
-                [],
-                [],
-                None,
-                self.field,
-            )
-            db.d = vals_to_ids
-            del self.mbm[k]
-            self.mbm[db.val_hash] = db
-            # The HashBucket we removed previously spanned a range of hash values,
-            # but the new DictBucket only covers 1 hash value. We may need to create HashBuckets on the
-            # left and right sides.
-            left_key, right_key = self.mbm.get_neighbors(db.val_hash)
-            if right_key is None or right_key > db.val_hash + 1:
-                if right_key is not None and isinstance(
-                    self.mbm[right_key], HashBucket
-                ):
-                    # just extend that bucket leftward to here
-                    b = self.mbm.pop(right_key)
-                    self.mbm[db.val_hash + 1] = b
-                else:
-                    # gotta make a new bucket
-                    self.mbm[db.val_hash + 1] = HashBucket()
-            if db.val_hash > HASH_MIN:
-                if left_key is None:
-                    self.mbm[HASH_MIN] = HashBucket()
-                elif left_key < db.val_hash - 1 and isinstance(
-                    self.mbm[left_key], DictBucket
-                ):
-                    self.mbm[left_key + 1] = HashBucket()
-        else:
-            # split it into two hashbuckets
-            new_bucket = HashBucket(dumped_obj_ids)
-            new_key = dumped_min_hash
-            self.mbm[new_key] = new_bucket
+        return bucket.get_matching_ids(val)
 
     def add(self, obj_id, obj):
         val = get_field(obj, self.field)
         val_hash = hash(val)
         k = self.mbm.get_bucket_key_for(val_hash)
-        if isinstance(self.mbm[k], DictBucket):
-            self.mbm[k].add(val, obj_id)
-        else:
-            self.mbm[k].add(obj_id)
+        self.mbm[k].add(val, obj_id)
         if isinstance(self.mbm[k], HashBucket) and len(self.mbm[k]) > SIZE_THRESH:
-            self._handle_big_hash_bucket(k)
+            self.mbm.handle_big_hash_bucket(k)
 
     def remove(self, obj_id, obj):
         """
@@ -125,21 +62,19 @@ class MutableFieldIndex:
 
     def _add_plan_bucket(self, hash_pos: int, bp: BucketPlan):
         """Adds a bucket. Only used during init."""
+        bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
         if (
             len(bp.distinct_hash_counts) == 1
             and bp.distinct_hash_counts[0] > SIZE_THRESH
         ):
-            bucket_obj_ids = [id(obj) for obj in bp.obj_arr]
             b = DictBucket(
                 bp.distinct_hashes[0],
                 bp.obj_arr,
                 bucket_obj_ids,
-                bp.val_arr,
-                self.field,
+                bp.val_arr
             )
         else:
-            bucket_obj_ids = Int64Set(id(obj) for obj in bp.obj_arr)
-            b = HashBucket(bucket_obj_ids)
+            b = HashBucket(bp.val_arr, bucket_obj_ids)
         self.mbm[hash_pos] = b
 
     def _apply_bucket_plan(self, bucket_plans: List[BucketPlan]):

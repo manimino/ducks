@@ -1,12 +1,12 @@
-from typing import Optional, List, Any, Dict, Set, Callable, Union, Iterable
+from typing import Optional, List, Any, Dict, Callable, Union, Iterable
 from cykhash import Int64Set
 
 from operator import itemgetter
 from hashindex.constants import SIZE_THRESH
-from hashindex.exceptions import MissingObjectError, MissingIndexError
+from hashindex.exceptions import MissingObjectError
 from hashindex.utils import validate_query
 from hashindex.init_helpers import compute_buckets
-from hashindex.mutable_field import MutableFieldIndex
+from hashindex.mutable.field_index import MutableFieldIndex
 
 
 class HashIndex:
@@ -36,7 +36,7 @@ class HashIndex:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> List:
-        hits = self.find_ids(match, exclude)
+        hits = self._find_ids(match, exclude)
         # itemgetter is about 10% faster than doing a comprehension like [self.objs[ptr] for ptr in hits]
         if len(hits) == 0:
             return []
@@ -49,7 +49,7 @@ class HashIndex:
                 itemgetter(*hits)(self.obj_map)
             )  # itemgetter returns a tuple of items here, so make it a list
 
-    def find_ids(
+    def _find_ids(
         self,
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
