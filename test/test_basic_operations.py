@@ -1,10 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import unittest
-import pytest
-
-from hashindex import HashIndex, FrozenHashIndex
+from hashindex import FrozenHashIndex
 from hashindex.utils import get_attributes
 from .conftest import AssertRaises
 

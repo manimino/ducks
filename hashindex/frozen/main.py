@@ -3,9 +3,7 @@ import numpy as np
 from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
-from hashindex.constants import SIZE_THRESH
 from hashindex.frozen.frozen_field import FrozenFieldIndex
-from hashindex.init_helpers import compute_buckets
 from hashindex.frozen.array_pair import ArrayPair, make_empty_array_pair
 from hashindex.utils import validate_query
 
@@ -33,8 +31,7 @@ class FrozenHashIndex:
         self.on = on
         self.indices = {}
         for field in on:
-            bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
-            self.indices[field] = FrozenFieldIndex(field, bucket_plans)
+            self.indices[field] = FrozenFieldIndex(field, objs)
 
     def find(
         self,
@@ -107,9 +104,11 @@ class FrozenHashIndex:
         if exclude:
             for field, value in exclude.items():
                 field_hits = self._match_any_of(field, value)
+                print(hits.obj_arr, 'minus', field_hits.obj_arr)
                 hits.apply_difference(field_hits)
                 if len(hits) == 0:
                     break
+        print(hits.obj_arr)
 
         return hits.obj_arr
 

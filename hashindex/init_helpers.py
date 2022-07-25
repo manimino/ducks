@@ -25,7 +25,7 @@ from hashindex.constants import SIZE_THRESH
 from cykhash import Int64Set
 
 
-def hash_and_sort(
+def sort_by_hash(
     objs: Iterable[Any], field: Union[Callable, str]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -41,26 +41,65 @@ def hash_and_sort(
     hash_arr = np.empty(len(objs), dtype='int64')
     val_arr = np.empty(len(objs), dtype='O')
     obj_arr = np.array(objs, dtype='O')
-    for i, o in enumerate(objs):
-        val_arr[i] = get_field(o, field)
-        objs[i] = get_field(o, field)
+    for i, obj in enumerate(objs):
+        val_arr[i] = get_field(obj, field)
+        hash_arr[i] = hash(val_arr[i])
+        obj_arr[i] = obj
     sort_order = np.argsort(hash_arr)
     val_arr = val_arr[sort_order]
     obj_arr = obj_arr[sort_order]
     return hash_arr, val_arr, obj_arr
 
 
-def group_equal_vals(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray):
-    """
-    Normal tools for doing group_by fail here.
-    - We can't assume sortability, so can't sort 'em and find change points.
-    - We are grouping values that have the same hash, so we can't put them in a dict() either.
-    Luckily, we don't expect too many distinct values with the same hash. So just making a list for each
-    distinct value and appending the indices to it will be O(n*k) where k = num of distinct values. Not too too bad.
-    """
-    mismatch_hash = hash_arr[1:] != hash_arr[:-1]
-    change_pts = np.append(np.where(mismatch_hash), len(val_arr) - 1)
+def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray):
+    """Modifies val_arr and obj_arr so that they group elements having the same value.
 
+    Does not modify hash_arr, as we won't need it past this point.
+
+    """
+    def _group_by_val_same_hash(val_arr, obj_arr, p0, p1):
+        """Does group_by for a subarray all having the same hash but containing >=2 distinct values.
+
+        Normal tools for doing group_by fail here.
+        - We can't assume values are sortable, so can't just sort the values and find change points.
+        - We are grouping values that have the same hash, so dict() will be inefficient.
+
+        So just making a list for each distinct value and appending the indices to it will work.
+        That will be O(n*k), where k = num of distinct values.
+        Luckily, we don't expect too many distinct values with the same hash.
+        Having more than two hashes colliding probably means the user is doing something funky, and bad
+        performance is ok in that case.
+        """
+        distinct_vals = []
+        val_idx_lists = []  # list of list of indices. All elements in the inner list have the same val.
+        for i in range(p0, p1):
+            try:
+                idx = distinct_vals.index(val_arr[i])
+                val_idx_lists[idx].append(i)
+            except ValueError:
+                distinct_vals.append(val_arr[i])
+                val_idx_lists.append([i])
+
+        # concat the val_idx_lists to make one array of indices, like how argsort output looks
+        sort_idxs = []
+        for ixl in val_idx_lists:
+            sort_idxs.extend(ixl)
+
+        # now apply that to each array inplace
+        val_arr[p0:p1] = val_arr[sort_idxs]
+        obj_arr[p0:p1] = obj_arr[sort_idxs]
+
+    mismatch_hash = hash_arr[1:] != hash_arr[:-1]
+    hash_change_pts = np.append(np.where(mismatch_hash), len(hash_arr) - 1)
+    p0 = 0
+    for end_i in hash_change_pts:
+        p1 = end_i + 1
+        if p1-p0 > 1:
+            v = val_arr[p0]
+            non_v_values = np.where(val_arr[p0+1:p1] != v)
+            if len(non_v_values):  # False unless there's a hash collision
+                _group_by_val_same_hash(val_arr, obj_arr, p0, p1)
+        p0 = p1
 
 
 def run_length_encode(val_arr: np.ndarray):
@@ -76,10 +115,11 @@ def run_length_encode(val_arr: np.ndarray):
     return starts, counts, val_arr[change_pts]
 
 
-def compute_dict(objs, field):
+def compute_mutable_dict(objs, field):
     """Create a dict of {val: obj_ids}. Used when creating a mutable index."""
-    sorted_hashes, sorted_vals, sorted_objs = hash_and_sort(objs, field)
-    starts, counts, unique_hashes = run_length_encode(sorted_hashes)
+    sorted_hashes, sorted_vals, sorted_objs = sort_by_hash(objs, field)
+    group_by_val(sorted_hashes, sorted_vals, sorted_objs)
+    starts, counts, unique_vals = run_length_encode(sorted_vals)
     d = dict()
     for i, v in enumerate(unique_vals):
         start = starts[i]
@@ -89,11 +129,3 @@ def compute_dict(objs, field):
         else:
             d[v] = tuple(id(obj) for obj in sorted_objs[start:start+count])
     return d
-
-
-def compute_frozen_data(objs, field):
-    sorted_hashes, sorted_vals, sorted_objs = hash_and_sort(objs, field)
-    sorted_obj_ids = np.empty_like(sorted_objs, dtype='int64')
-    for i, obj in enumerate(sorted_objs):
-        sorted_obj_ids[i] = id(obj)
-    starts, counts, unique_vals = run_length_encode(sorted_vals)

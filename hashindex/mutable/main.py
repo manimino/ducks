@@ -5,7 +5,6 @@ from operator import itemgetter
 from hashindex.constants import SIZE_THRESH
 from hashindex.exceptions import MissingObjectError
 from hashindex.utils import validate_query
-from hashindex.init_helpers import compute_buckets
 from hashindex.mutable.field_index import MutableFieldIndex
 
 
