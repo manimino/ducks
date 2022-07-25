@@ -4,16 +4,17 @@ import numpy as np
 
 from hashindex.init_helpers import BucketPlan
 from hashindex.constants import SIZE_THRESH
-from hashindex.frozen_buckets import (
+from hashindex.frozen.buckets import (
     FDictBucket,
     FHashBucket,
-    ArrayPair,
-    empty_array_pair,
 )
+from hashindex.frozen.array_pair import ArrayPair, make_empty_array_pair
 from typing import List, Union, Callable
 
 
 class FrozenFieldIndex:
+    """Stores data and handles requests that are relevant to a single attribute of a FrozenHashIndex."""
+
     def __init__(self, field: Union[str, Callable], bucket_plans: List[BucketPlan]):
         self.buckets = []
         self.bucket_min_hashes = []
@@ -40,7 +41,7 @@ class FrozenFieldIndex:
         return self.get(val).id_arr
 
     def get_all(self) -> ArrayPair:
-        arrs = empty_array_pair()
+        arrs = make_empty_array_pair()
         for b in self.buckets:
             arrs.apply_union(b.get_all())
         return arrs

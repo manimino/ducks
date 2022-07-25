@@ -1,7 +1,6 @@
-import pytest
 import random
 from sortedcontainers import SortedDict
-from hashindex.mutable_bucket_manager import MutableBucketManager
+from hashindex.mutable.bucket_manager import MutableBucketManager
 from hashindex.constants import HASH_MIN, HASH_MAX
 import pytest
 
