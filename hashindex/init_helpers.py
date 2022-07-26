@@ -48,15 +48,13 @@ def sort_by_hash(
     sort_order = np.argsort(hash_arr)
     val_arr = val_arr[sort_order]
     obj_arr = obj_arr[sort_order]
+    hash_arr = hash_arr[sort_order]
     return hash_arr, val_arr, obj_arr
 
 
 def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray):
-    """Modifies val_arr and obj_arr so that they group elements having the same value.
+    """Modifies val_arr, hash_arr, and obj_arr so that they group elements having the same value."""
 
-    Does not modify hash_arr, as we won't need it past this point.
-
-    """
     def _group_by_val_same_hash(val_arr, obj_arr, p0, p1):
         """Does group_by for a subarray all having the same hash but containing >=2 distinct values.
 
@@ -88,6 +86,7 @@ def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray)
         # now apply that to each array inplace
         val_arr[p0:p1] = val_arr[sort_idxs]
         obj_arr[p0:p1] = obj_arr[sort_idxs]
+        hash_arr[p0:p1] = hash_arr[sort_idxs]
 
     mismatch_hash = hash_arr[1:] != hash_arr[:-1]
     hash_change_pts = np.append(np.where(mismatch_hash), len(hash_arr) - 1)
@@ -102,17 +101,17 @@ def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray)
         p0 = p1
 
 
-def run_length_encode(val_arr: np.ndarray):
+def run_length_encode(arr: np.ndarray):
     """
-    Find counts of each val in the val_arr (sorted) via run-length encoding.
+    Find counts of each element in the arr (sorted) via run-length encoding.
 
     Takes 10ms for 1M objs.
     """
-    mismatch_val = val_arr[1:] != val_arr[:-1]
-    change_pts = np.append(np.where(mismatch_val), len(val_arr) - 1)
+    mismatch_val = arr[1:] != arr[:-1]
+    change_pts = np.append(np.where(mismatch_val), len(arr) - 1)
     counts = np.diff(np.append(-1, change_pts))
     starts = np.cumsum(np.append(0, counts))[:-1]
-    return starts, counts, val_arr[change_pts]
+    return starts, counts, arr[change_pts]
 
 
 def compute_mutable_dict(objs, field):

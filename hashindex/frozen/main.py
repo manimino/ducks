@@ -4,7 +4,7 @@ from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
 from hashindex.frozen.frozen_field import FrozenFieldIndex
-from hashindex.frozen.array_pair import ArrayPair, make_empty_array_pair
+from hashindex.frozen.array_pair import ArrayPair, make_empty_array_pair, make_array_pair
 from hashindex.utils import validate_query
 
 
@@ -30,6 +30,7 @@ class FrozenHashIndex:
             )
         self.on = on
         self.indices = {}
+        self.all = make_array_pair(np.array(objs, dtype='O'))
         for field in on:
             self.indices[field] = FrozenFieldIndex(field, objs)
 
@@ -98,7 +99,7 @@ class FrozenHashIndex:
                     return make_empty_array_pair().obj_arr
         else:
             # 'match' is unspecified, so match all objects
-            hits = self._get_all()
+            hits = self.all
 
         # perform 'exclude' query
         if exclude:
@@ -137,16 +138,13 @@ class FrozenHashIndex:
 
     def _get_all(self) -> ArrayPair:
         """Return all objects in the FrozenHashIndex. Used by find() when match=None."""
-        for f in self.indices:
-            return self.indices[f].get_all()
+        return self.all()
 
     def __contains__(self, obj):
-        for idx in self.indices.values():
-            return obj in idx
+        return obj in self.all
 
     def __iter__(self):
-        for idx in self.indices.values():
-            return iter(idx)
+        return iter(self.all.obj_arr)
 
     def __len__(self):
         for idx in self.indices.values():

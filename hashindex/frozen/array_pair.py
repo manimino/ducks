@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 import sortednp as snp
 from typing import Optional
+from bisect import bisect_left
 
 
 @dataclass
@@ -39,8 +40,15 @@ class ArrayPair:
     def __len__(self):
         return len(self.id_arr)
 
+    def __contains__(self, obj):
+        obj_id = id(obj)
+        idx = bisect_left(self.id_arr, obj_id)
+        if idx < 0 or idx >= len(self.id_arr):
+            return False
+        return self.id_arr[idx] == obj_id
 
-def make_array_pair(obj_arr: np.ndarray, obj_ids: Optional[np.ndarray] = None, sort_order: Optional[np.ndarray]=None):
+
+def make_array_pair(obj_arr: np.ndarray, obj_ids: Optional[np.ndarray] = None, sort_order: Optional[np.ndarray] = None):
     """Creates an ArrayPair. Finds obj_ids and sort_order if not provided."""
     if obj_ids is None:
         obj_ids = np.empty_like(obj_arr, dtype="int64")
