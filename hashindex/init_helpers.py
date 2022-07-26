@@ -112,9 +112,13 @@ def run_length_encode(arr: np.ndarray):
     return starts, counts, arr[change_pts]
 
 
-def compute_mutable_dict(objs, field):
+def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
     """Create a dict of {val: obj_ids}. Used when creating a mutable index."""
-    sorted_hashes, sorted_vals, sorted_objs = sort_by_hash(objs, field)
+    obj_arr = np.empty(len(objs), dtype='O')
+    for i, obj in enumerate(objs):
+        obj_arr[i] = obj
+
+    sorted_hashes, sorted_vals, sorted_objs = sort_by_hash(obj_arr, field)
     group_by_val(sorted_hashes, sorted_vals, sorted_objs)
     starts, counts, unique_vals = run_length_encode(sorted_vals)
     d = dict()

@@ -2,8 +2,6 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable
 from cykhash import Int64Set
 
 from operator import itemgetter
-from hashindex.constants import SIZE_THRESH
-from hashindex.exceptions import MissingObjectError
 from hashindex.utils import validate_query
 from hashindex.mutable.field_index import MutableFieldIndex
 
@@ -99,7 +97,7 @@ class HashIndex:
     def remove(self, obj):
         ptr = id(obj)
         if ptr not in self.obj_map:
-            raise MissingObjectError
+            raise KeyError
 
         for field in self.indices:
             self.indices[field].remove(ptr, obj)
@@ -112,8 +110,6 @@ class HashIndex:
             matches = Int64Set()
             for v in value:
                 v_matches = self.indices[field].get_obj_ids(v)
-                if isinstance(v_matches, tuple):
-                    v_matches = Int64Set(v_matches)
                 # union with the larger set on the left is faster in cykhash
                 if len(matches) > len(v_matches):
                     matches = matches.union(v_matches)

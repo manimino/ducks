@@ -9,20 +9,3 @@ class MissingIndexError(Exception):
 
     pass
 
-
-class MissingValueError(Exception):
-    """Raised when adding an object that is missing a field we need to index"""
-
-    pass
-
-
-class MissingObjectError(Exception):
-    """Raised when removing or updating an object we don't have."""
-
-    pass
-
-
-class StaleObjectRemovalError(Exception):
-    """Raised when attempting to remove an object that was modified elsewhere."""
-
-    pass

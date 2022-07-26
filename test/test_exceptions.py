@@ -1,5 +1,5 @@
 from hashindex import HashIndex, FrozenHashIndex
-from hashindex.exceptions import MissingObjectError, MissingIndexError
+from hashindex.exceptions import MissingIndexError
 from hashindex.constants import SIZE_THRESH
 import pytest
 
@@ -8,7 +8,7 @@ from .conftest import AssertRaises, BadHash
 
 def test_remove_empty():
     hi = HashIndex([], on=["stuff"])
-    with AssertRaises(MissingObjectError):
+    with AssertRaises(KeyError):
         hi.remove("nope")
 
 
@@ -41,6 +41,6 @@ def test_remove_missing_value(n_items):
     data = [BadHash(i) for i in range(5)]
     hi = HashIndex(data, ["n"])
     assert len(hi.find({"n": -1})) == 0
-    with AssertRaises(MissingObjectError):
+    with AssertRaises(KeyError):
         hi.remove(BadHash(-1))
 

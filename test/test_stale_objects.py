@@ -2,7 +2,6 @@ from hashindex.constants import SIZE_THRESH
 from hashindex import HashIndex
 import pytest
 from .conftest import BadHash, TwoHash, AssertRaises
-from hashindex.exceptions import StaleObjectRemovalError, MissingObjectError
 
 
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])
@@ -23,7 +22,7 @@ def test_remove_stale_objects_one_hash(n_items):
     hi = HashIndex(objs, ["z"])
     for o in objs:
         o["z"] = BadHash(1)  # updated without calling update()
-    with AssertRaises(StaleObjectRemovalError):
+    with AssertRaises(KeyError):
         hi.remove(objs[0])
 
 
@@ -31,5 +30,5 @@ def test_remove_stale_objects_one_hash(n_items):
 def test_remove_missing_object(n_items):
     objs = [{"z": TwoHash(1)} for _ in range(n_items)]
     hi = HashIndex(objs, ["z"])
-    with AssertRaises(MissingObjectError):
+    with AssertRaises(KeyError):
         hi.remove(TwoHash(2))
