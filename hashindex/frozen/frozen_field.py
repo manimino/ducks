@@ -21,23 +21,25 @@ class ObjsByHash:
         val_hash = hash(val)
         i = bisect_left(self.unique_hashes, val_hash)
         if i < 0 or i >= len(self.unique_hashes) or self.unique_hashes[i] != val_hash:
-            raise KeyError('not in here')
+            return make_empty_array_pair()
         start = self.hash_starts[i]
         end = self.hash_starts[i] + self.hash_run_lengths[i]
         # Typically the hash will only contain the one val we want.
         # But hash collisions do happen.
         # Shrink the range until it contains only our value.
-        while self.sorted_vals[start] != val:
+        while start < end and self.sorted_vals[start] != val:
             start += 1
-        while self.sorted_vals[end-1] != val:
+        while end > start and self.sorted_vals[end-1] != val:
             end -= 1
+        if end == start:
+            return make_empty_array_pair()
         return make_array_pair(self.sorted_objs[start:end])
 
 
 class FrozenFieldIndex:
     """Stores data and handles requests that are relevant to a single attribute of a FrozenHashIndex."""
 
-    def __init__(self, field: Union[str, Callable], objs: Iterable[Any]):
+    def __init__(self, field: Union[str, Callable], objs: np.ndarray):
         # sort the objects by attribute value, using their hashes and handling collisions
         sorted_hashes, sorted_vals, sorted_objs = sort_by_hash(objs, field)
         group_by_val(sorted_hashes, sorted_vals, sorted_objs)
@@ -93,57 +95,9 @@ class FrozenFieldIndex:
 
     def get(self, val) -> ArrayPair:
         if val in self.val_to_arr_pair:
-            print(val, self.val_to_arr_pair[val])
             return self.val_to_arr_pair[val]
         elif self.objs_by_hash is not None:
             return self.objs_by_hash.get(val)
 
     def get_obj_ids(self, val) -> np.ndarray:
         return self.get(val).id_arr
-
-    def get_all(self) -> ArrayPair:
-        arrs = make_empty_array_pair()
-        for v in self.big_vals:
-            arrs.apply_union(self.big_vals[v])
-        small = make_array_pair(self.sm_objs)
-        arrs.apply_union(small)
-        return arrs
-
-    def __iter__(self):
-        return FrozenFieldIndexIterator(self)
-
-    def __len__(self):
-        return len(self.sm_objs) + sum([len(v) for v in self.big_vals.values()])
-
-
-class FrozenFieldIndexIterator:
-    def __init__(self, ffi: FrozenFieldIndex):
-        self.sm_objs = ffi.sm_objs
-        self.i = 0
-        self.big_iter = iter(ffi.big_vals.values())
-        self.cur_arr = None
-        self.did_small = False
-
-    def __next__(self):
-        while True:
-            # smalls first
-            if not self.did_small:
-                if self.i == len(self.sm_objs):
-                    self.did_small = True
-                    self.i = 0
-                else:
-                    obj = self.sm_objs[self.i]
-                    self.i += 1
-                    return obj
-
-            # now each large
-            if self.cur_arr is None:
-                self.cur_arr = next(self.big_iter).obj_arr
-                self.i = 0
-                continue
-            if self.i == len(self.cur_arr):
-                self.cur_arr = None
-                continue
-            obj = self.cur_arr[self.i]
-            self.i += 1
-            return obj

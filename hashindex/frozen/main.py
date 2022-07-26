@@ -30,9 +30,13 @@ class FrozenHashIndex:
             )
         self.on = on
         self.indices = {}
-        self.all = make_array_pair(np.array(objs, dtype='O'))
+
+        obj_arr = np.empty(len(objs), dtype='O')
+        for i, obj in enumerate(objs):
+            obj_arr[i] = obj
+        self.all = make_array_pair(np.array(obj_arr, dtype='O'))
         for field in on:
-            self.indices[field] = FrozenFieldIndex(field, objs)
+            self.indices[field] = FrozenFieldIndex(field, obj_arr)
 
     def find(
         self,
@@ -105,11 +109,9 @@ class FrozenHashIndex:
         if exclude:
             for field, value in exclude.items():
                 field_hits = self._match_any_of(field, value)
-                print(hits.obj_arr, 'minus', field_hits.obj_arr)
                 hits.apply_difference(field_hits)
                 if len(hits) == 0:
                     break
-        print(hits.obj_arr)
 
         return hits.obj_arr
 
@@ -136,10 +138,6 @@ class FrozenHashIndex:
         else:
             return self.indices[field].get(value)
 
-    def _get_all(self) -> ArrayPair:
-        """Return all objects in the FrozenHashIndex. Used by find() when match=None."""
-        return self.all()
-
     def __contains__(self, obj):
         return obj in self.all
 
@@ -147,5 +145,4 @@ class FrozenHashIndex:
         return iter(self.all.obj_arr)
 
     def __len__(self):
-        for idx in self.indices.values():
-            return len(idx)
+        return len(self.all)

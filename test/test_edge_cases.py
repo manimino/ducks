@@ -1,5 +1,3 @@
-import random
-
 from hashindex import HashIndex
 from hashindex.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 import pytest
@@ -134,11 +132,14 @@ def test_arg_order():
 
 
 class NoSort:
-    def __init__(self, n):
-        self.x = n
+    def __init__(self, x):
+        self.x = x
 
     def __hash__(self):
         return hash(self.x)
+
+    def __eq__(self, other):
+        return self.x == other.x
 
 
 def test_unsortable_values(index_type):
@@ -150,4 +151,4 @@ def test_unsortable_values(index_type):
         hi.add(objs[2])
     assert len(hi) == len(objs)
     for i, obj in enumerate(objs):
-        assert hi.find({'a': i}) == [obj]
+        assert hi.find({'a': NoSort(i)}) == [obj]

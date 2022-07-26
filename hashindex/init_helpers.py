@@ -26,7 +26,7 @@ from cykhash import Int64Set
 
 
 def sort_by_hash(
-    objs: Iterable[Any], field: Union[Callable, str]
+    objs: np.ndarray, field: Union[Callable, str]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Sort objs and vals by vals.
@@ -40,14 +40,12 @@ def sort_by_hash(
     """
     hash_arr = np.empty(len(objs), dtype='int64')
     val_arr = np.empty(len(objs), dtype='O')
-    obj_arr = np.empty(len(objs), dtype='O')
     for i, obj in enumerate(objs):
         val_arr[i] = get_field(obj, field)
         hash_arr[i] = hash(val_arr[i])
-        obj_arr[i] = obj
     sort_order = np.argsort(hash_arr)
     val_arr = val_arr[sort_order]
-    obj_arr = obj_arr[sort_order]
+    obj_arr = objs[sort_order]
     hash_arr = hash_arr[sort_order]
     return hash_arr, val_arr, obj_arr
 
