@@ -63,12 +63,12 @@ class MutableFieldIndex:
             if ptr in obj_ids:
                 if isinstance(obj_ids, tuple):
                     self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
+                    if len(self.d[val]) == 1:
+                        self.d[val] = self.d[val][0]
                 else:
                     self.d[val].remove(ptr)
                     if len(self.d[val]) < SET_SIZE_MIN:
                         self.d[val] = tuple(self.d[val])
-                if len(self.d[val]) == 0:
-                    del self.d[val]
             else:
                 raise KeyError
         else:

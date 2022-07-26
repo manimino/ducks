@@ -115,9 +115,9 @@ class HashIndex:
                     matches = matches.union(v_matches)
                 else:
                     matches = v_matches.union(matches)
-            return matches
         else:
-            return self.indices[field].get_obj_ids(value)
+            matches = self.indices[field].get_obj_ids(value)
+        return matches
 
     def __contains__(self, obj):
         return id(obj) in self.obj_map

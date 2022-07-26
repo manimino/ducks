@@ -128,7 +128,8 @@ def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
         if counts[i] > SIZE_THRESH:
             d[v] = Int64Set(id(obj) for obj in sorted_objs[start:start+count])
         elif counts[i] == 1:
-            d[v] = id(sorted_objs[start:start+count])
+            obj = sorted_objs[start]
+            d[v] = id(obj)
         else:
             d[v] = tuple(id(obj) for obj in sorted_objs[start:start+count])
     return d

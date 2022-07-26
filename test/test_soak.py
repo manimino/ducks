@@ -125,6 +125,13 @@ class SoakTest:
             self.hi.remove(t)
         self.objs = dict()
 
+    def remove_all_but_one(self):
+        key = random.choice(list(self.objs.keys()))
+        for k in self.objs:
+            if k != key:
+                self.hi.remove(self.objs[k])
+                del self.objs[k]
+
     def random_obj(self):
         if not len(self.objs):
             return None
