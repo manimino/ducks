@@ -38,8 +38,8 @@ def sort_by_hash(
      - 100ms to sort the hashes
      - 30ms of whatever
     """
-    hash_arr = np.empty(len(objs), dtype='int64')
-    val_arr = np.empty(len(objs), dtype='O')
+    hash_arr = np.empty(len(objs), dtype="int64")
+    val_arr = np.empty(len(objs), dtype="O")
     for i, obj in enumerate(objs):
         val_arr[i] = get_field(obj, field)
         hash_arr[i] = hash(val_arr[i])
@@ -67,7 +67,9 @@ def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray)
         performance is ok in that case.
         """
         distinct_vals = []
-        val_idx_lists = []  # list of list of indices. All elements in the inner list have the same val.
+        val_idx_lists = (
+            []
+        )  # list of list of indices. All elements in the inner list have the same val.
         for i in range(p0, p1):
             try:
                 idx = distinct_vals.index(val_arr[i])
@@ -91,9 +93,9 @@ def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray)
     p0 = 0
     for end_i in hash_change_pts:
         p1 = end_i + 1
-        if p1-p0 > 1:
+        if p1 - p0 > 1:
             v = val_arr[p0]
-            non_v_values = np.where(val_arr[p0+1:p1] != v)
+            non_v_values = np.where(val_arr[p0 + 1 : p1] != v)
             if len(non_v_values):  # False unless there's a hash collision
                 _group_by_val_same_hash(val_arr, obj_arr, p0, p1)
         p0 = p1
@@ -114,7 +116,7 @@ def run_length_encode(arr: np.ndarray):
 
 def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
     """Create a dict of {val: obj_ids}. Used when creating a mutable index."""
-    obj_arr = np.empty(len(objs), dtype='O')
+    obj_arr = np.empty(len(objs), dtype="O")
     for i, obj in enumerate(objs):
         obj_arr[i] = obj
 
@@ -126,10 +128,10 @@ def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
         start = starts[i]
         count = counts[i]
         if counts[i] > SIZE_THRESH:
-            d[v] = Int64Set(id(obj) for obj in sorted_objs[start:start+count])
+            d[v] = Int64Set(id(obj) for obj in sorted_objs[start : start + count])
         elif counts[i] == 1:
             obj = sorted_objs[start]
             d[v] = id(obj)
         else:
-            d[v] = tuple(id(obj) for obj in sorted_objs[start:start+count])
+            d[v] = tuple(id(obj) for obj in sorted_objs[start : start + count])
     return d

@@ -1,6 +1,10 @@
 import numpy as np
 
-from hashindex.frozen.array_pair import ArrayPair, make_array_pair, make_empty_array_pair
+from hashindex.frozen.array_pair import (
+    ArrayPair,
+    make_array_pair,
+    make_empty_array_pair,
+)
 from typing import Union, Callable, Iterable, Any
 from hashindex.init_helpers import sort_by_hash, group_by_val, run_length_encode
 from hashindex.constants import SIZE_THRESH
@@ -29,7 +33,7 @@ class ObjsByHash:
         # Shrink the range until it contains only our value.
         while start < end and self.sorted_vals[start] != val:
             start += 1
-        while end > start and self.sorted_vals[end-1] != val:
+        while end > start and self.sorted_vals[end - 1] != val:
             end -= 1
         if end == start:
             return make_empty_array_pair()
@@ -49,7 +53,7 @@ class FrozenFieldIndex:
 
         # Pre-bake a dict of {val: array_pair} where there are many objs with the same val.
         self.val_to_arr_pair = dict()
-        unused = np.ones_like(sorted_objs, dtype='bool')
+        unused = np.ones_like(sorted_objs, dtype="bool")
         unused_count = len(unused)
         for i, val in enumerate(unique_vals):
             if val_run_lengths[i] > SIZE_THRESH:
@@ -76,7 +80,7 @@ class FrozenFieldIndex:
                 sorted_hashes=sorted_hashes,
                 unique_hashes=unique_hashes,
                 hash_starts=hash_starts,
-                hash_run_lengths=hash_run_lengths
+                hash_run_lengths=hash_run_lengths,
             )
             return
 
@@ -90,7 +94,7 @@ class FrozenFieldIndex:
             sorted_hashes=sorted_hashes,
             unique_hashes=unique_hashes,
             hash_starts=hash_starts,
-            hash_run_lengths=hash_run_lengths
+            hash_run_lengths=hash_run_lengths,
         )
 
     def get(self, val) -> ArrayPair:
@@ -98,6 +102,3 @@ class FrozenFieldIndex:
             return self.val_to_arr_pair[val]
         elif self.objs_by_hash is not None:
             return self.objs_by_hash.get(val)
-
-    def get_obj_ids(self, val) -> np.ndarray:
-        return self.get(val).id_arr

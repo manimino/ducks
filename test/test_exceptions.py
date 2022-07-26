@@ -32,7 +32,7 @@ def test_bad_query(index_type):
         hi.find({"b": 1})
 
 
-@pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])
+@pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH + 1])
 def test_remove_missing_value(n_items):
     """
     When the value hashes to a bucket, but the bucket does not contain the value, is
@@ -43,4 +43,3 @@ def test_remove_missing_value(n_items):
     assert len(hi.find({"n": -1})) == 0
     with AssertRaises(KeyError):
         hi.remove(BadHash(-1))
-

@@ -18,21 +18,20 @@ def test_get_nearby(index_type):
 
 def test_wordle(index_type):
     ws = [
-        ('ABOUT', 1226734006),
-        ('OTHER', 978481319),
-        ('WHICH', 810514085),
-        ('THEIR', 782849411),
+        ("ABOUT", 1226734006),
+        ("OTHER", 978481319),
+        ("WHICH", 810514085),
+        ("THEIR", 782849411),
     ]
 
     def has_t(w):
-        return 'T' in w[0]
+        return "T" in w[0]
 
     def has_h(w):
-        return 'H' in w[0]
+        return "H" in w[0]
 
     hi = index_type(ws, [has_t, has_h])
     found = hi.find()
     found_ws = [f[0] for f in found]
     for w in ws:
         assert w[0] in found_ws
-

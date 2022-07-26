@@ -53,26 +53,18 @@ class MutableFieldIndex:
 
     def remove(self, ptr: int, obj: Any):
         """
-        Remove a single object from the index.
-
-        If a val slot ever gets empty, remove it.
+        Remove a single object from the index. ptr is already known to be in the index.
         """
         val = get_field(obj, self.field)
         obj_ids = self.d[val]
         if isinstance(obj_ids, tuple) or isinstance(obj_ids, Int64Set):
-            if ptr in obj_ids:
-                if isinstance(obj_ids, tuple):
-                    self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
-                    if len(self.d[val]) == 1:
-                        self.d[val] = self.d[val][0]
-                else:
-                    self.d[val].remove(ptr)
-                    if len(self.d[val]) < SET_SIZE_MIN:
-                        self.d[val] = tuple(self.d[val])
+            if isinstance(obj_ids, tuple):
+                self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
+                if len(self.d[val]) == 1:
+                    self.d[val] = self.d[val][0]
             else:
-                raise KeyError
+                self.d[val].remove(ptr)
+                if len(self.d[val]) < SET_SIZE_MIN:
+                    self.d[val] = tuple(self.d[val])
         else:
-            if ptr == obj_ids:
-                del self.d[val]
-            else:
-                raise KeyError
+            del self.d[val]

@@ -31,6 +31,12 @@ class BadHash:
     def __hash__(self):
         return 42
 
+    def __eq__(self, other):
+        return self.n == other.n
+
+    def __repr__(self):
+        return str(self.n)
+
 
 class TwoHash:
     def __init__(self, n):

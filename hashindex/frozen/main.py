@@ -4,7 +4,11 @@ from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
 from hashindex.frozen.frozen_field import FrozenFieldIndex
-from hashindex.frozen.array_pair import ArrayPair, make_empty_array_pair, make_array_pair
+from hashindex.frozen.array_pair import (
+    ArrayPair,
+    make_empty_array_pair,
+    make_array_pair,
+)
 from hashindex.utils import validate_query
 
 
@@ -31,17 +35,21 @@ class FrozenHashIndex:
         self.on = on
         self.indices = {}
 
-        obj_arr = np.empty(len(objs), dtype='O')
+        obj_arr = np.empty(len(objs), dtype="O")
         for i, obj in enumerate(objs):
             obj_arr[i] = obj
-        self.all = make_array_pair(np.array(obj_arr, dtype='O'))
+        self.all = make_array_pair(np.array(obj_arr, dtype="O"))
         for field in on:
             self.indices[field] = FrozenFieldIndex(field, obj_arr)
 
     def find(
         self,
-        match: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
-        exclude: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+        match: Optional[
+            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
+        ] = None,
+        exclude: Optional[
+            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
+        ] = None,
     ) -> np.ndarray:
         """Find objects in the FrozenHashIndex that satisfy the match and exclude constraints.
 
@@ -115,7 +123,9 @@ class FrozenHashIndex:
 
         return hits.obj_arr
 
-    def _match_any_of(self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]) -> ArrayPair:
+    def _match_any_of(
+        self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]
+    ) -> ArrayPair:
         """Get matches for a single field during a find(). If multiple values specified, handle union logic.
 
         Args:

@@ -44,8 +44,11 @@ def test_find_match(index_type):
 
 
 def test_find_sub_obj(index_type):
-    objs = [{'p': Pokemon("Zapdos", "Electric", "Flying")}, {'p': Pokemon("Pikachu", "Electric", None)}]
-    hi = index_type(objs, on=['p'])
+    objs = [
+        {"p": Pokemon("Zapdos", "Electric", "Flying")},
+        {"p": Pokemon("Pikachu", "Electric", None)},
+    ]
+    hi = index_type(objs, on=["p"])
     found = hi.find()
     found_empty = hi.find({}, {})
     assert len(found) == 2

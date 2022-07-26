@@ -144,11 +144,18 @@ class NoSort:
 
 def test_unsortable_values(index_type):
     """We need to support values that are hashable, even if they cannot be sorted."""
-    objs = [{'a': NoSort(0)}, {'a': NoSort(1)}]
-    hi = index_type(objs, ['a'])
+    objs = [{"a": NoSort(0)}, {"a": NoSort(1)}]
+    hi = index_type(objs, ["a"])
     if isinstance(index_type, HashIndex):
         objs.append(NoSort(2))
         hi.add(objs[2])
     assert len(hi) == len(objs)
     for i, obj in enumerate(objs):
-        assert hi.find({'a': NoSort(i)}) == [obj]
+        assert hi.find({"a": NoSort(i)}) == [obj]
+
+
+def test_not_in(index_type):
+    """the things we do for 100% coverage"""
+    hi = index_type([{"a": 1}], on=["a"])
+    assert {"a": 0} not in hi
+    assert {"a": 2} not in hi
