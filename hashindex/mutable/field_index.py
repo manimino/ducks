@@ -30,20 +30,26 @@ class MutableFieldIndex:
         ids = self.d.get(val, Int64Set())
         if isinstance(ids, tuple):
             return Int64Set(ids)
-        return ids
+        elif isinstance(ids, Int64Set):
+            return ids
+        else:
+            return Int64Set([ids])
 
     def add(self, ptr: int, obj: Any):
         val = get_field(obj, self.field)
         if val in self.d:
-            if len(self.d[val]) == TUPLE_SIZE_MAX:
-                self.d[val] = Int64Set(self.d[val])
+            if isinstance(self.d[val], tuple):
+                if len(self.d[val]) == TUPLE_SIZE_MAX:
+                    self.d[val] = Int64Set(self.d[val])
+                    self.d[val].add(ptr)
+                else:
+                    self.d[val] = tuple(list(self.d[val]) + [ptr])
+            elif isinstance(self.d[val], Int64Set):
                 self.d[val].add(ptr)
-            elif isinstance(self.d[val], tuple):
-                self.d[val] = tuple(list(self.d[val]) + [ptr])
             else:
-                self.d[val].add(ptr)
+                self.d[val] = (self.d[val], ptr)
         else:
-            self.d[val] = (ptr,)
+            self.d[val] = ptr
 
     def remove(self, ptr: int, obj: Any):
         """
@@ -53,12 +59,20 @@ class MutableFieldIndex:
         """
         val = get_field(obj, self.field)
         obj_ids = self.d[val]
-        if ptr in obj_ids:
-            if isinstance(obj_ids, tuple):
-                self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
+        if isinstance(obj_ids, tuple) or isinstance(obj_ids, Int64Set):
+            if ptr in obj_ids:
+                if isinstance(obj_ids, tuple):
+                    self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
+                else:
+                    self.d[val].remove(ptr)
+                    if len(self.d[val]) < SET_SIZE_MIN:
+                        self.d[val] = tuple(self.d[val])
+                if len(self.d[val]) == 0:
+                    del self.d[val]
             else:
-                self.d[val].remove(ptr)
-                if len(self.d[val]) < SET_SIZE_MIN:
-                    self.d[val] = tuple(self.d[val])
-            if len(self.d[val]) == 0:
+                raise KeyError
+        else:
+            if ptr == obj_ids:
                 del self.d[val]
+            else:
+                raise KeyError
