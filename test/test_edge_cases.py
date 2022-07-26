@@ -93,7 +93,6 @@ def test_grouped_hash(delete_bucket):
             assert len(hi.find({"z": GroupedHash(b)})) == SIZE_THRESH + 1
 
 
-
 def test_get_zero(index_type):
     def _f(x):
         return x[0]

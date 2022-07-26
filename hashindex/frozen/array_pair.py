@@ -40,15 +40,15 @@ class ArrayPair:
         return len(self.id_arr)
 
 
-def make_array_pair(obj_arr: np.ndarray, obj_ids: Optional[np.ndaray], sort_order: Optional[np.ndaray]):
+def make_array_pair(obj_arr: np.ndarray, obj_ids: Optional[np.ndarray] = None, sort_order: Optional[np.ndarray]=None):
     """Creates an ArrayPair. Finds obj_ids and sort_order if not provided."""
-    if not obj_ids:
+    if obj_ids is None:
         obj_ids = np.empty_like(obj_arr, dtype="int64")
         for i, obj in enumerate(obj_arr):
             obj_ids[i] = id(obj)
-    if not sort_order:
+    if sort_order is None:
         sort_order = np.argsort(obj_ids)
-    return ArrayPair(id_arr=obj_ids[sort_order], obj_arr=obj_arr[sort_order]), sort_order
+    return ArrayPair(id_arr=obj_ids[sort_order], obj_arr=obj_arr[sort_order])
 
 
 def make_empty_array_pair() -> ArrayPair:

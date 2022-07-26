@@ -1,12 +1,10 @@
-from typing import Callable, Union, Dict, Any, List, Iterable, Optional
+from typing import Callable, Union, Dict, Any, Iterable, Optional
 
 from cykhash import Int64Set
 
-from hashindex.constants import SIZE_THRESH, HASH_MIN, HASH_MAX
+from hashindex.constants import SIZE_THRESH
 from hashindex.init_helpers import compute_mutable_dict
 from hashindex.utils import get_field
-
-import numpy as np
 
 
 class MutableFieldIndex:
@@ -34,20 +32,32 @@ class MutableFieldIndex:
         bucket = self.mbm[k]
         return bucket.get_matching_ids(val)
 
-    def add(self, obj_id, obj):
+    def add(self, ptr, obj):
         val = get_field(obj, self.field)
-        val_hash = hash(val)
-        k = self.mbm.get_bucket_key_for(val_hash)
-        self.mbm[k].add(val, obj_id)
+        if val in self.d:
+            if len(self.d[val]) == SIZE_THRESH:
+                self.d[val] = Int64Set(self.d[val])
+                self.d[val].add(ptr)
+            elif isinstance(self.d[val], tuple):
+                self.d[val] = tuple(list(self.d[val]) + [ptr])
+            else:
+                self.d[val].add(ptr)
+        else:
+            self.d[val] = tuple(val)
 
-    def remove(self, obj_id, obj):
+    def remove(self, ptr, obj):
         """
         Remove a single object from the index.
 
-        If a bucket ever gets empty, remove it.
+        If a val slot ever gets empty, remove it.
         """
         val = get_field(obj, self.field)
-        val_hash = hash(val)
-        k = self.mbm.get_bucket_key_for(val_hash)
-        if len(self.mbm[k]) == 0:
-            self.mbm.remove_bucket(k)
+        obj_ids = self.d[val]
+        if ptr in obj_ids:
+            if isinstance(obj_ids, tuple):
+                self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
+            else:
+                self.d[val].remove(ptr)
+            if len(self.d[val]) == 0:
+                del self.d[val]
+            # TODO set -> tuple change

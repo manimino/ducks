@@ -40,7 +40,7 @@ def sort_by_hash(
     """
     hash_arr = np.empty(len(objs), dtype='int64')
     val_arr = np.empty(len(objs), dtype='O')
-    obj_arr = np.array(objs, dtype='O')
+    obj_arr = np.empty(len(objs), dtype='O')
     for i, obj in enumerate(objs):
         val_arr[i] = get_field(obj, field)
         hash_arr[i] = hash(val_arr[i])

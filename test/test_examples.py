@@ -2,6 +2,7 @@ import random
 
 
 def test_get_nearby(index_type):
+    # set of tuples
     t = {(random.random() * 10, random.random() * 10) for _ in range(10 ** 4)}
 
     def _x(obj):

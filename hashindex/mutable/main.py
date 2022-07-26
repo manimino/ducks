@@ -112,6 +112,8 @@ class HashIndex:
             matches = Int64Set()
             for v in value:
                 v_matches = self.indices[field].get_obj_ids(v)
+                if isinstance(v_matches, tuple):
+                    v_matches = Int64Set(v_matches)
                 # union with the larger set on the left is faster in cykhash
                 if len(matches) > len(v_matches):
                     matches = matches.union(v_matches)
