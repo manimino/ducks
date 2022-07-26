@@ -2,11 +2,14 @@ from dataclasses import dataclass
 
 import numpy as np
 import sortednp as snp
+from typing import Optional
+from bisect import bisect_left
 
 
 @dataclass
 class ArrayPair:
     """Pair of sorted numpy arrays that act like a Python set of objects. Objects need not be hashable."""
+
     id_arr: np.ndarray
     obj_arr: np.ndarray
 
@@ -38,14 +41,27 @@ class ArrayPair:
     def __len__(self):
         return len(self.id_arr)
 
+    def __contains__(self, obj):
+        obj_id = id(obj)
+        idx = bisect_left(self.id_arr, obj_id)
+        if idx < 0 or idx >= len(self.id_arr):
+            return False
+        return self.id_arr[idx] == obj_id
 
-def make_array_pair(obj_arr: np.ndarray):
-    """Finds obj_ids and sorts obj_arr by the ids. Returns an ArrayPair."""
-    obj_ids = np.empty_like(obj_arr, dtype="int64")
-    for i, obj in enumerate(obj_arr):
-        obj_ids[i] = id(obj)
-    sort_order = np.argsort(obj_ids)
-    return ArrayPair(id_arr=obj_ids[sort_order], obj_arr=obj_arr[sort_order]), sort_order
+
+def make_array_pair(
+    obj_arr: np.ndarray,
+    obj_ids: Optional[np.ndarray] = None,
+    sort_order: Optional[np.ndarray] = None,
+):
+    """Creates an ArrayPair. Finds obj_ids and sort_order if not provided."""
+    if obj_ids is None:
+        obj_ids = np.empty_like(obj_arr, dtype="int64")
+        for i, obj in enumerate(obj_arr):
+            obj_ids[i] = id(obj)
+    if sort_order is None:
+        sort_order = np.argsort(obj_ids)
+    return ArrayPair(id_arr=obj_ids[sort_order], obj_arr=obj_arr[sort_order])
 
 
 def make_empty_array_pair() -> ArrayPair:

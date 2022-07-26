@@ -2,10 +2,7 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable
 from cykhash import Int64Set
 
 from operator import itemgetter
-from hashindex.constants import SIZE_THRESH
-from hashindex.exceptions import MissingObjectError
 from hashindex.utils import validate_query
-from hashindex.init_helpers import compute_buckets
 from hashindex.mutable.field_index import MutableFieldIndex
 
 
@@ -25,11 +22,7 @@ class HashIndex:
         # Make an index for each field.
         self.indices = {}
         for field in on:
-            if objs:
-                bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
-            else:
-                bucket_plans = None
-            self.indices[field] = MutableFieldIndex(field, self.obj_map, bucket_plans)
+            self.indices[field] = MutableFieldIndex(field, self.obj_map, objs)
 
     def find(
         self,
@@ -104,7 +97,7 @@ class HashIndex:
     def remove(self, obj):
         ptr = id(obj)
         if ptr not in self.obj_map:
-            raise MissingObjectError
+            raise KeyError
 
         for field in self.indices:
             self.indices[field].remove(ptr, obj)
@@ -122,9 +115,9 @@ class HashIndex:
                     matches = matches.union(v_matches)
                 else:
                     matches = v_matches.union(matches)
-            return matches
         else:
-            return self.indices[field].get_obj_ids(value)
+            matches = self.indices[field].get_obj_ids(value)
+        return matches
 
     def __contains__(self, obj):
         return id(obj) in self.obj_map

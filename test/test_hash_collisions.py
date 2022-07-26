@@ -5,34 +5,24 @@ from .conftest import BadHash, TwoHash
 from hashindex import HashIndex
 
 
-def test_dict_bucket_collision(index_type):
-    """
-    Ensure the DictBuckets still work properly under hash collision.
-    """
-    items_1 = [BadHash(1) for _ in range(SIZE_THRESH + 1)]
-    items_2 = [BadHash(2) for _ in range(SIZE_THRESH + 2)]
-    hi = index_type(items_1 + items_2, ["n"])
-    found_1 = hi.find({"n": 1})
-    found_2 = hi.find({"n": 2})
-    assert len(found_1) == len(items_1)
-    assert len(found_2) == len(items_2)
-    assert all([o.n == 1 for o in found_1])
-    assert all([o.n == 2 for o in found_2])
-
-
-def test_hash_bucket_collision(index_type):
+@pytest.mark.parametrize("n_items", [5])
+def test_hash_bucket_collision(index_type, n_items):
     """
     Ensure the HashBuckets still work properly under hash collision.
     """
-    items_1 = [BadHash(1) for _ in range(5)]
-    items_2 = [BadHash(2) for _ in range(6)]
-    hi = index_type(items_1 + items_2, ["n"])
-    found_1 = hi.find({"n": 1})
-    found_2 = hi.find({"n": 2})
+    items_1 = [{"b": BadHash(1)} for _ in range(n_items + 1)]
+    items_2 = [{"b": BadHash(2)} for _ in range(n_items + 2)]
+    items_3 = [{"b": BadHash(3)} for _ in range(n_items + 3)]
+    hi = index_type(items_1 + items_2 + items_3, ["b"])
+    found_1 = hi.find({"b": BadHash(1)})
+    found_2 = hi.find({"b": BadHash(2)})
+    found_3 = hi.find({"b": BadHash(3)})
     assert len(found_1) == len(items_1)
     assert len(found_2) == len(items_2)
-    assert all([o.n == 1 for o in found_1])
-    assert all([o.n == 2 for o in found_2])
+    assert len(found_3) == len(items_3)
+    assert all([o["b"] == BadHash(1) for o in found_1])
+    assert all([o["b"] == BadHash(2) for o in found_2])
+    assert all([o["b"] == BadHash(3) for o in found_3])
 
 
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])

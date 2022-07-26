@@ -28,7 +28,7 @@ numpy = ">=1.14"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "a3b0b3a8e03e4f9e12bf2308989bc36d5954006d900931245fe25fcb2c4e0086"
+content-hash = "fcac2bd9f32b0de54fb09e63bf53814617ce827ca1982b23cb3e8fcebaa51208"
 
 [metadata.files]
 cykhash = [

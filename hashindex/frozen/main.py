@@ -3,10 +3,12 @@ import numpy as np
 from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
-from hashindex.constants import SIZE_THRESH
 from hashindex.frozen.frozen_field import FrozenFieldIndex
-from hashindex.init_helpers import compute_buckets
-from hashindex.frozen.array_pair import ArrayPair, make_empty_array_pair
+from hashindex.frozen.array_pair import (
+    ArrayPair,
+    make_empty_array_pair,
+    make_array_pair,
+)
 from hashindex.utils import validate_query
 
 
@@ -32,14 +34,22 @@ class FrozenHashIndex:
             )
         self.on = on
         self.indices = {}
+
+        obj_arr = np.empty(len(objs), dtype="O")
+        for i, obj in enumerate(objs):
+            obj_arr[i] = obj
+        self.all = make_array_pair(np.array(obj_arr, dtype="O"))
         for field in on:
-            bucket_plans = compute_buckets(objs, field, SIZE_THRESH)
-            self.indices[field] = FrozenFieldIndex(field, bucket_plans)
+            self.indices[field] = FrozenFieldIndex(field, obj_arr)
 
     def find(
         self,
-        match: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
-        exclude: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+        match: Optional[
+            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
+        ] = None,
+        exclude: Optional[
+            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
+        ] = None,
     ) -> np.ndarray:
         """Find objects in the FrozenHashIndex that satisfy the match and exclude constraints.
 
@@ -101,7 +111,7 @@ class FrozenHashIndex:
                     return make_empty_array_pair().obj_arr
         else:
             # 'match' is unspecified, so match all objects
-            hits = self._get_all()
+            hits = self.all
 
         # perform 'exclude' query
         if exclude:
@@ -113,7 +123,9 @@ class FrozenHashIndex:
 
         return hits.obj_arr
 
-    def _match_any_of(self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]) -> ArrayPair:
+    def _match_any_of(
+        self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]
+    ) -> ArrayPair:
         """Get matches for a single field during a find(). If multiple values specified, handle union logic.
 
         Args:
@@ -136,19 +148,11 @@ class FrozenHashIndex:
         else:
             return self.indices[field].get(value)
 
-    def _get_all(self) -> ArrayPair:
-        """Return all objects in the FrozenHashIndex. Used by find() when match=None."""
-        for f in self.indices:
-            return self.indices[f].get_all()
-
     def __contains__(self, obj):
-        for idx in self.indices.values():
-            return obj in idx
+        return obj in self.all
 
     def __iter__(self):
-        for idx in self.indices.values():
-            return iter(idx)
+        return iter(self.all.obj_arr)
 
     def __len__(self):
-        for idx in self.indices.values():
-            return len(idx)
+        return len(self.all)

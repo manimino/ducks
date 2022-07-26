@@ -1,10 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import unittest
-import pytest
-
-from hashindex import HashIndex, FrozenHashIndex
+from hashindex import FrozenHashIndex
 from hashindex.utils import get_attributes
 from .conftest import AssertRaises
 
@@ -19,6 +16,10 @@ class Pokemon:
         if self.type2 is None:
             return f"{self.name}: {self.type1}"
         return f"{self.name}: {self.type1}/{self.type2}"
+
+    def __hash__(self):
+        t = (self.name, self.type1, self.type2)
+        return hash(t)
 
 
 def make_test_data(index_type):
@@ -40,6 +41,21 @@ def test_find_match(index_type):
     hi = make_test_data(index_type)
     result = hi.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
+
+
+def test_find_sub_obj(index_type):
+    objs = [
+        {"p": Pokemon("Zapdos", "Electric", "Flying")},
+        {"p": Pokemon("Pikachu", "Electric", None)},
+    ]
+    hi = index_type(objs, on=["p"])
+    found = hi.find()
+    found_empty = hi.find({}, {})
+    assert len(found) == 2
+    assert len(found_empty) == 2
+    for obj in objs:
+        assert obj in found
+        assert obj in found_empty
 
 
 def test_find_exclude_only(index_type):
