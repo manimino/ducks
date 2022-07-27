@@ -1,43 +1,33 @@
 """
-When HashIndex is initialized with objects, it would be slow to add the objects one at a time. Instead, we can
-analyze the list of objects, plan out which buckets will be created, and put the objects in those buckets.
+When Filtered is initialized with objects, it would be slow to add the objects one at a time. Instead, we can
+analyze the list of objects, plan out which containers will be created, and put the objects in those containers.
 
-There is a ~10X performance benefit to examining the objs and constructing all the needed buckets just once.
-
-The functions here provide that speedup. They have been squeezed pretty hard for performance. It matters here!
-Building the index is most likely going to be the bottleneck when working with large datasets, especially in the
-expected applications for this library.
+These functions are also used during FrozenFiltered creation, although the final data structures there are different.
 
 Workflow:
  - Hash the given attribute for all objs
  - Sort the hashes
+ - Group within each hash by matching value
  - Get counts of each unique hash (via run-length encoding)
- - Use a cumulative sum-like algorithm to determine the span of each bucket
- - Return all information that init needs to create buckets containing the objects (a list of `BucketPlan`)
+ - Return all information that init needs to create containers for the objects
 
-Running the workflow takes between 600ms (low-cardinality case) and 800ms (high-cardinality case) on a 1M-item dataset.
+Note that we cannot simply sort by value; the values may not be comparable. Hence we hash, then group by value.
+
+The total time is very close to simply making a dict-of-set for all objects; it's about the best you can do in Python.
+Running the workflow takes between 600ms (low-cardinality case) and 1.5s (high-cardinality case) on a 1M-item dataset.
 """
 
 import numpy as np
 from typing import Tuple, Union, Callable, Any, Iterable
-from hashindex.utils import get_field
-from hashindex.constants import SIZE_THRESH
+from filtered.utils import get_field
+from filtered.constants import SIZE_THRESH
 from cykhash import Int64Set
 
 
 def sort_by_hash(
     objs: np.ndarray, field: Union[Callable, str]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Sort objs and vals by vals.
-
-    Takes 450ms for 1M objs on a numeric field. May take longer if field is a Callable or is hard to hash.
-    Breakdown:
-     - 100ms to do all the get_field() calls. Cost is the part that inspects each obj to see if it's a dict.
-     - 220ms to get and hash the field for each obj. No getting around that.
-     - 100ms to sort the hashes
-     - 30ms of whatever
-    """
+    """Sort obj, val, and hash arrays by hash."""
     hash_arr = np.empty(len(objs), dtype="int64")
     val_arr = np.empty(len(objs), dtype="O")
     for i, obj in enumerate(objs):

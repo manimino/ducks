@@ -69,3 +69,10 @@ def make_empty_array_pair() -> ArrayPair:
     return ArrayPair(
         id_arr=np.array([], dtype="int64"), obj_arr=np.array([], dtype="O")
     )
+
+
+def copy_array_pair(arr: ArrayPair) -> ArrayPair:
+    """Copy an ArrayPair.
+
+    Used during get, since difference / union / intersect mutate. We don't want to mutate the original."""
+    return ArrayPair(id_arr=np.copy(arr.id_arr), obj_arr=np.copy(arr.obj_arr))

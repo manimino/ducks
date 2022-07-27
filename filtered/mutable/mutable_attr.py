@@ -2,9 +2,9 @@ from typing import Callable, Union, Dict, Any, Iterable, Optional
 
 from cykhash import Int64Set
 
-from hashindex.constants import TUPLE_SIZE_MAX, SET_SIZE_MIN
-from hashindex.init_helpers import compute_mutable_dict
-from hashindex.utils import get_field
+from filtered.constants import TUPLE_SIZE_MAX, SET_SIZE_MIN
+from filtered.init_helpers import compute_mutable_dict
+from filtered.utils import get_field
 
 
 class MutableFieldIndex:

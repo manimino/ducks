@@ -2,11 +2,11 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable
 from cykhash import Int64Set
 
 from operator import itemgetter
-from hashindex.utils import validate_query
-from hashindex.mutable.field_index import MutableFieldIndex
+from filtered.utils import validate_query
+from filtered.mutable.mutable_attr import MutableFieldIndex
 
 
-class HashIndex:
+class Filtered:
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
@@ -89,12 +89,14 @@ class HashIndex:
         return hits
 
     def add(self, obj):
+        """Add a new object, evaluating any attributes and storing the results."""
         ptr = id(obj)
         self.obj_map[ptr] = obj
         for field in self.indices:
             self.indices[field].add(ptr, obj)
 
     def remove(self, obj):
+        """Remove an object."""
         ptr = id(obj)
         if ptr not in self.obj_map:
             raise KeyError

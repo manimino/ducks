@@ -17,18 +17,18 @@ test/test_stale_objects.py .......                                       [100%]
 ----------- coverage: platform linux, python 3.9.7-final-0 -----------
 Name                               Stmts   Miss  Cover
 ------------------------------------------------------
-hashindex/__init__.py                  2      0   100%
-hashindex/constants.py                 7      0   100%
-hashindex/exceptions.py                4      0   100%
-hashindex/frozen/__init__.py           0      0   100%
-hashindex/frozen/array_pair.py        44      0   100%
-hashindex/frozen/frozen_field.py      62      0   100%
-hashindex/frozen/main.py              53      0   100%
-hashindex/init_helpers.py             68      0   100%
-hashindex/mutable/__init__.py          0      0   100%
-hashindex/mutable/field_index.py      43      0   100%
-hashindex/mutable/main.py             71      0   100%
-hashindex/utils.py                    25      0   100%
+filtered/__init__.py                  2      0   100%
+filtered/constants.py                 7      0   100%
+filtered/exceptions.py                4      0   100%
+filtered/frozen/__init__.py           0      0   100%
+filtered/frozen/array_pair.py        44      0   100%
+filtered/frozen/frozen_field.py      62      0   100%
+filtered/frozen/main.py              53      0   100%
+filtered/init_helpers.py             68      0   100%
+filtered/mutable/__init__.py          0      0   100%
+filtered/mutable/field_index.py      43      0   100%
+filtered/mutable/main.py             71      0   100%
+filtered/utils.py                    25      0   100%
 ------------------------------------------------------
 TOTAL                                379      0   100%
 

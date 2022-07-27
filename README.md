@@ -1,39 +1,37 @@
-# HashIndex
+# Filtered
 
-Container for finding Python objects by combinations of attributes.
+Find Python objects that match a set of attributes, usually in <1ms.
 
-`pip install hashindex`
+`pip install filtered`
 
-[![tests Actions Status](https://github.com/manimino/hashindex/workflows/tests/badge.svg)](https://github.com/manimino/hashindex/actions)
+[![tests Actions Status](https://github.com/manimino/filtered/workflows/tests/badge.svg)](https://github.com/manimino/filtered/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
 
 ### Usage:
 
 ```
-from hashindex import HashIndex
-hi = HashIndex(objects, ['attr1', 'attr2', 'attr3'])
-hi.find(                                                # find objects
-    match={'attr1': a, 'attr2': [b, c]},                # where attr1 == a and attr2 in [b, c]
-    exclude={'attr3': d}                                # and attr3 != d
-)
+from filtered import Filtered
+f = Filtered(objects, attributes)
+objs = f.find(match={attr1: values, ...}, exclude={attr2: values, ...})
 ```
 
-Any Python object can go in a HashIndex: class instances, namedtuples, dicts, strings, floats, ints, etc.
+Filtered can hold any Python object: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
-Nested attributes and derived attributes can be indexed using custom functions. See examples below.
+Attributes can be actual object attributes, or they can be functions of the object. Functions
+allow lookup of nested and derived attributes. See examples below.
 
-There are two container classes available.
- - HashIndex: allows addition / removal of objects after creation
- - FrozenHashIndex: much faster performance, but objects cannot be added / removed after creation
+There are two classes available.
+ - Filtered: supports `add()` and `remove()`.
+ - FrozenFiltered: much faster performance, but can't be changed after creation.
 
 ____
 
 ## Examples
 
-### Find dicts by attribute
+### Dicts
 
 ```
-from hashindex import HashIndex
+from filtered import Filtered
 
 objects = [
     {'order': 1, 'size': 'regular', 'topping': 'smothered'}, 
@@ -42,22 +40,20 @@ objects = [
     {'order': 4, 'size': 'triple', 'topping': 'chunked'}
 ]
 
-hi = HashIndex(objects, on=['size', 'topping'])
+f = Filtered(objects, on=['size', 'topping'])
 
-# returns order 1
-hi.find(match={'size': 'regular', 'topping': 'smothered'})  
+f.find(match={'size': 'regular', 'topping': 'smothered'})  # returns order 1
 
-# returns orders 1 and 2
-hi.find(
+f.find(
     match={'size': ['regular', 'large']},  # match 'regular' or 'large' sizes
     exclude={'topping': 'covered'}         # exclude where topping is 'covered'
-)
+)  # returns orders 1 and 2
 ```
 
-### Nested attributes
+### Object with nested attributes
 
 ```
-from hashindex import FrozenHashIndex
+from filtered import FrozenFiltered
 
 class Order:
     def __init__(self, num, size, toppings):
@@ -74,108 +70,56 @@ objects = [
 
 def has_cheese(obj):
     return 'covered' in obj.toppings or 'all the way' in obj.toppings
-    
-hi = FrozenHashIndex(objects, ['size', has_cheese])
+
+f = FrozenFiltered(objects, ['size', has_cheese])
 
 # returns orders 1, 2 and 4
-hi.find({has_cheese: True})  
+f.find({has_cheese: True})  
 ```
 
-### String objects
+### Strings
 
 ```
-from hashindex import FrozenHashIndex
+from filtered import FrozenFiltered
 
-objects = ['one', 'two', 'three']
+objects = ['mushrooms', 'peppers', 'onions']
 
-def e_count(obj):
-    return obj.count('e')
+def o_count(obj):
+    return obj.count('o')
 
-hi = FrozenHashIndex(objects, [e_count, len])
-hi.find({len: 3})       # returns ['one', 'two']
-hi.find({e_count: 2})  # returns ['three']
+f = FrozenFiltered(objects, [o_count, len])
+f.find({len: 6})       # returns ['onions']
+f.find({o_count: 2})  # returns ['mushrooms', 'onions']
 ```
+
+### Advanced usage
+ 
+ - [Auto-updating](examples/update.py) - Define setters on your objects to keep Filtered updated when they change
+ - [Wordle solver](examples/wordle.py) - Use partials to generate many attribute functions
+ - [Spatial lookup](examples/spatial.py) - Do location finding and collision detection
 
 ____
 
 ## Performance
 
-### FrozenHashIndex
+
+### FrozenFiltered
 
 
 
-### HashIndex
-
+### Filtered
 
 
 ____
 
 ## How it works
 
-At a high level, you can think of each attribute index as a dict of set of object IDs. Each attribute lookup
-returns a set of object IDs. Then union / intersection / difference operations are performed on the results of those
-lookups to find the object IDs matching the query constraints. Finally, the object corresponding to each ID is returned. 
+Attribute values are stored by their hash, either in dicts (Filtered) or numpy 
+arrays (FrozenHashFilter). So values don't need to be comparable by greater than / less than, they only need to be 
+hashable. This maximizes flexibility.
 
-In practice, HashIndex uses specialized data structures to achieve this in a fast, memory-efficient way.
-
-[Data structures](docs/data_structures.md)
-
-____
-
-## Updating indexed objects
-
-HashIndex and FrozenHashIndex assume that the indexed attributes of their objects do not change.
-
-⚠ ️ Breaking this assumption will cause inaccurate results or exceptions.
-
-If you need to change an indexed attribute of an object, just remove it, apply the change, and add it back. 
-
-#### This works
-```
-obj = {'attr': 1}
-hi = HashIndex([obj], on=['attr'])
-hi.remove(obj)
-obj['attr'] = 2
-hi.add(obj)
-```
-
-#### This will break index functions
-```
-obj = {'attr': 1}
-hi = HashIndex([obj], on=['attr'])
-obj.attr = some_other_thing   # don't do this
-```
-
-____
-
-## API
-
-WIP.
-
-### Init
-
-```
-HashIndex(
-        objs: Optional[Iterable[Any]] = None,
-        on: List[str, Any] = None
-)
-```
-
-
-### add()
-
-```
-add(obj:Any)
-```
-
- - The objects do not need to be hashable. 
- - The attributes must be hashable.
- - If an object is missing an attribute, it will be indexed with a `None` value for that attribute.
-
-____
-
-## FrozenHashIndex Methods
-
-### 
+For each attribute value, the `id` of each matching object is stored. During `find`, these IDs are retrieved as sets 
+(Filtered) or sorted numpy arrays (FrozenHashFilter). Set operations such as intersection are then used to find the 
+objects that fit all constraints.
 
 ____

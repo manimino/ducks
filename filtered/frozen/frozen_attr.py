@@ -1,13 +1,13 @@
 import numpy as np
 
-from hashindex.frozen.array_pair import (
+from filtered.frozen.array_pair import (
     ArrayPair,
     make_array_pair,
     make_empty_array_pair,
 )
 from typing import Union, Callable, Iterable, Any
-from hashindex.init_helpers import sort_by_hash, group_by_val, run_length_encode
-from hashindex.constants import SIZE_THRESH
+from filtered.init_helpers import sort_by_hash, group_by_val, run_length_encode
+from filtered.constants import SIZE_THRESH
 from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
 
@@ -41,7 +41,7 @@ class ObjsByHash:
 
 
 class FrozenFieldIndex:
-    """Stores data and handles requests that are relevant to a single attribute of a FrozenHashIndex."""
+    """Stores data and handles requests that are relevant to a single attribute of a FrozenFiltered."""
 
     def __init__(self, field: Union[str, Callable], objs: np.ndarray):
         # sort the objects by attribute value, using their hashes and handling collisions

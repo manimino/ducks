@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from hashindex import FrozenHashIndex
-from hashindex.utils import get_attributes
+from filtered import FrozenFiltered
+from filtered.utils import get_attributes
 from .conftest import AssertRaises
 
 
@@ -27,19 +27,19 @@ def make_test_data(index_type):
     pikachu_1 = Pokemon("Pikachu", "Electric", None)
     pikachu_2 = Pokemon("Pikachu", "Electric", None)
     eevee = Pokemon("Eevee", "Normal", None)
-    hi = index_type([zapdos, pikachu_1, pikachu_2, eevee], on=get_attributes(Pokemon))
-    return hi
+    f = index_type([zapdos, pikachu_1, pikachu_2, eevee], on=get_attributes(Pokemon))
+    return f
 
 
 def test_find_one(index_type):
-    hi = make_test_data(index_type)
-    result = hi.find({"name": ["Zapdos"]})
+    f = make_test_data(index_type)
+    result = f.find({"name": ["Zapdos"]})
     assert len(result) == 1
 
 
 def test_find_match(index_type):
-    hi = make_test_data(index_type)
-    result = hi.find({"name": ["Pikachu", "Eevee"]})
+    f = make_test_data(index_type)
+    result = f.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
 
 
@@ -48,9 +48,9 @@ def test_find_sub_obj(index_type):
         {"p": Pokemon("Zapdos", "Electric", "Flying")},
         {"p": Pokemon("Pikachu", "Electric", None)},
     ]
-    hi = index_type(objs, on=["p"])
-    found = hi.find()
-    found_empty = hi.find({}, {})
+    f = index_type(objs, on=["p"])
+    found = f.find()
+    found_empty = f.find({}, {})
     assert len(found) == 2
     assert len(found_empty) == 2
     for obj in objs:
@@ -59,15 +59,15 @@ def test_find_sub_obj(index_type):
 
 
 def test_find_exclude_only(index_type):
-    hi = make_test_data(index_type)
-    result = hi.find(exclude={"type2": None})  # Zapdos is the only one with a type2
+    f = make_test_data(index_type)
+    result = f.find(exclude={"type2": None})  # Zapdos is the only one with a type2
     assert len(result) == 1
     assert result[0].name == "Zapdos"
 
 
 def test_two_fields(index_type):
-    hi = make_test_data(index_type)
-    result = hi.find(
+    f = make_test_data(index_type)
+    result = f.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric"},
         exclude={"type2": "Flying"},
     )
@@ -77,8 +77,8 @@ def test_two_fields(index_type):
 
 
 def test_three_fields(index_type):
-    hi = make_test_data(index_type)
-    result = hi.find(
+    f = make_test_data(index_type)
+    result = f.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric", "type2": "Flying"}
     )
     assert len(result) == 1
@@ -86,31 +86,31 @@ def test_three_fields(index_type):
 
 
 def test_exclude_all(index_type):
-    hi = make_test_data(index_type)
-    result = hi.find(exclude={"type1": ["Electric", "Normal"]})
+    f = make_test_data(index_type)
+    result = f.find(exclude={"type1": ["Electric", "Normal"]})
     assert len(result) == 0
 
 
 def test_remove(index_type):
-    hi = make_test_data(index_type)
-    two_chus = hi.find({"name": "Pikachu"})
+    f = make_test_data(index_type)
+    two_chus = f.find({"name": "Pikachu"})
     assert len(two_chus) == 2
-    if index_type == FrozenHashIndex:
+    if index_type == FrozenFiltered:
         with AssertRaises(AttributeError):
-            hi.remove(two_chus[1])
+            f.remove(two_chus[1])
     else:
-        hi.remove(two_chus[1])
-        one_chu = hi.find({"name": "Pikachu"})
+        f.remove(two_chus[1])
+        one_chu = f.find({"name": "Pikachu"})
         assert len(one_chu) == 1
 
 
 def test_add(index_type):
-    hi = make_test_data(index_type)
+    f = make_test_data(index_type)
     glaceon = Pokemon("Glaceon", "Ice", None)
-    if index_type == FrozenHashIndex:
+    if index_type == FrozenFiltered:
         with AssertRaises(AttributeError):
-            hi.add(glaceon)
+            f.add(glaceon)
     else:
-        hi.add(glaceon)
-        res = hi.find({"name": "Glaceon"})
+        f.add(glaceon)
+        res = f.find({"name": "Glaceon"})
         assert res == [glaceon]
