@@ -112,7 +112,7 @@ class FrozenFiltered:
                     hits = snp.intersect(hits, field_hits)
                 else:
                     # this field had no matches, therefore the intersection will be empty. We can stop here.
-                    return np.empty([], dtype='O')
+                    return np.empty(0, dtype="O")
         else:
             # 'match' is unspecified, so match all objects
             hits = self.id_arr

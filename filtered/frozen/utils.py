@@ -12,4 +12,4 @@ def snp_difference(left: np.ndarray, right: np.ndarray):
 
 
 def make_empty_int_array():
-    return np.empty(0, dtype='int64')
+    return np.empty(0, dtype="int64")

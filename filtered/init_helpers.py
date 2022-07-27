@@ -87,7 +87,7 @@ def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_id_arr: np.ndarr
         p1 = end_i + 1
         if p1 - p0 > 1:
             v = val_arr[p0]
-            non_v_values = np.where(val_arr[p0 + 1: p1] != v)
+            non_v_values = np.where(val_arr[p0 + 1 : p1] != v)
             if len(non_v_values):  # False unless there's a hash collision
                 _group_by_val_same_hash(val_arr, obj_id_arr, p0, p1)
         p0 = p1
@@ -120,9 +120,9 @@ def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
         start = starts[i]
         count = counts[i]
         if counts[i] > SIZE_THRESH:
-            d[v] = Int64Set(sorted_obj_ids[start: start + count])
+            d[v] = Int64Set(sorted_obj_ids[start : start + count])
         elif counts[i] == 1:
             d[v] = sorted_obj_ids[start]
         else:
-            d[v] = tuple(sorted_obj_ids[start: start + count])
+            d[v] = tuple(sorted_obj_ids[start : start + count])
     return d
