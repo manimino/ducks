@@ -30,20 +30,22 @@ def sort_by_hash(
     """Sort obj, val, and hash arrays by hash."""
     hash_arr = np.empty(len(objs), dtype="int64")
     val_arr = np.empty(len(objs), dtype="O")
+    obj_id_arr = np.empty(len(objs), dtype="int64")
     for i, obj in enumerate(objs):
         val_arr[i] = get_field(obj, field)
         hash_arr[i] = hash(val_arr[i])
+        obj_id_arr[i] = id(obj)
     sort_order = np.argsort(hash_arr)
     val_arr = val_arr[sort_order]
-    obj_arr = objs[sort_order]
+    obj_id_arr = obj_id_arr[sort_order]
     hash_arr = hash_arr[sort_order]
-    return hash_arr, val_arr, obj_arr
+    return hash_arr, val_arr, obj_id_arr
 
 
-def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray):
-    """Modifies val_arr, hash_arr, and obj_arr so that they group elements having the same value."""
+def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_id_arr: np.ndarray):
+    """Modifies val_arr, hash_arr, and obj_id_arr so that they group elements having the same value."""
 
-    def _group_by_val_same_hash(val_arr, obj_arr, p0, p1):
+    def _group_by_val_same_hash(val_arr, obj_id_arr, p0, p1):
         """Does group_by for a subarray all having the same hash but containing >=2 distinct values.
 
         Normal tools for doing group_by fail here.
@@ -75,7 +77,7 @@ def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray)
 
         # now apply that to each array inplace
         val_arr[p0:p1] = val_arr[sort_idxs]
-        obj_arr[p0:p1] = obj_arr[sort_idxs]
+        obj_id_arr[p0:p1] = obj_id_arr[sort_idxs]
         hash_arr[p0:p1] = hash_arr[sort_idxs]
 
     mismatch_hash = hash_arr[1:] != hash_arr[:-1]
@@ -87,7 +89,7 @@ def group_by_val(hash_arr: np.ndarray, val_arr: np.ndarray, obj_arr: np.ndarray)
             v = val_arr[p0]
             non_v_values = np.where(val_arr[p0 + 1 : p1] != v)
             if len(non_v_values):  # False unless there's a hash collision
-                _group_by_val_same_hash(val_arr, obj_arr, p0, p1)
+                _group_by_val_same_hash(val_arr, obj_id_arr, p0, p1)
         p0 = p1
 
 
@@ -110,18 +112,18 @@ def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
     for i, obj in enumerate(objs):
         obj_arr[i] = obj
 
-    sorted_hashes, sorted_vals, sorted_objs = sort_by_hash(obj_arr, field)
-    group_by_val(sorted_hashes, sorted_vals, sorted_objs)
+    sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(obj_arr, field)
+    group_by_val(sorted_hashes, sorted_vals, sorted_obj_ids)
     starts, counts, unique_vals = run_length_encode(sorted_vals)
     d = dict()
     for i, v in enumerate(unique_vals):
         start = starts[i]
         count = counts[i]
         if counts[i] > SIZE_THRESH:
-            d[v] = Int64Set(id(obj) for obj in sorted_objs[start : start + count])
+            d[v] = Int64Set(sorted_obj_ids[start: start + count])
         elif counts[i] == 1:
-            obj = sorted_objs[start]
+            obj = sorted_obj_ids[start]
             d[v] = id(obj)
         else:
-            d[v] = tuple(id(obj) for obj in sorted_objs[start : start + count])
+            d[v] = tuple(sorted_obj_ids[start: start + count])
     return d
