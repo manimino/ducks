@@ -46,6 +46,6 @@ def test_contains(index_type):
 
 def test_not_contains(index_type):
     yes = {"i": 1}
-    f = index_type([yes], 'i')
+    f = index_type([yes], "i")
     no = {"i": -1000}
     assert no not in f

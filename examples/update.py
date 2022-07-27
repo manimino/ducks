@@ -26,18 +26,18 @@ class Changey:
 
 def main():
     objs = [Changey(1) for _ in range(10)]
-    f = Filtered(objs, ['n'])
+    f = Filtered(objs, ["n"])
     for obj in objs:
         obj.add_listener(f)
-    assert len(f.find({'n': 1})) == 10
+    assert len(f.find({"n": 1})) == 10
 
     # change an object
     objs[0].n = 2
 
     # see that changes are propagated to Filtered
-    assert len(f.find({'n': 1})) == 9
-    assert len(f.find({'n': 2})) == 1
+    assert len(f.find({"n": 1})) == 9
+    assert len(f.find({"n": 2})) == 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

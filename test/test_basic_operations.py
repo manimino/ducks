@@ -37,10 +37,22 @@ def test_find_one(index_type):
     assert len(result) == 1
 
 
-def test_find_match(index_type):
+def test_find_union(index_type):
     f = make_test_data(index_type)
     result = f.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
+
+
+def test_find_union_with_mismatch(index_type):
+    f = make_test_data(index_type)
+    result = f.find({"name": ["Pikachu", "Shykadu"]})
+    assert len(result) == 2
+
+
+def test_find_list_of_one(index_type):
+    f = make_test_data(index_type)
+    result = f.find({"name": ["Pikachu"]})
+    assert len(result) == 2
 
 
 def test_find_sub_obj(index_type):
