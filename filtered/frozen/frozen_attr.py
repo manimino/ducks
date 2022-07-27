@@ -3,6 +3,7 @@ import numpy as np
 from typing import Union, Callable
 from filtered.init_helpers import sort_by_hash, group_by_val, run_length_encode
 from filtered.constants import SIZE_THRESH
+from filtered.frozen.utils import make_empty_int_array
 from bisect import bisect_left
 from dataclasses import dataclass
 
@@ -20,7 +21,7 @@ class ObjsByHash:
         val_hash = hash(val)
         i = bisect_left(self.unique_hashes, val_hash)
         if i < 0 or i >= len(self.unique_hashes) or self.unique_hashes[i] != val_hash:
-            return np.array([], dtype='int64')
+            return make_empty_int_array()
         start = self.hash_starts[i]
         end = self.hash_starts[i] + self.hash_run_lengths[i]
         # Typically the hash will only contain the one val we want.
@@ -31,7 +32,7 @@ class ObjsByHash:
         while end > start and self.sorted_vals[end - 1] != val:
             end -= 1
         if end == start:
-            return np.array([], dtype='int64')
+            return make_empty_int_array()
         return self.sorted_obj_ids[start:end]
 
 
@@ -58,7 +59,8 @@ class FrozenFieldIndex:
                 unused[start:end] = False
                 unused_count -= val_run_lengths[i]
                 obj_id_arr = sorted_obj_ids[start:end]
-                self.val_to_obj_ids[val] = obj_id_arr
+                # the obj_ids are sorted by val hash, but we want them sorted by themselves
+                self.val_to_obj_ids[val] = np.sort(obj_id_arr)
 
         # Put all remaining objs into one big object array 'objs_by_hash'.
         # During query, use bisection on the hash value to locate objects.
@@ -94,6 +96,9 @@ class FrozenFieldIndex:
 
     def get(self, val) -> np.ndarray:
         if val in self.val_to_obj_ids:
+            # these are stored in sorted order
             return self.val_to_obj_ids[val]
         elif self.objs_by_hash is not None:
-            return self.objs_by_hash.get(val)
+            return np.sort(self.objs_by_hash.get(val))
+        else:
+            return make_empty_int_array()

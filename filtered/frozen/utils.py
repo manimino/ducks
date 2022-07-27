@@ -9,3 +9,7 @@ def snp_difference(left: np.ndarray, right: np.ndarray):
     keep_these = np.ones_like(left, dtype=bool)
     keep_these[indices_to_discard] = False
     return left[keep_these]
+
+
+def make_empty_int_array():
+    return np.empty(0, dtype='int64')

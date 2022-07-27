@@ -7,7 +7,7 @@ from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 import sortednp as snp
 
 from filtered.frozen.frozen_attr import FrozenFieldIndex
-from filtered.frozen.utils import snp_difference
+from filtered.frozen.utils import make_empty_int_array, snp_difference
 from filtered.utils import validate_query
 
 
@@ -38,6 +38,11 @@ class FrozenFiltered:
         for i, obj in enumerate(objs):
             self.obj_arr[i] = obj
         self.id_arr = np.fromiter((id(obj) for obj in self.obj_arr), dtype="int64")
+        # sort both arrays by obj_id
+        sort_order = np.argsort(self.id_arr)
+        self.id_arr = self.id_arr[sort_order]
+        self.obj_arr = self.obj_arr[sort_order]
+
         for field in on:
             self.indices[field] = FrozenFieldIndex(field, self.obj_arr)
 
@@ -100,17 +105,17 @@ class FrozenFiltered:
             for field, value in match.items():
                 # if multiple values for a field, find each value and union those first
                 field_hits = self._match_any_of(field, value)
-                if hits is None:  # first field
+                if hits is None:  # this is the first field
                     hits = field_hits
                 elif len(field_hits):
                     # intersect this field's hits with our hits so far
                     hits = snp.intersect(hits, field_hits)
                 else:
                     # this field had no matches, therefore the intersection will be empty. We can stop here.
-                    return np.array([], dtype='int64')
+                    return np.empty([], dtype='O')
         else:
             # 'match' is unspecified, so match all objects
-            hits = np.copy(self.id_arr)
+            hits = self.id_arr
 
         # perform 'exclude' query
         if exclude:
@@ -157,7 +162,7 @@ class FrozenFiltered:
         return self.id_arr[idx] == obj_id
 
     def __iter__(self):
-        return iter(self.all.obj_arr)
+        return iter(self.obj_arr)
 
     def __len__(self):
-        return len(self.all)
+        return len(self.obj_arr)

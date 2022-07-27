@@ -21,8 +21,8 @@ Attributes can be actual object attributes, or they can be functions of the obje
 allow lookup of nested and derived attributes. See examples below.
 
 There are two classes available.
- - Filtered: supports `add()` and `remove()`.
- - FrozenFiltered: much faster performance, but can't be changed after creation.
+ - Filtered: can `add()` and `remove()` objects.
+ - FrozenFiltered: much faster performance and lower memory cost, but can't be changed after creation.
 
 ____
 
@@ -95,7 +95,7 @@ f.find({o_count: 2})  # returns ['mushrooms', 'onions']
 ### Advanced usage
  
  - [Auto-updating](examples/update.py) - Define setters on your objects to keep Filtered updated when they change
- - [Wordle solver](examples/wordle.py) - Use partials to generate many attribute functions
+ - [Wordle solver](examples/wordle.ipynb) - Use partials to generate many attribute functions
  - [Spatial lookup](examples/spatial.py) - Do location finding and collision detection
 
 ____
