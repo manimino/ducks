@@ -1,5 +1,5 @@
-from hashindex import HashIndex
-from hashindex.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
+from filtered import Filtered
+from filtered.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 import pytest
 
 
@@ -18,10 +18,10 @@ class EdgeHash:
 
 @pytest.mark.parametrize("n_items", [SIZE_THRESH * 3 + 3, 15])
 def test_edge_hash(index_type, n_items):
-    hi = index_type([{"z": EdgeHash(i % 3)} for i in range(n_items)], ["z"])
-    assert len(hi.find({"z": EdgeHash(0)})) == n_items // 3
-    assert len(hi.find({"z": EdgeHash(1)})) == n_items // 3
-    assert len(hi.find({"z": EdgeHash(2)})) == n_items // 3
+    f = index_type([{"z": EdgeHash(i % 3)} for i in range(n_items)], ["z"])
+    assert len(f.find({"z": EdgeHash(0)})) == n_items // 3
+    assert len(f.find({"z": EdgeHash(1)})) == n_items // 3
+    assert len(f.find({"z": EdgeHash(2)})) == n_items // 3
 
 
 @pytest.mark.parametrize(
@@ -41,19 +41,19 @@ def test_edge_hash_mutable(n_items, delete_bucket):
     for i in range(n_items):
         arrs[i % 3].append({"z": EdgeHash(i % 3)})
 
-    hi = HashIndex(on=["z"])
+    f = Filtered(on=["z"])
     for arr in arrs:
         for obj in arr:
-            hi.add(obj)
+            f.add(obj)
     for obj in arrs[delete_bucket]:
-        hi.remove(obj)
-    assert len(hi.find()) == int(n_items * 2 / 3)
+        f.remove(obj)
+    assert len(f.find()) == int(n_items * 2 / 3)
     for i in range(3):
         if i == delete_bucket:
             continue
         for obj in arrs[i]:
-            hi.remove(obj)
-    assert len(hi) == 0
+            f.remove(obj)
+    assert len(f) == 0
 
 
 class GroupedHash:
@@ -75,60 +75,60 @@ def test_grouped_hash(delete_bucket):
     for i in range(SIZE_THRESH * 3 + 3):
         arrs[i % 3].append({"z": GroupedHash(i % 3)})
 
-    hi = HashIndex(on=["z"])
+    f = Filtered(on=["z"])
     for arr in arrs:
         for gh in arr:
-            hi.add(gh)
+            f.add(gh)
 
     # That created three adjacent DictBuckets. Now let's get rid of the delete_bucket.
     for obj in arrs[delete_bucket]:
-        hi.remove(obj)
+        f.remove(obj)
 
     for b in range(3):
         if b == delete_bucket:
-            assert len(hi.find({"z": GroupedHash(b)})) == 0
+            assert len(f.find({"z": GroupedHash(b)})) == 0
         else:
-            assert len(hi.find({"z": GroupedHash(b)})) == SIZE_THRESH + 1
+            assert len(f.find({"z": GroupedHash(b)})) == SIZE_THRESH + 1
 
 
 def test_get_zero(index_type):
     def _f(x):
         return x[0]
 
-    hi = index_type(["a", "b", "c"], on=[_f])
-    assert hi.find({_f: "c"}) == ["c"]
-    assert len(hi.find({_f: "d"})) == 0
+    f = index_type(["a", "b", "c"], on=[_f])
+    assert f.find({_f: "c"}) == ["c"]
+    assert len(f.find({_f: "d"})) == 0
 
 
 def test_add_none():
-    hi = HashIndex(on="s")
-    hi.add(None)
-    result = hi.find({"s": None})
+    f = Filtered(on="s")
+    f.add(None)
+    result = f.find({"s": None})
     assert result[0] is None
 
 
 def test_double_add():
-    hi = HashIndex(on="s")
+    f = Filtered(on="s")
     x = {"s": "hello"}
-    hi.add(x)
-    hi.add(x)
-    assert len(hi) == 1
-    assert hi.find({"s": "hello"}) == [x]
-    hi.remove(x)
-    assert len(hi) == 0
-    assert hi.find({"s": "hello"}) == []
+    f.add(x)
+    f.add(x)
+    assert len(f) == 1
+    assert f.find({"s": "hello"}) == [x]
+    f.remove(x)
+    assert len(f) == 0
+    assert f.find({"s": "hello"}) == []
 
 
 def test_empty_mutable_index():
-    hi = HashIndex([], on=["stuff"])
-    result = hi.find({"stuff": 3})
+    f = Filtered([], on=["stuff"])
+    result = f.find({"stuff": 3})
     assert len(result) == 0
 
 
 def test_arg_order():
     data = [{"a": i % 5, "b": i % 3} for i in range(100)]
-    hi = HashIndex(data, ["a", "b"])
-    assert len(hi.find({"a": 1, "b": 2})) == len(hi.find({"b": 2, "a": 1}))
+    f = Filtered(data, ["a", "b"])
+    assert len(f.find({"a": 1, "b": 2})) == len(f.find({"b": 2, "a": 1}))
 
 
 class NoSort:
@@ -145,17 +145,17 @@ class NoSort:
 def test_unsortable_values(index_type):
     """We need to support values that are hashable, even if they cannot be sorted."""
     objs = [{"a": NoSort(0)}, {"a": NoSort(1)}]
-    hi = index_type(objs, ["a"])
-    if isinstance(index_type, HashIndex):
+    f = index_type(objs, ["a"])
+    if isinstance(index_type, Filtered):
         objs.append(NoSort(2))
-        hi.add(objs[2])
-    assert len(hi) == len(objs)
+        f.add(objs[2])
+    assert len(f) == len(objs)
     for i, obj in enumerate(objs):
-        assert hi.find({"a": NoSort(i)}) == [obj]
+        assert f.find({"a": NoSort(i)}) == [obj]
 
 
 def test_not_in(index_type):
     """the things we do for 100% coverage"""
-    hi = index_type([{"a": 1}], on=["a"])
-    assert {"a": 0} not in hi
-    assert {"a": 2} not in hi
+    f = index_type([{"a": 1}], on=["a"])
+    assert {"a": 0} not in f
+    assert {"a": 2} not in f

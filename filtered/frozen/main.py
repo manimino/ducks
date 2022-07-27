@@ -3,26 +3,27 @@ import numpy as np
 from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
-from hashindex.frozen.frozen_field import FrozenFieldIndex
-from hashindex.frozen.array_pair import (
+from filtered.frozen.frozen_attr import FrozenFieldIndex
+from filtered.frozen.array_pair import (
     ArrayPair,
     make_empty_array_pair,
     make_array_pair,
+    copy_array_pair
 )
-from hashindex.utils import validate_query
+from filtered.utils import validate_query
 
 
-class FrozenHashIndex:
-    """A much faster HashIndex that lacks the ability to add or remove objects."""
+class FrozenFiltered:
+    """A much faster Filtered that lacks the ability to add or remove objects."""
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
-        """Create a FrozenHashIndex containing the objs, queryable by the 'on' attributes.
+        """Create a FrozenFiltered containing the objs, queryable by the 'on' attributes.
 
         Args:
-            objs (Any iterable containing any types): The objects that FrozenHashIndex will contain.
+            objs (Any iterable containing any types): The objects that FrozenFiltered will contain.
                 Must contain at least one object. Objects do not need to be hashable, any object works.
 
-            on (Iterable of attributes): The attributes that FrozenHashIndex will build indices on.
+            on (Iterable of attributes): The attributes that FrozenFiltered will build indices on.
                 Must contain at least one.
 
         Objects in obj do not need to have all of the attributes in 'on'. Objects will be considered to have a
@@ -30,7 +31,7 @@ class FrozenHashIndex:
         """
         if not objs:
             raise ValueError(
-                "Cannot build an empty FrozenHashIndex; at least 1 object is required."
+                "Cannot build an empty FrozenFiltered; at least 1 object is required."
             )
         self.on = on
         self.indices = {}
@@ -51,7 +52,7 @@ class FrozenHashIndex:
             Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
         ] = None,
     ) -> np.ndarray:
-        """Find objects in the FrozenHashIndex that satisfy the match and exclude constraints.
+        """Find objects in the FrozenFiltered that satisfy the match and exclude constraints.
 
         Args:
             match (Dict of {attribute: value}, or None): Specifies the subset of objects that match.
@@ -141,12 +142,12 @@ class FrozenHashIndex:
             for v in value:
                 v_matches = self.indices[field].get(v)
                 if matches is None:
-                    matches = v_matches
+                    matches = copy_array_pair(v_matches)
                 else:
                     matches.apply_union(v_matches)
             return matches
         else:
-            return self.indices[field].get(value)
+            return copy_array_pair(self.indices[field].get(value))
 
     def __contains__(self, obj):
         return obj in self.all

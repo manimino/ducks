@@ -1,13 +1,13 @@
 """
-HashIndex (mutable form) is pretty complex.
+Filtered (mutable form) is pretty complex.
 Let's run a lengthy test to make sure all the pieces work as expected across many add / remove operations.
 """
 
 import time
 from datetime import datetime
 import random
-from hashindex import HashIndex
-from hashindex.utils import get_field
+from filtered import Filtered
+from filtered.utils import get_field
 
 
 PLANETS = (
@@ -79,10 +79,10 @@ class SoakTest:
         self.seed = random.choice(range(10 ** 6))
         print("running soak test with seed:", self.seed)
         random.seed(self.seed)
-        self.hi = HashIndex(
+        self.f = Filtered(
             on=["ts_sec", "ts", "planet", "collider", "sometimes", planet_len]
         )
-        #  self.hi = HashIndex(on=[planet_len])
+        #  self.f = Filtered(on=[planet_len])
         self.objs = dict()
         self.max_id_num = 0
 
@@ -107,7 +107,7 @@ class SoakTest:
         else:
             t = make_dict_thing(self.max_id_num)
         self.objs[self.max_id_num] = t
-        self.hi.add(t)
+        self.f.add(t)
 
     def add_many(self):
         for _ in range(random.choice([10, 100, 1000])):
@@ -117,19 +117,19 @@ class SoakTest:
         if self.objs:
             key = random.choice(list(self.objs.keys()))
             obj = self.objs[key]
-            self.hi.remove(obj)
+            self.f.remove(obj)
             del self.objs[key]
 
     def remove_all(self):
         for t in self.objs.values():
-            self.hi.remove(t)
+            self.f.remove(t)
         self.objs = dict()
 
     def remove_all_but_one(self):
         key = random.choice(list(self.objs.keys()))
         for k in self.objs:
             if k != key:
-                self.hi.remove(self.objs[k])
+                self.f.remove(self.objs[k])
                 del self.objs[k]
 
     def random_obj(self):
@@ -140,28 +140,28 @@ class SoakTest:
     def check_equal(self):
         # check a string key
         ls = [o for o in self.objs.values() if get_field(o, "planet") == "saturn"]
-        hi_ls = self.hi.find({"planet": "saturn"})
-        assert len(ls) == len(hi_ls)
+        f_ls = self.f.find({"planet": "saturn"})
+        assert len(ls) == len(f_ls)
         # check a functional key
         ls = [o for o in self.objs.values() if get_field(o, planet_len) == 6]
-        hi_ls = self.hi.find({planet_len: 6})
-        assert len(ls) == len(hi_ls)
+        f_ls = self.f.find({planet_len: 6})
+        assert len(ls) == len(f_ls)
         # check a null-ish key
         ls = [o for o in self.objs.values() if get_field(o, "sometimes") is None]
-        hi_ls = self.hi.find({"sometimes": None})
-        assert len(ls) == len(hi_ls)
+        f_ls = self.f.find({"sometimes": None})
+        assert len(ls) == len(f_ls)
         # check a colliding key
         c = Collider()
         ls = [o for o in self.objs.values() if get_field(o, "collider") == c]
-        hi_ls = self.hi.find({"collider": c})
-        assert len(ls) == len(hi_ls)
+        f_ls = self.f.find({"collider": c})
+        assert len(ls) == len(f_ls)
         # check an object-ish key
         t = self.random_obj()
         if t is not None:
             target_ts = get_field(t, "ts_sec")
             ls = [o for o in self.objs.values() if get_field(o, "ts_sec") == target_ts]
-            hi_ls = self.hi.find({"ts_sec": target_ts})
-            assert len(ls) == len(hi_ls)
+            f_ls = self.f.find({"ts_sec": target_ts})
+            assert len(ls) == len(f_ls)
 
 
 def test_soak():

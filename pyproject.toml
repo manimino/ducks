@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "hashindex"
-version = "0.6.0"
+name = "filtered"
+version = "0.1.1"
 description = "Find Python objects by exact match on their attributes."
 authors = ["Your Name <you@example.com>"]
 license = "MIT"

@@ -2,11 +2,11 @@
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
 rootdir: /home/theo/repos
 plugins: anyio-2.2.0, cov-3.0.0
-collected 89 items
+collected 91 items
 
-test/test_basic_operations.py ..................                         [ 20%]
-test/test_container_ops.py ............                                  [ 33%]
-test/test_edge_cases.py .......................                          [ 59%]
+test/test_basic_operations.py ..................                         [ 19%]
+test/test_container_ops.py ..............                                [ 35%]
+test/test_edge_cases.py .......................                          [ 60%]
 test/test_examples.py ....                                               [ 64%]
 test/test_exceptions.py ........                                         [ 73%]
 test/test_fancy_gets.py ........                                         [ 82%]
@@ -17,20 +17,21 @@ test/test_stale_objects.py .......                                       [100%]
 ----------- coverage: platform linux, python 3.9.7-final-0 -----------
 Name                               Stmts   Miss  Cover
 ------------------------------------------------------
-hashindex/__init__.py                  2      0   100%
-hashindex/constants.py                 7      0   100%
-hashindex/exceptions.py                4      0   100%
-hashindex/frozen/__init__.py           0      0   100%
-hashindex/frozen/array_pair.py        44      0   100%
-hashindex/frozen/frozen_field.py      62      0   100%
-hashindex/frozen/main.py              53      0   100%
-hashindex/init_helpers.py             68      0   100%
-hashindex/mutable/__init__.py          0      0   100%
-hashindex/mutable/field_index.py      43      0   100%
-hashindex/mutable/main.py             71      0   100%
-hashindex/utils.py                    25      0   100%
+filtered/__init__.py                   2      0   100%
+filtered/constants.py                  7      0   100%
+filtered/exceptions.py                 4      0   100%
+filtered/frozen/__init__.py            0      0   100%
+filtered/frozen/array_pair.py         48      0   100%
+filtered/frozen/frozen_attr.py        62      0   100%
+filtered/frozen/main.py               53      0   100%
+filtered/init_helpers.py              68      0   100%
+filtered/mutable/__init__.py           0      0   100%
+filtered/mutable/main.py              71      0   100%
+filtered/mutable/mutable_attr.py      43      0   100%
+filtered/perf.py                       0      0   100%
+filtered/utils.py                     25      0   100%
 ------------------------------------------------------
-TOTAL                                379      0   100%
+TOTAL                                383      0   100%
 
 
-============================== 89 passed in 5.37s ==============================
+============================== 91 passed in 5.39s ==============================

@@ -1,4 +1,4 @@
-from hashindex import HashIndex, get_attributes
+from filtered import Filtered, get_attributes
 from dataclasses import dataclass
 from words import all_wordle_words  # contains all 5-letter Wordle words
 
@@ -15,7 +15,7 @@ class Word:
         return f"{self.c0}{self.c1}{self.c2}{self.c3}{self.c4}"
 
 
-mi = HashIndex(get_attributes(Word))
+mi = Filtered(get_attributes(Word))
 
 for w, _ in all_wordle_words:
     mi.add(Word(w[0], w[1], w[2], w[3], w[4]))

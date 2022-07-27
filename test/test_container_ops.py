@@ -1,44 +1,51 @@
 import pytest
-from hashindex import HashIndex, FrozenHashIndex
-from hashindex.constants import SIZE_THRESH
+from filtered import Filtered, FrozenFiltered
+from filtered.constants import SIZE_THRESH
 
 
 def test_iter_small(index_type):
     ls = [{"i": i} for i in range(5)]
-    hi = index_type(ls, ["i"])
-    assert len(hi) == len(ls)
-    hi_ls = list(hi)
-    assert len(hi_ls) == len(ls)
+    f = index_type(ls, ["i"])
+    assert len(f) == len(ls)
+    f_ls = list(f)
+    assert len(f_ls) == len(ls)
     for item in ls:
-        assert item in hi_ls
-    assert len(hi_ls) == len(ls)
+        assert item in f_ls
+    assert len(f_ls) == len(ls)
 
 
 @pytest.mark.parametrize("idx_order", [["i", "j"], ["j", "i"],])
 def test_iter_large(index_type, idx_order):
     ls = [{"i": i, "j": -(i % 3)} for i in range(SIZE_THRESH * 3 + 3)]
     ls += [{"j": 16}]  # make sure there's at least one hashbucket
-    hi = index_type(ls, idx_order)
-    assert len(hi) == len(ls)
-    hi_ls = list(hi)
-    assert len(hi_ls) == len(ls)
+    f = index_type(ls, idx_order)
+    assert len(f) == len(ls)
+    f_ls = list(f)
+    assert len(f_ls) == len(ls)
     for item in ls:
-        assert item in hi_ls
-    assert len(hi_ls) == len(ls)
+        assert item in f_ls
+    assert len(f_ls) == len(ls)
 
 
 @pytest.mark.parametrize("idx_order", [["i", "j"], ["j", "i"],])
 def test_make_from(index_type, idx_order):
     """See if we can make one index type from the other type."""
-    make_type = HashIndex if index_type == FrozenHashIndex else FrozenHashIndex
+    make_type = Filtered if index_type == FrozenFiltered else FrozenFiltered
     ls = [{"i": i, "j": -(i % 3)} for i in range(SIZE_THRESH * 3 + 3)]
-    hi = index_type(ls, on=idx_order)
-    other_hi = make_type(hi, on=idx_order)
-    assert len(other_hi) == len(hi)
+    f = index_type(ls, on=idx_order)
+    other_f = make_type(f, on=idx_order)
+    assert len(other_f) == len(f)
 
 
 def test_contains(index_type):
     ls = [{"i": i} for i in range(5)]
-    hi = index_type(ls, ["i"])
+    f = index_type(ls, ["i"])
     for item in ls:
-        assert item in hi
+        assert item in f
+
+
+def test_not_contains(index_type):
+    yes = {"i": 1}
+    f = index_type([yes], 'i')
+    no = {"i": -1000}
+    assert no not in f

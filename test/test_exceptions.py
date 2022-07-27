@@ -1,35 +1,35 @@
-from hashindex import HashIndex, FrozenHashIndex
-from hashindex.exceptions import MissingIndexError
-from hashindex.constants import SIZE_THRESH
+from filtered import Filtered, FrozenFiltered
+from filtered.exceptions import MissingIndexError
+from filtered.constants import SIZE_THRESH
 import pytest
 
 from .conftest import AssertRaises, BadHash
 
 
 def test_remove_empty():
-    hi = HashIndex([], on=["stuff"])
+    f = Filtered([], on=["stuff"])
     with AssertRaises(KeyError):
-        hi.remove("nope")
+        f.remove("nope")
 
 
 def test_empty_frozen():
     with AssertRaises(ValueError):
-        FrozenHashIndex([], on=["stuff"])
+        FrozenFiltered([], on=["stuff"])
 
 
 def test_no_index_mutable():
     with AssertRaises(ValueError):
-        HashIndex(["a"])
+        Filtered(["a"])
 
 
 def test_bad_query(index_type):
-    hi = index_type([0], on=["a"])
+    f = index_type([0], on=["a"])
     with AssertRaises(TypeError):
-        hi.find(match=[])
+        f.find(match=[])
     with AssertRaises(TypeError):
-        hi.find(["a", 1])
+        f.find(["a", 1])
     with AssertRaises(MissingIndexError):
-        hi.find({"b": 1})
+        f.find({"b": 1})
 
 
 @pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH + 1])
@@ -39,7 +39,7 @@ def test_remove_missing_value(n_items):
     an empty result correctly retrieved?
     """
     data = [BadHash(i) for i in range(5)]
-    hi = HashIndex(data, ["n"])
-    assert len(hi.find({"n": -1})) == 0
+    f = Filtered(data, ["n"])
+    assert len(f.find({"n": -1})) == 0
     with AssertRaises(KeyError):
-        hi.remove(BadHash(-1))
+        f.remove(BadHash(-1))

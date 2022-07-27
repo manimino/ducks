@@ -2,25 +2,25 @@
 
 ## Overview
 
- - HashIndex [mutable.py](hashindex/mutable.py)
+ - Filtered [mutable.py](filtered/mutable.py)
     - MutableFieldIndex
       - HashBucket
       - DictBucket
- - FrozenHashIndex
+ - FrozenFiltered
    - FrozenFieldIndex
      - FHashBucket
      - FDictBucket
 
-### HashIndex - main class
+### Filtered - main class
 
-A HashIndex object contains:
+A Filtered object contains:
  - a list of MutableFieldIndex objects, one for each attribute
  - an id-to-object lookup dictionary
 
-When a query comes in, HashIndex asks each MutableFieldIndex for the IDs of objects that match the query values for its 
+When a query comes in, Filtered asks each MutableFieldIndex for the IDs of objects that match the query values for its 
 field. Each FieldIndex returns a collection of object IDs. 
 
-HashIndex then applies union, intersect, and difference operations on the object IDs to get a final set of object 
+Filtered then applies union, intersect, and difference operations on the object IDs to get a final set of object 
 IDs. It looks up each object ID in its dictionary to get the objects, and returns them.
 
 ### MutableFieldIndex
@@ -42,12 +42,12 @@ Let's look at the best way to store sets of object IDs.
 - A cykhash set is a typed set, of type Int64 in this case. Typed sets are much more memory-efficient than the generic 
 Python sets. They are implemented by the [cykhash](https://github.com/realead/cykhash) library. 
 - Numpy arrays, while very memory-efficient, can't be used in the MutableFieldIndex. We'll see those later in the
-FrozenHashIndex implementation.
+FrozenFiltered implementation.
 
 For all three, there is a high overhead cost. Storing many collections of size 1 is a bad idea. Nearly-unique values
 (high cardinality data) are very likely to be in datasets. We need a bucketing strategy to allow storage of similar
 hashes in one larger collection. This common solution is also done in the 
-[Postgres HashIndex]([Postgres's HashIndex](https://www.postgresql.org/docs/current/hash-implementation.html)),
+[Postgres Filtered]([Postgres's Filtered](https://www.postgresql.org/docs/current/hash-implementation.html)),
 for example.
 
 Thus, a MutableFieldIndex contains:
@@ -80,7 +80,7 @@ separately even if they have the same hash.
 ### Summary / Performance
 
 While this design is more complex than the naive dict-of-set implementation, the memory efficiency is tremendously 
-improved. This allows HashIndex to store far more items than it would otherwise.
+improved. This allows Filtered to store far more items than it would otherwise.
 
 DictBucket works pretty much the same as a dict-of-set does, with the minor overhead of needing to locate the bucket. 
 So the lookup speed there is quite fast.
@@ -93,7 +93,7 @@ ____
 
 ### FrozenIndex
 
-It's the same overall design as HashIndex. The big difference is that it does not use sets. In place of a sets of object
+It's the same overall design as Filtered. The big difference is that it does not use sets. In place of a sets of object
 IDs, FrozenIndex uses pairs of numpy arrays: one of objects, one of IDs. Both arrays are sorted by object ID.
 
 Operations on sorted arrays are quite fast. Consider that lookup in a set is O(1), unless you get unlucky, and 

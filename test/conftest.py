@@ -1,8 +1,8 @@
 import pytest
-from hashindex import HashIndex, FrozenHashIndex
+from filtered import Filtered, FrozenFiltered
 
 
-@pytest.fixture(params=[HashIndex, FrozenHashIndex])
+@pytest.fixture(params=[Filtered, FrozenFiltered])
 def index_type(request):
     return request.param
 
