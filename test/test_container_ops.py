@@ -42,3 +42,10 @@ def test_contains(index_type):
     f = index_type(ls, ["i"])
     for item in ls:
         assert item in f
+
+
+def test_not_contains(index_type):
+    yes = {"i": 1}
+    f = index_type([yes], 'i')
+    no = {"i": -1000}
+    assert no not in f
