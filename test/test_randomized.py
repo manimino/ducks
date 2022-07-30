@@ -1,13 +1,13 @@
 """
-Filtered (mutable form) is pretty complex.
+HashBox (mutable form) is pretty complex.
 Let's run a lengthy test to make sure all the pieces work as expected across many add / remove operations.
 """
 
 import time
 from datetime import datetime
 import random
-from filtered import Filtered
-from filtered.utils import get_field
+from hashbox import HashBox
+from hashbox.utils import get_field
 
 
 PLANETS = (
@@ -79,10 +79,10 @@ class SoakTest:
         self.seed = random.choice(range(10 ** 6))
         print("running soak test with seed:", self.seed)
         random.seed(self.seed)
-        self.f = Filtered(
+        self.f = HashBox(
             on=["ts_sec", "ts", "planet", "collider", "sometimes", planet_len]
         )
-        #  self.f = Filtered(on=[planet_len])
+        #  self.f = HashBox(on=[planet_len])
         self.objs = dict()
         self.max_id_num = 0
 

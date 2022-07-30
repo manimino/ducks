@@ -1,8 +1,8 @@
 """
-When Filtered is initialized with objects, it would be slow to add the objects one at a time. Instead, we can
+When HashBox is initialized with objects, it would be slow to add the objects one at a time. Instead, we can
 analyze the list of objects, plan out which containers will be created, and put the objects in those containers.
 
-These functions are also used during FrozenFiltered creation, although the final data structures there are different.
+These functions are also used during FrozenHashBox creation, although the final data structures there are different.
 
 Workflow:
  - Hash the given attribute for all objs
@@ -19,8 +19,8 @@ Running the workflow takes between 600ms (low-cardinality case) and 1.5s (high-c
 
 import numpy as np
 from typing import Tuple, Union, Callable, Any, Iterable
-from filtered.utils import get_field
-from filtered.constants import SIZE_THRESH
+from hashbox.utils import get_field
+from hashbox.constants import SIZE_THRESH
 from cykhash import Int64Set
 
 

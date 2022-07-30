@@ -1,5 +1,5 @@
-from filtered.constants import SIZE_THRESH
-from filtered import Filtered
+from hashbox.constants import SIZE_THRESH
+from hashbox import HashBox
 import pytest
 from .conftest import BadHash, TwoHash, AssertRaises
 
@@ -19,7 +19,7 @@ def test_get_stale_objects(index_type, n_items):
 @pytest.mark.parametrize("n_items", [SIZE_THRESH * 2 + 2])
 def test_remove_stale_objects_one_hash(n_items):
     objs = [{"z": BadHash(0)} for _ in range(n_items)]
-    f = Filtered(objs, ["z"])
+    f = HashBox(objs, ["z"])
     for o in objs:
         o["z"] = BadHash(1)
     with AssertRaises(KeyError):
@@ -29,6 +29,6 @@ def test_remove_stale_objects_one_hash(n_items):
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH * 2 + 2])
 def test_remove_missing_object(n_items):
     objs = [{"z": TwoHash(1)} for _ in range(n_items)]
-    f = Filtered(objs, ["z"])
+    f = HashBox(objs, ["z"])
     with AssertRaises(KeyError):
         f.remove(TwoHash(2))

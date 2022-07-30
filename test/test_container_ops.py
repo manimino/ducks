@@ -1,6 +1,6 @@
 import pytest
-from filtered import Filtered, FrozenFiltered
-from filtered.constants import SIZE_THRESH
+from hashbox import HashBox, FrozenHashBox
+from hashbox.constants import SIZE_THRESH
 
 
 def test_iter_small(index_type):
@@ -30,7 +30,7 @@ def test_iter_large(index_type, idx_order):
 @pytest.mark.parametrize("idx_order", [["i", "j"], ["j", "i"],])
 def test_make_from(index_type, idx_order):
     """See if we can make one index type from the other type."""
-    make_type = Filtered if index_type == FrozenFiltered else FrozenFiltered
+    make_type = HashBox if index_type == FrozenHashBox else FrozenHashBox
     ls = [{"i": i, "j": -(i % 3)} for i in range(SIZE_THRESH * 3 + 3)]
     f = index_type(ls, on=idx_order)
     other_f = make_type(f, on=idx_order)

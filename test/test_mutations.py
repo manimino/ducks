@@ -1,6 +1,6 @@
 import pytest
 
-from filtered.constants import SIZE_THRESH, TUPLE_SIZE_MAX, SET_SIZE_MIN
+from hashbox.constants import SIZE_THRESH, TUPLE_SIZE_MAX, SET_SIZE_MIN
 
 
 @pytest.mark.parametrize(

@@ -1,7 +1,7 @@
 import random
 import time
 from dataclasses import dataclass
-from filtered import Filtered
+from hashbox import HashBox
 
 from pympler import asizeof
 
@@ -51,7 +51,7 @@ def make_objs(n_keys, n_items):
 
 
 def perf_test(size=100000, n_indices=1):
-    print(f"=== Filtered Test: {size} items, {n_indices} indices ===")
+    print(f"=== HashBox Test: {size} items, {n_indices} indices ===")
     TARGET = str(1)
 
     # About 10% of the objs will have the first key
@@ -74,9 +74,9 @@ def perf_test(size=100000, n_indices=1):
     # for k in sorted(d.keys()):
     #    print(k, len(d[k]))
 
-    # build Filtered
+    # build HashBox
     t0 = time.time()
-    hi = Filtered(indices)
+    hi = HashBox(indices)
     for item in ls:
         hi.add(item)
     t_hashbox_build = time.time() - t0
@@ -86,7 +86,7 @@ def perf_test(size=100000, n_indices=1):
     t0 = time.time()
     _ = hi.find({"a": TARGET})[0]
     t_hashbox = time.time() - t0
-    print("Filtered Find:", round(t_hashbox, 6))
+    print("HashBox Find:", round(t_hashbox, 6))
 
     objs_size = asizeof.asizeof(ls)
     hi_size = asizeof.asizeof(hi)

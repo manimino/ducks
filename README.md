@@ -1,28 +1,28 @@
-# Filtered
+# HashBox
 
-Find Python objects that match a set of attributes, usually in <1ms.
+Container for finding Python objects by exact match on attribute value. 
 
-`pip install filtered`
+`pip install hashbox`
 
-[![tests Actions Status](https://github.com/manimino/filtered/workflows/tests/badge.svg)](https://github.com/manimino/filtered/actions)
+[![tests Actions Status](https://github.com/manimino/hashbox/workflows/tests/badge.svg)](https://github.com/manimino/hashbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
 
 ### Usage:
 
 ```
-from filtered import Filtered
-f = Filtered(objects, attributes)
+from hashbox import HashBox
+f = HashBox(objects, attributes)
 objs = f.find(match={attr1: values, ...}, exclude={attr2: values, ...})
 ```
 
-Filtered can hold any Python object: class instances, namedtuples, dicts, strings, floats, ints, etc.
+HashBox can hold any Python object: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
 Attributes can be actual object attributes, or they can be functions of the object. Functions
 allow lookup of nested and derived attributes. See examples below.
 
 There are two classes available.
- - Filtered: can `add()` and `remove()` objects.
- - FrozenFiltered: much faster performance and lower memory cost, but can't be changed after creation.
+ - HashBox: can `add()` and `remove()` objects.
+ - FrozenHashBox: much faster performance and lower memory cost, but can't be changed after creation.
 
 ____
 
@@ -31,7 +31,7 @@ ____
 ### Dicts
 
 ```
-from filtered import Filtered
+from hashbox import HashBox
 
 objects = [
     {'order': 1, 'size': 'regular', 'topping': 'smothered'}, 
@@ -40,7 +40,7 @@ objects = [
     {'order': 4, 'size': 'triple', 'topping': 'chunked'}
 ]
 
-f = Filtered(objects, on=['size', 'topping'])
+f = HashBox(objects, on=['size', 'topping'])
 
 f.find(match={'size': 'regular', 'topping': 'smothered'})  # returns order 1
 
@@ -53,7 +53,7 @@ f.find(
 ### Object with nested attributes
 
 ```
-from filtered import FrozenFiltered
+from hashbox import FrozenHashBox
 
 class Order:
     def __init__(self, num, size, toppings):
@@ -71,7 +71,7 @@ objects = [
 def has_cheese(obj):
     return 'covered' in obj.toppings or 'all the way' in obj.toppings
 
-f = FrozenFiltered(objects, ['size', has_cheese])
+f = FrozenHashBox(objects, ['size', has_cheese])
 
 # returns orders 1, 2 and 4
 f.find({has_cheese: True})  
@@ -80,21 +80,21 @@ f.find({has_cheese: True})
 ### Strings
 
 ```
-from filtered import FrozenFiltered
+from hashbox import FrozenHashBox
 
 objects = ['mushrooms', 'peppers', 'onions']
 
 def o_count(obj):
     return obj.count('o')
 
-f = FrozenFiltered(objects, [o_count, len])
+f = FrozenHashBox(objects, [o_count, len])
 f.find({len: 6})       # returns ['onions']
 f.find({o_count: 2})  # returns ['mushrooms', 'onions']
 ```
 
 ### Advanced usage
  
- - [Auto-updating](examples/update.py) - Define setters on your objects to keep Filtered updated when they change
+ - [Auto-updating](examples/update.py) - Define setters on your objects to keep HashBox updated when they change
  - [Wordle solver](examples/wordle.ipynb) - Use partials to generate many attribute functions
  - [Spatial lookup](examples/spatial.py) - Do location finding and collision detection
 
@@ -103,23 +103,23 @@ ____
 ## Performance
 
 
-### FrozenFiltered
+### FrozenHashBox
 
 
 
-### Filtered
+### HashBox
 
 
 ____
 
 ## How it works
 
-Attribute values are stored by their hash, either in dicts (Filtered) or numpy 
-arrays (FrozenHashFilter). So values don't need to be comparable by greater than / less than, they only need to be 
+Attribute values are stored by their hash, either in dicts (HashBox) or numpy 
+arrays (FrozenHashBox). So values don't need to be comparable by greater than / less than, they only need to be 
 hashable. This maximizes flexibility.
 
 For each attribute value, the `id` of each matching object is stored. During `find`, these IDs are retrieved as sets 
-(Filtered) or sorted numpy arrays (FrozenHashFilter). Set operations such as intersection are then used to find the 
+(HashBox) or sorted numpy arrays (FrozenHashBox). Set operations such as intersection are then used to find the 
 objects that fit all constraints.
 
 ____
