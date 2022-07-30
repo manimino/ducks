@@ -1,6 +1,6 @@
 # HashBox
 
-Find Python objects that match a set of attributes, usually in <1ms.
+Find Python objects that match a set of attributes.
 
 `pip install hashbox`
 
@@ -115,11 +115,11 @@ ____
 ## How it works
 
 Attribute values are stored by their hash, either in dicts (HashBox) or numpy 
-arrays (FrozenHashFilter). So values don't need to be comparable by greater than / less than, they only need to be 
+arrays (FrozenHashBox). So values don't need to be comparable by greater than / less than, they only need to be 
 hashable. This maximizes flexibility.
 
 For each attribute value, the `id` of each matching object is stored. During `find`, these IDs are retrieved as sets 
-(HashBox) or sorted numpy arrays (FrozenHashFilter). Set operations such as intersection are then used to find the 
+(HashBox) or sorted numpy arrays (FrozenHashBox). Set operations such as intersection are then used to find the 
 objects that fit all constraints.
 
 ____
