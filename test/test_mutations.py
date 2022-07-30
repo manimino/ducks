@@ -6,14 +6,14 @@ from hashbox.constants import SIZE_THRESH, TUPLE_SIZE_MAX, SET_SIZE_MIN
 @pytest.mark.parametrize(
     "n_items", [SIZE_THRESH, TUPLE_SIZE_MAX + 1, SET_SIZE_MIN - 1, SET_SIZE_MIN + 1]
 )
-def test_many_gets(index_type, n_items):
+def test_many_gets(box_class, n_items):
     """At one point there was a bug involving several sequential gets, let's make sure that can't come back."""
 
     def f5(i):
         return i["n"] % 5
 
     data = [{"n": i} for i in range(n_items)]
-    f = index_type(data, ["n", f5])
+    f = box_class(data, ["n", f5])
     for _ in range(4):
         # just a lot of queries in every conceivable flavor
         assert len(f.find(match={"n": [1, 2, 3, 4, 5], f5: [3, 4]})) == 2
@@ -35,10 +35,10 @@ def test_many_gets(index_type, n_items):
         assert len(f.find()) == n_items
 
 
-def test_mutated_return(index_type):
+def test_mutated_return(box_class):
     """If the user modifies the returned array, none of our arrays change, right?"""
     data = [{"n": 0} for _ in range(5)]
-    f = index_type(data, ["n"])
+    f = box_class(data, ["n"])
     arr = f.find({"n": 0})
     assert len(arr) == 5
     assert all(a["n"] == 0 for a in arr)

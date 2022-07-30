@@ -17,26 +17,26 @@ def make_dict_data():
     return dicts
 
 
-def test_dicts(index_type):
+def test_dicts(box_class):
     dicts = make_dict_data()
-    f = index_type(dicts, ["t0", "t1", "s"])
+    f = box_class(dicts, ["t0", "t1", "s"])
     result = f.find(match={"t0": [0.1, 0.3], "s": ["ABC", "DEF"]}, exclude={"t1": 0.4})
     assert result == [dicts[0]]
 
 
-def test_getter_fn(index_type):
+def test_getter_fn(box_class):
     def _middle_letter(obj):
         return obj["s"][1]
 
     dicts = make_dict_data()
-    f = index_type(dicts, on=[_middle_letter])
+    f = box_class(dicts, on=[_middle_letter])
     result = f.find({_middle_letter: "H"})
     assert result == [dicts[2]]
 
 
 @pytest.mark.parametrize("n", [SIZE_THRESH + 1, 5])
-def test_get_all(index_type, n):
+def test_get_all(box_class, n):
     """There's a special fast-path when all items are being retrieved."""
-    f = index_type([{"a": 1} for _ in range(n)], ["a"])
+    f = box_class([{"a": 1} for _ in range(n)], ["a"])
     result = f.find()
     assert len(result) == n

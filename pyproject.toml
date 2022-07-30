@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hashbox"
-version = "0.2.0"
+version = "0.2.1"
 description = "Find Python objects by exact match on their attributes."
 authors = ["Your Name <you@example.com>"]
 license = "MIT"

@@ -22,8 +22,8 @@ def test_no_index_mutable():
         HashBox(["a"])
 
 
-def test_bad_query(index_type):
-    f = index_type([0], on=["a"])
+def test_bad_query(box_class):
+    f = box_class([0], on=["a"])
     with AssertRaises(TypeError):
         f.find(match=[])
     with AssertRaises(TypeError):

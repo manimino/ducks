@@ -3,7 +3,7 @@ from hashbox import HashBox, FrozenHashBox
 
 
 @pytest.fixture(params=[HashBox, FrozenHashBox])
-def index_type(request):
+def box_class(request):
     return request.param
 
 
