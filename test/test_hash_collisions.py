@@ -1,8 +1,8 @@
 import pytest
 
-from filtered.constants import SIZE_THRESH
+from hashbox.constants import SIZE_THRESH
 from .conftest import BadHash, TwoHash
-from filtered import Filtered
+from hashbox import HashBox
 
 
 @pytest.mark.parametrize("n_items", [5])
@@ -39,7 +39,7 @@ def test_get_missing_value(index_type, n_items):
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])
 def test_add_remove_two_hashes_uneven(n_items):
     data = [TwoHash(0) for _ in range(n_items)] + [TwoHash(1) for _ in range(5)]
-    f = Filtered(on=["n"])
+    f = HashBox(on=["n"])
     for d in data:
         f.add(d)
     for d in data:

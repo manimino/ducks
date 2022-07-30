@@ -1,9 +1,9 @@
 import numpy as np
 
 from typing import Union, Callable
-from filtered.init_helpers import sort_by_hash, group_by_val, run_length_encode
-from filtered.constants import SIZE_THRESH
-from filtered.frozen.utils import make_empty_int_array
+from hashbox.init_helpers import sort_by_hash, group_by_val, run_length_encode
+from hashbox.constants import SIZE_THRESH
+from hashbox.frozen.utils import make_empty_int_array
 from bisect import bisect_left
 from dataclasses import dataclass
 
@@ -37,7 +37,7 @@ class ObjsByHash:
 
 
 class FrozenFieldIndex:
-    """Stores data and handles requests that are relevant to a single attribute of a FrozenFiltered."""
+    """Stores data and handles requests that are relevant to a single attribute of a FrozenHashBox."""
 
     def __init__(self, field: Union[str, Callable], objs: np.ndarray):
         # sort the objects by attribute value, using their hashes and handling collisions

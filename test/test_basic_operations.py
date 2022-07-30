@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from filtered import FrozenFiltered
-from filtered.utils import get_attributes
+from hashbox import FrozenHashBox
+from hashbox.utils import get_attributes
 from .conftest import AssertRaises
 
 
@@ -107,7 +107,7 @@ def test_remove(index_type):
     f = make_test_data(index_type)
     two_chus = f.find({"name": "Pikachu"})
     assert len(two_chus) == 2
-    if index_type == FrozenFiltered:
+    if index_type == FrozenHashBox:
         with AssertRaises(AttributeError):
             f.remove(two_chus[1])
     else:
@@ -119,7 +119,7 @@ def test_remove(index_type):
 def test_add(index_type):
     f = make_test_data(index_type)
     glaceon = Pokemon("Glaceon", "Ice", None)
-    if index_type == FrozenFiltered:
+    if index_type == FrozenHashBox:
         with AssertRaises(AttributeError):
             f.add(glaceon)
     else:

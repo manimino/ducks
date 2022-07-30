@@ -1,7 +1,7 @@
 
 ## RAM use of different object ID collections
 
-Each index in a filtered is a dict of {key: collection of integer object IDs}.
+Each index in a hashbox is a dict of {key: collection of integer object IDs}.
 
 We need RAM-efficient collections of integers. Let's look at the options...
 
@@ -34,12 +34,12 @@ few objects (low cardinality). We need efficiency in both.
 It's possible to pack several low-cardinality keys into a single container.
 
 We could have a bucket for every 100 items, and hash each key to land in one of those buckets. 
-Consistent hashing would prevent needing to rehash everything as the Filtered grows.
+Consistent hashing would prevent needing to rehash everything as the HashBox grows.
 
 Any one bucket would contain several keys. During lookup, we'd fetch the whole bucket, and 
 do an equality check on each of the objects to find just the key we want.
 
-This is the method used by [Postgres's Filtered](https://www.postgresql.org/docs/current/hash-intro.html).
+This is the method used by [Postgres's HashBox](https://www.postgresql.org/docs/current/hash-intro.html).
 
 It can backfire: suppose we have a few large keys that together make up 90% of the values.
 If any two of them hash to the same bucket, untangling them would be very inefficient. We could avert this problem by
@@ -52,8 +52,8 @@ storing each high-cardinality key (say, >1% of the dataset) in its own devoted l
 Numpy arrays are up to 10x faster than Python sets or cykash sets. They also use less RAM. The downside is that 
 mutability is worse; removes and updates become very slow.
 
-The `freeze()` method of filtered converts the containers from cykhash sets to numpy arrays, and prevents future
+The `freeze()` method of hashbox converts the containers from cykhash sets to numpy arrays, and prevents future
 changes to the data structure. 
 
 Making the index immutable also helps in multithreaded situations. With no writes, multiple threads
-can access the filtered simultaneously with no risk of concurrency bugs.
+can access the hashbox simultaneously with no risk of concurrency bugs.

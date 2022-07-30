@@ -6,22 +6,22 @@ from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
 import sortednp as snp
 
-from filtered.frozen.frozen_attr import FrozenFieldIndex
-from filtered.frozen.utils import make_empty_int_array, snp_difference
-from filtered.utils import validate_query
+from hashbox.frozen.frozen_attr import FrozenFieldIndex
+from hashbox.frozen.utils import make_empty_int_array, snp_difference
+from hashbox.utils import validate_query
 
 
-class FrozenFiltered:
-    """A much faster Filtered that lacks the ability to add or remove objects."""
+class FrozenHashBox:
+    """A much faster HashBox that lacks the ability to add or remove objects."""
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
-        """Create a FrozenFiltered containing the objs, queryable by the 'on' attributes.
+        """Create a FrozenHashBox containing the objs, queryable by the 'on' attributes.
 
         Args:
-            objs (Any iterable containing any types): The objects that FrozenFiltered will contain.
+            objs (Any iterable containing any types): The objects that FrozenHashBox will contain.
                 Must contain at least one object. Objects do not need to be hashable, any object works.
 
-            on (Iterable of attributes): The attributes that FrozenFiltered will build indices on.
+            on (Iterable of attributes): The attributes that FrozenHashBox will build indices on.
                 Must contain at least one.
 
         Objects in obj do not need to have all of the attributes in 'on'. Objects will be considered to have a
@@ -29,7 +29,7 @@ class FrozenFiltered:
         """
         if not objs:
             raise ValueError(
-                "Cannot build an empty FrozenFiltered; at least 1 object is required."
+                "Cannot build an empty FrozenHashBox; at least 1 object is required."
             )
         self.on = on
         self.indices = {}
@@ -55,7 +55,7 @@ class FrozenFiltered:
             Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
         ] = None,
     ) -> np.ndarray:
-        """Find objects in the FrozenFiltered that satisfy the match and exclude constraints.
+        """Find objects in the FrozenHashBox that satisfy the match and exclude constraints.
 
         Args:
             match (Dict of {attribute: value}, or None): Specifies the subset of objects that match.

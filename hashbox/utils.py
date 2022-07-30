@@ -1,7 +1,7 @@
 import numpy as np
 
 from typing import List, Union, Callable, Optional, Any, Dict
-from filtered.exceptions import MissingIndexError
+from hashbox.exceptions import MissingIndexError
 
 
 def get_field(obj, field):

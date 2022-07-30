@@ -1,8 +1,8 @@
 import pytest
-from filtered import Filtered, FrozenFiltered
+from hashbox import HashBox, FrozenHashBox
 
 
-@pytest.fixture(params=[Filtered, FrozenFiltered])
+@pytest.fixture(params=[HashBox, FrozenHashBox])
 def index_type(request):
     return request.param
 

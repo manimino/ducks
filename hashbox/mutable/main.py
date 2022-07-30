@@ -2,11 +2,11 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable
 from cykhash import Int64Set
 
 from operator import itemgetter
-from filtered.utils import validate_query
-from filtered.mutable.mutable_attr import MutableFieldIndex
+from hashbox.utils import validate_query
+from hashbox.mutable.mutable_attr import MutableFieldIndex
 
 
-class Filtered:
+class HashBox:
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
