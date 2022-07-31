@@ -5,9 +5,9 @@ from .conftest import BadHash, TwoHash, AssertRaises
 
 
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])
-def test_get_stale_objects(index_type, n_items):
+def test_get_stale_objects(box_class, n_items):
     objs = [{"z": BadHash(1)} for _ in range(n_items)]
-    f = index_type(objs, ["z"])
+    f = box_class(objs, ["z"])
     for o in objs:
         o["z"] = BadHash(2)
     found = f.find({"z": BadHash(1)})

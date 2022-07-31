@@ -17,8 +17,8 @@ class EdgeHash:
 
 
 @pytest.mark.parametrize("n_items", [SIZE_THRESH * 3 + 3, 15])
-def test_edge_hash(index_type, n_items):
-    f = index_type([{"z": EdgeHash(i % 3)} for i in range(n_items)], ["z"])
+def test_edge_hash(box_class, n_items):
+    f = box_class([{"z": EdgeHash(i % 3)} for i in range(n_items)], ["z"])
     assert len(f.find({"z": EdgeHash(0)})) == n_items // 3
     assert len(f.find({"z": EdgeHash(1)})) == n_items // 3
     assert len(f.find({"z": EdgeHash(2)})) == n_items // 3
@@ -91,11 +91,11 @@ def test_grouped_hash(delete_bucket):
             assert len(f.find({"z": GroupedHash(b)})) == SIZE_THRESH + 1
 
 
-def test_get_zero(index_type):
+def test_get_zero(box_class):
     def _f(x):
         return x[0]
 
-    f = index_type(["a", "b", "c"], on=[_f])
+    f = box_class(["a", "b", "c"], on=[_f])
     assert f.find({_f: "c"}) == ["c"]
     assert len(f.find({_f: "d"})) == 0
 
@@ -142,11 +142,11 @@ class NoSort:
         return self.x == other.x
 
 
-def test_unsortable_values(index_type):
+def test_unsortable_values(box_class):
     """We need to support values that are hashable, even if they cannot be sorted."""
     objs = [{"a": NoSort(0)}, {"a": NoSort(1)}]
-    f = index_type(objs, ["a"])
-    if isinstance(index_type, HashBox):
+    f = box_class(objs, ["a"])
+    if isinstance(box_class, HashBox):
         objs.append(NoSort(2))
         f.add(objs[2])
     assert len(f) == len(objs)
@@ -154,8 +154,8 @@ def test_unsortable_values(index_type):
         assert f.find({"a": NoSort(i)}) == [obj]
 
 
-def test_not_in(index_type):
+def test_not_in(box_class):
     """the things we do for 100% coverage"""
-    f = index_type([{"a": 1}], on=["a"])
+    f = box_class([{"a": 1}], on=["a"])
     assert {"a": 0} not in f
     assert {"a": 2} not in f

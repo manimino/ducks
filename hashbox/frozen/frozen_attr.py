@@ -50,14 +50,14 @@ class FrozenFieldIndex:
         # Pre-bake a dict of {val: array_pair} where there are many objs with the same val.
         self.val_to_obj_ids = dict()
         unused = np.ones_like(sorted_obj_ids, dtype="bool")
-        unused_count = len(unused)
+        n_unused = len(unused)
         for i, val in enumerate(unique_vals):
             if val_run_lengths[i] > SIZE_THRESH:
                 # extract these
                 start = val_starts[i]
                 end = start + val_run_lengths[i]
                 unused[start:end] = False
-                unused_count -= val_run_lengths[i]
+                n_unused -= val_run_lengths[i]
                 obj_id_arr = sorted_obj_ids[start:end]
                 # the obj_ids are sorted by val hash, but we want them sorted by themselves
                 self.val_to_obj_ids[val] = np.sort(obj_id_arr)
@@ -65,12 +65,12 @@ class FrozenFieldIndex:
         # Put all remaining objs into one big object array 'objs_by_hash'.
         # During query, use bisection on the hash value to locate objects.
         # The output obj_id_arrays will be made during query.
-        if unused_count == 0:
+        if n_unused == 0:
             self.objs_by_hash = None
             return
 
-        hash_starts, hash_run_lengths, unique_hashes = run_length_encode(sorted_hashes)
-        if unused_count == len(sorted_obj_ids):
+        if n_unused == len(sorted_obj_ids):
+            hash_starts, hash_run_lengths, unique_hashes = run_length_encode(sorted_hashes)
             self.objs_by_hash = ObjsByHash(
                 sorted_obj_ids=sorted_obj_ids,
                 sorted_vals=sorted_vals,
@@ -81,10 +81,12 @@ class FrozenFieldIndex:
             )
             return
 
+        # we have a mix of cardinalities
         unused_idx = np.where(unused)
         sorted_obj_ids = sorted_obj_ids[unused_idx]
         sorted_hashes = sorted_hashes[unused_idx]
         sorted_vals = sorted_vals[unused_idx]
+        hash_starts, hash_run_lengths, unique_hashes = run_length_encode(sorted_hashes)
         self.objs_by_hash = ObjsByHash(
             sorted_obj_ids=sorted_obj_ids,
             sorted_vals=sorted_vals,

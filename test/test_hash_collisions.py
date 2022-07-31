@@ -6,14 +6,14 @@ from hashbox import HashBox
 
 
 @pytest.mark.parametrize("n_items", [5])
-def test_hash_bucket_collision(index_type, n_items):
+def test_hash_bucket_collision(box_class, n_items):
     """
     Ensure the HashBuckets still work properly under hash collision.
     """
     items_1 = [{"b": BadHash(1)} for _ in range(n_items + 1)]
     items_2 = [{"b": BadHash(2)} for _ in range(n_items + 2)]
     items_3 = [{"b": BadHash(3)} for _ in range(n_items + 3)]
-    f = index_type(items_1 + items_2 + items_3, ["b"])
+    f = box_class(items_1 + items_2 + items_3, ["b"])
     found_1 = f.find({"b": BadHash(1)})
     found_2 = f.find({"b": BadHash(2)})
     found_3 = f.find({"b": BadHash(3)})
@@ -26,13 +26,13 @@ def test_hash_bucket_collision(index_type, n_items):
 
 
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])
-def test_get_missing_value(index_type, n_items):
+def test_get_missing_value(box_class, n_items):
     """
     When the value hashes to a bucket, but the bucket does not contain the value, is
     an empty result correctly retrieved?
     """
     data = [BadHash(i) for i in range(n_items)]
-    f = index_type(data, ["n"])
+    f = box_class(data, ["n"])
     assert len(f.find({"n": -1})) == 0
 
 
