@@ -126,3 +126,10 @@ def test_add(box_class):
         f.add(glaceon)
         res = f.find({"name": "Glaceon"})
         assert res == [glaceon]
+
+
+def test_multi_exclude(box_class):
+    f = make_test_data(box_class)
+    res = f.find(exclude={'name': 'Pikachu', 'type1': ['Normal']})
+    zapdos_ls = [p for p in f if p.name == 'Zapdos']
+    assert res == zapdos_ls

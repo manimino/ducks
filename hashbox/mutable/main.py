@@ -56,33 +56,39 @@ class HashBox:
         validate_query(self.indices, match, exclude)
 
         # perform 'match' query
-        hits = None
         if match:
             # find intersection of each field
+            hit_sets = []
             for field, value in match.items():
                 # if multiple values for a field, find each value and union those first
-                field_hits = self._match_any_of(field, value)
-                if hits is None:  # first field
-                    hits = field_hits
-                if field_hits:
-                    # intersect this field's hits with our hits so far
-                    # intersecting from the smaller set is faster in cykhash sets
-                    if len(hits) < len(field_hits):
-                        hits = hits.intersection(field_hits)
-                    else:
-                        hits = field_hits.intersection(hits)
-                else:
+                hit_set = self._match_any_of(field, value)
+                if len(hit_set) == 0:
                     # this field had no matches, therefore the intersection will be empty. We can stop here.
                     return Int64Set()
+                hit_sets.append(hit_set)
+
+            for i, hit_set in enumerate(sorted(hit_sets, key=len)):
+                # intersect this field's hits with our hits so far
+                if i == 0:
+                    hits = hit_set
+                else:
+                    # intersecting with the smaller set on the left is faster in cykhash sets
+                    if len(hits) < len(hit_set):
+                        hits = hits.intersection(hit_set)
+                    else:
+                        hits = hit_set.intersection(hits)
         else:
             # 'match' is unspecified, so match all objects
             hits = Int64Set(self.obj_map.keys())
 
         # perform 'exclude' query
         if exclude:
+            exc_sets = []
             for field, value in exclude.items():
-                field_hits = self._match_any_of(field, value)
-                hits = Int64Set.difference(hits, field_hits)
+                exc_sets.append(self._match_any_of(field, value))
+
+            for exc_set in sorted(exc_sets, key=len, reverse=True):
+                hits = Int64Set.difference(hits, exc_set)
                 if len(hits) == 0:
                     break
 
