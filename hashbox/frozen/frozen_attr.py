@@ -70,7 +70,9 @@ class FrozenFieldIndex:
             return
 
         if n_unused == len(sorted_obj_ids):
-            hash_starts, hash_run_lengths, unique_hashes = run_length_encode(sorted_hashes)
+            hash_starts, hash_run_lengths, unique_hashes = run_length_encode(
+                sorted_hashes
+            )
             self.objs_by_hash = ObjsByHash(
                 sorted_obj_ids=sorted_obj_ids,
                 sorted_vals=sorted_vals,

@@ -1,6 +1,6 @@
 # HashBox
 
-Container for finding Python objects by exact match on attribute value. 
+Container for finding Python objects by exact match on attribute value.
 
 ```
 pip install hashbox

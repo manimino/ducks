@@ -99,30 +99,33 @@ class FrozenHashBox:
         validate_query(self.indices, match, exclude)
 
         # perform 'match' query
-        hits = None
         if match:
-            # find intersection of each field
+            hit_arrays = []
             for field, value in match.items():
-                # if multiple values for a field, find each value and union those first
-                field_hits = self._match_any_of(field, value)
-                if hits is None:  # this is the first field
-                    hits = field_hits
-                elif len(field_hits):
-                    # intersect this field's hits with our hits so far
-                    hits = snp.intersect(hits, field_hits)
-                else:
+                hit_array = self._match_any_of(field, value)
+                if len(hit_array) == 0:
                     # this field had no matches, therefore the intersection will be empty. We can stop here.
                     return np.empty(0, dtype="O")
+                hit_arrays.append(hit_array)
+
+            # intersect all the hit_arrays, starting with the smallest
+            for i, hit_array in enumerate(sorted(hit_arrays, key=len)):
+                if i == 0:
+                    hits = hit_array
+                else:
+                    hits = snp.intersect(hits, hit_array)
         else:
-            # 'match' is unspecified, so match all objects
             hits = self.id_arr
 
         # perform 'exclude' query
         if exclude:
+            exc_arrays = []
             for field, value in exclude.items():
-                field_hits = self._match_any_of(field, value)
-                hits = snp_difference(hits, field_hits)
+                exc_arrays.append(self._match_any_of(field, value))
 
+            # subtract each of the exc_arrays, starting with the largest
+            for exc_array in sorted(exc_arrays, key=len, reverse=True):
+                hits = snp_difference(hits, exc_array)
                 if len(hits) == 0:
                     break
 
@@ -151,6 +154,13 @@ class FrozenHashBox:
             return self.indices[field].get(value)
 
     def _get_objs_by_ids(self, id_arr: np.ndarray):
+        # Someday optimize:
+        # There's no real reason to store the object IDs. We could just use
+        # array indices instead of object IDs, throughout FrozenHashIndex.
+        # That would result in a small speedup here.
+        # Example:
+        # On a million-item dataset, lookup by index takes 2-5 microseconds
+        # while this intersection takes 20-50 microseconds.
         _, indices = snp.intersect(id_arr, self.id_arr, indices=True)
         return self.obj_arr[indices[1]]
 
