@@ -119,7 +119,7 @@ def o_count(obj):
 
 f = FrozenHashBox(objects, [o_count, len])
 f.find({len: 6})       # returns ['onions']
-f.find({o_count: 2})  # returns ['mushrooms', 'onions']
+f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ```
 
 ### Recipes
