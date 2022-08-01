@@ -128,7 +128,6 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
  - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make many attribute functions
  - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
- - [Crossword helper service](examples/crossword.py) - Pickle a FrozenHashBox, wrap it in an API
 
 ____
 
