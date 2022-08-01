@@ -1,6 +1,7 @@
 # HashBox
 
-Container for finding Python objects by exact match on attribute value.
+Container for finding Python objects by their attributes. Built on hash-based containers (`dict` and `set`), so it's 
+very fast.
 
 ```
 pip install hashbox
@@ -16,24 +17,37 @@ pip install hashbox
 
 ```
 from hashbox import HashBox
-f = HashBox(objects, attributes)
-objs = f.find(match={attr1: values, ...}, exclude={attr2: values, ...})
+
+objects = [
+    {'a': 1, 'b': 2}, 
+    {'a': 1, 'b': 3}
+]
+
+hb = HashBox(
+    objects,
+    on=['a', 'b']
+)
+
+hb.find(
+    match={'a': 1}, 
+    exclude={'b': 3}
+)  
+# result: [{'a': 1, 'b': 2}]
 ```
 
-HashBox can hold any Python object: class instances, namedtuples, dicts, strings, floats, ints, etc.
-
-Attributes can be actual object attributes, or they can be functions of the object. Functions
-allow lookup of nested and derived attributes. See examples below.
+The objects can be any type: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
 There are two classes available.
  - HashBox: can `add()` and `remove()` objects.
- - FrozenHashBox: much faster performance and lower memory cost, but can't be changed after creation.
+ - FrozenHashBox: much faster performance, memory-efficient, and immutable.
 
 ____
 
 ## Examples
 
-### Dicts
+### Match multiple values
+
+Specify a list of values for an attribute to include / exclude values in the list.
 
 ```
 from hashbox import HashBox
@@ -45,26 +59,35 @@ objects = [
     {'order': 4, 'size': 'triple', 'topping': 'chunked'}
 ]
 
-f = HashBox(objects, on=['size', 'topping'])
+hb = HashBox(objects, on=['size', 'topping'])
 
-f.find(match={'size': 'regular', 'topping': 'smothered'})  # returns order 1
+hb.find(
+    match={'size': ['regular', 'large']},  # match anything with size in ['regular', 'large'] 
+    exclude={'topping': 'diced'}           # exclude where topping is 'diced'
+)  # result: orders 1 and 3
 
-f.find(
-    match={'size': ['regular', 'large']},  # match 'regular' or 'large' sizes
-    exclude={'topping': 'covered'}         # exclude where topping is 'covered'
-)  # returns orders 1 and 2
+hb.find(
+    match={},                               # match all objects
+    exclude={'size': ['regular', 'large']}  # where size is not in ['regular', 'large']
+)  # result: order 4
+
 ```
 
-### Object with nested attributes
+### Nested attributes
+
+Define a function to access nested attributes.
 
 ```
-from hashbox import FrozenHashBox
+from hashbox import HashBox
 
 class Order:
     def __init__(self, num, size, toppings):
         self.num = num
         self.size = size
         self.toppings = toppings
+        
+    def __repr__(self):
+        return f"order: {self.num}, size: '{self.size}', toppings: {self.toppings}"
     
 objects = [
     Order(1, 'regular', ['scattered', 'smothered', 'covered']),
@@ -76,13 +99,15 @@ objects = [
 def has_cheese(obj):
     return 'covered' in obj.toppings or 'all the way' in obj.toppings
 
-f = FrozenHashBox(objects, ['size', has_cheese])
+hb = HashBox(objects, ['size', has_cheese])
 
 # returns orders 1, 2 and 4
-f.find({has_cheese: True})  
+hb.find({has_cheese: True})  
 ```
 
-### Strings
+### Derived attributes
+
+Find-by-function adds huge flexibility. Here we find string objects with certain characteristics.
 
 ```
 from hashbox import FrozenHashBox
@@ -99,16 +124,17 @@ f.find({o_count: 2})  # returns ['mushrooms', 'onions']
 
 ### Recipes
  
- - [Auto-updating](examples/update.py) - Keep Filtered updated when attribute values change
- - [Wordle solver](examples/wordle.ipynb) - Use `functools.partials` to make many attribute functions
+ - [Auto-updating](examples/update.py) - Keep HashBox updated when attribute values change
+ - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make many attribute functions
  - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
+ - [Crossword helper service](examples/crossword.py) - Pickle a FrozenHashBox, wrap it in an API
 
 ____
 
 ## Performance
 
-Really fast. Beats SQLite by 5x ~ 10x. Proper benchmarks are a work in progress, stay tuned.
+Demo: [HashBox going 5x~10x faster than SQLite](examples/perf_demo.ipynb)
 
 ____
 
@@ -118,8 +144,9 @@ Attribute values are stored by their hash, either in dicts (HashBox) or numpy
 arrays (FrozenHashBox). So values don't need to be comparable by greater than / less than, they only need to be 
 hashable. This maximizes flexibility.
 
-For each attribute value, the `id` of each matching object is stored. During `find`, these IDs are retrieved as sets 
-(HashBox) or sorted numpy arrays (FrozenHashBox). Set operations such as intersection are then used to find the 
-objects that fit all constraints.
+For each attribute value, a [unique ID](https://docs.python.org/3/library/functions.html#id) of each matching object is 
+stored. During `find`, these IDs are retrieved as sets (HashBox) or
+[sorted numpy arrays](https://pypi.org/project/sortednp/) (FrozenHashBox). Set operations 
+such as intersection are then used to find the objects that fit all constraints.
 
 ____
