@@ -1,5 +1,6 @@
 """
 Look up objects by the percentile rank of an attribute.
+
 In this example, we find requests with latency > p99 (99th percentile)
 and requests with median latency (50th percentile).
 """
@@ -9,7 +10,7 @@ from bisect import bisect_left
 import numpy as np
 from typing import Any
 
-from filtered import Filtered
+from hashbox import HashBox
 
 
 def percentile(cutoffs: np.ndarray, attr: str, obj: Any) -> int:
@@ -30,15 +31,15 @@ def main():
     latencies = np.array([obj["latency"] for obj in objs])
     cutoffs = np.quantile(latencies, np.linspace(0, 1, 100))
     p_latency = functools.partial(percentile, cutoffs, "latency")
-    f = Filtered(objs, [p_latency])
+    hb = HashBox(objs, [p_latency])
     print("requests with first-percentile latency:")
-    for obj in f.find({p_latency: [0, 1]}):
+    for obj in hb.find({p_latency: [0, 1]}):
         print(obj)
     print("\nrequests with median (50th percentile) latency:")
-    for obj in f.find({p_latency: 50}):
+    for obj in hb.find({p_latency: 50}):
         print(obj)
     print("\nrequests with 99th percentile latency:")
-    for obj in f.find({p_latency: 99}):
+    for obj in hb.find({p_latency: 99}):
         print(obj)
 
 
