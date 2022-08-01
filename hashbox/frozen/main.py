@@ -5,9 +5,9 @@ from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
 import sortednp as snp
-
+from hashbox.utils import get_field
 from hashbox.frozen.frozen_attr import FrozenFieldIndex
-from hashbox.frozen.utils import make_empty_int_array, snp_difference
+from hashbox.frozen.utils import make_empty_array, snp_difference
 from hashbox.utils import validate_query
 
 
@@ -35,16 +35,12 @@ class FrozenHashBox:
         self.indices = {}
 
         self.obj_arr = np.empty(len(objs), dtype="O")
+        self.dtype = 'uint32' if len(objs) < 2**32 else 'uint64'
         for i, obj in enumerate(objs):
             self.obj_arr[i] = obj
-        self.id_arr = np.fromiter((id(obj) for obj in self.obj_arr), dtype="int64")
-        # sort both arrays by obj_id
-        sort_order = np.argsort(self.id_arr)
-        self.id_arr = self.id_arr[sort_order]
-        self.obj_arr = self.obj_arr[sort_order]
 
         for field in on:
-            self.indices[field] = FrozenFieldIndex(field, self.obj_arr)
+            self.indices[field] = FrozenFieldIndex(field, self.obj_arr, self.dtype)
 
     def find(
         self,
@@ -105,7 +101,7 @@ class FrozenHashBox:
                 hit_array = self._match_any_of(field, value)
                 if len(hit_array) == 0:
                     # this field had no matches, therefore the intersection will be empty. We can stop here.
-                    return np.empty(0, dtype="O")
+                    return make_empty_array('O')
                 hit_arrays.append(hit_array)
 
             # intersect all the hit_arrays, starting with the smallest
@@ -115,7 +111,7 @@ class FrozenHashBox:
                 else:
                     hits = snp.intersect(hits, hit_array)
         else:
-            hits = self.id_arr
+            hits = np.arange(len(self.obj_arr), dtype=self.dtype)
 
         # perform 'exclude' query
         if exclude:
@@ -129,7 +125,7 @@ class FrozenHashBox:
                 if len(hits) == 0:
                     break
 
-        return self._get_objs_by_ids(hits)
+        return self.obj_arr[hits]
 
     def _match_any_of(
         self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]
@@ -153,23 +149,9 @@ class FrozenHashBox:
         else:
             return self.indices[field].get(value)
 
-    def _get_objs_by_ids(self, id_arr: np.ndarray):
-        # Someday optimize:
-        # There's no real reason to store the object IDs. We could just use
-        # array indices instead of object IDs, throughout FrozenHashIndex.
-        # That would result in a small speedup here.
-        # Example:
-        # On a million-item dataset, lookup by index takes 2-5 microseconds
-        # while this intersection takes 20-50 microseconds.
-        _, indices = snp.intersect(id_arr, self.id_arr, indices=True)
-        return self.obj_arr[indices[1]]
-
     def __contains__(self, obj):
-        obj_id = id(obj)
-        idx = bisect_left(self.id_arr, obj_id)
-        if idx < 0 or idx >= len(self.id_arr):
-            return False
-        return self.id_arr[idx] == obj_id
+        objs = self.find({f: get_field(obj, f) for f in self.indices})
+        return obj in objs
 
     def __iter__(self):
         return iter(self.obj_arr)

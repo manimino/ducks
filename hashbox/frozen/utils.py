@@ -11,5 +11,5 @@ def snp_difference(left: np.ndarray, right: np.ndarray):
     return left[keep_these]
 
 
-def make_empty_int_array():
-    return np.empty(0, dtype="int64")
+def make_empty_array(dtype: str):
+    return np.empty(0, dtype=dtype)
