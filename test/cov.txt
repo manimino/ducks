@@ -23,8 +23,8 @@ hashbox/__init__.py                   2      0   100%
 hashbox/constants.py                  7      0   100%
 hashbox/exceptions.py                 4      0   100%
 hashbox/frozen/__init__.py            0      0   100%
-hashbox/frozen/frozen_attr.py        64      0   100%
-hashbox/frozen/main.py               65      0   100%
+hashbox/frozen/frozen_attr.py        67      0   100%
+hashbox/frozen/main.py               57      0   100%
 hashbox/frozen/utils.py              10      0   100%
 hashbox/init_helpers.py              69      0   100%
 hashbox/mutable/__init__.py           0      0   100%
@@ -33,7 +33,7 @@ hashbox/mutable/mutable_attr.py      43      0   100%
 hashbox/perf.py                       0      0   100%
 hashbox/utils.py                     25      0   100%
 -----------------------------------------------------
-TOTAL                               364      0   100%
+TOTAL                               359      0   100%
 
 
-============================= 119 passed in 5.70s ==============================
+============================= 119 passed in 5.66s ==============================

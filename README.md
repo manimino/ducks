@@ -97,23 +97,18 @@ f.find({len: 6})       # returns ['onions']
 f.find({o_count: 2})  # returns ['mushrooms', 'onions']
 ```
 
-### Advanced usage
+### Recipes
  
- - [Auto-updating](examples/update.py) - Define setters on your objects to keep HashBox updated when they change
- - [Wordle solver](examples/wordle.ipynb) - Use partials to generate many attribute functions
- - [Spatial lookup](examples/spatial.py) - Do location finding and collision detection
+ - [Auto-updating](examples/update.py) - Keep Filtered updated when attribute values change
+ - [Wordle solver](examples/wordle.ipynb) - Use `functools.partials` to make many attribute functions
+ - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
+ - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
 
 ____
 
 ## Performance
 
-
-### FrozenHashBox
-
-
-
-### HashBox
-
+Really fast. Beats SQLite by 5x ~ 10x. Proper benchmarks are a work in progress, stay tuned.
 
 ____
 

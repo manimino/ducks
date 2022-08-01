@@ -25,16 +25,14 @@ from cykhash import Int64Set
 
 
 def sort_by_hash(
-    objs: np.ndarray, field: Union[Callable, str]
+    objs: np.ndarray, obj_id_arr: np.ndarray, field: Union[Callable, str],
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Fetch vals from each obj. Create obj_id, val, and hash arrays, sorted by hash."""
     hash_arr = np.empty(len(objs), dtype="int64")
     val_arr = np.empty(len(objs), dtype="O")
-    obj_id_arr = np.empty(len(objs), dtype="int64")
     for i, obj in enumerate(objs):
         val_arr[i] = get_field(obj, field)
         hash_arr[i] = hash(val_arr[i])
-        obj_id_arr[i] = id(obj)
     sort_order = np.argsort(hash_arr)
     val_arr = val_arr[sort_order]
     obj_id_arr = obj_id_arr[sort_order]
@@ -109,10 +107,12 @@ def run_length_encode(arr: np.ndarray):
 def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
     """Create a dict of {val: obj_ids}. Used when creating a mutable index."""
     obj_arr = np.empty(len(objs), dtype="O")
+    obj_id_arr = np.empty(len(objs), dtype="int64")
     for i, obj in enumerate(objs):
         obj_arr[i] = obj
+        obj_id_arr[i] = id(obj)
 
-    sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(obj_arr, field)
+    sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(obj_arr, obj_id_arr, field)
     group_by_val(sorted_hashes, sorted_vals, sorted_obj_ids)
     starts, counts, unique_vals = run_length_encode(sorted_vals)
     d = dict()

@@ -3,7 +3,7 @@ import numpy as np
 from typing import Union, Callable
 from hashbox.init_helpers import sort_by_hash, group_by_val, run_length_encode
 from hashbox.constants import SIZE_THRESH
-from hashbox.frozen.utils import make_empty_int_array
+from hashbox.frozen.utils import make_empty_array
 from bisect import bisect_left
 from dataclasses import dataclass
 
@@ -16,12 +16,13 @@ class ObjsByHash:
     unique_hashes: np.ndarray
     hash_starts: np.ndarray
     hash_run_lengths: np.ndarray
+    dtype: str
 
     def get(self, val):
         val_hash = hash(val)
         i = bisect_left(self.unique_hashes, val_hash)
         if i < 0 or i >= len(self.unique_hashes) or self.unique_hashes[i] != val_hash:
-            return make_empty_int_array()
+            return make_empty_array(self.dtype)
         start = self.hash_starts[i]
         end = self.hash_starts[i] + self.hash_run_lengths[i]
         # Typically the hash will only contain the one val we want.
@@ -32,16 +33,18 @@ class ObjsByHash:
         while end > start and self.sorted_vals[end - 1] != val:
             end -= 1
         if end == start:
-            return make_empty_int_array()
+            return make_empty_array(self.dtype)
         return self.sorted_obj_ids[start:end]
 
 
 class FrozenFieldIndex:
     """Stores data and handles requests that are relevant to a single attribute of a FrozenHashBox."""
 
-    def __init__(self, field: Union[str, Callable], objs: np.ndarray):
+    def __init__(self, field: Union[str, Callable], objs: np.ndarray, dtype: str):
         # sort the objects by attribute value, using their hashes and handling collisions
-        sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(objs, field)
+        self.dtype = dtype
+        obj_id_arr = np.arange(len(objs), dtype=self.dtype)
+        sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(objs, obj_id_arr, field)
         group_by_val(sorted_hashes, sorted_vals, sorted_obj_ids)
 
         # find runs of the same value, get the start positions and lengths of those runs
@@ -80,6 +83,7 @@ class FrozenFieldIndex:
                 unique_hashes=unique_hashes,
                 hash_starts=hash_starts,
                 hash_run_lengths=hash_run_lengths,
+                dtype=self.dtype
             )
             return
 
@@ -96,6 +100,7 @@ class FrozenFieldIndex:
             unique_hashes=unique_hashes,
             hash_starts=hash_starts,
             hash_run_lengths=hash_run_lengths,
+            dtype=self.dtype
         )
 
     def get(self, val) -> np.ndarray:
@@ -105,4 +110,4 @@ class FrozenFieldIndex:
         elif self.objs_by_hash is not None:
             return np.sort(self.objs_by_hash.get(val))
         else:
-            return make_empty_int_array()
+            return make_empty_array(self.dtype)
