@@ -44,7 +44,9 @@ class FrozenFieldIndex:
         # sort the objects by attribute value, using their hashes and handling collisions
         self.dtype = dtype
         obj_id_arr = np.arange(len(objs), dtype=self.dtype)
-        sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(objs, obj_id_arr, field)
+        sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(
+            objs, obj_id_arr, field
+        )
         group_by_val(sorted_hashes, sorted_vals, sorted_obj_ids)
 
         # find runs of the same value, get the start positions and lengths of those runs
@@ -83,7 +85,7 @@ class FrozenFieldIndex:
                 unique_hashes=unique_hashes,
                 hash_starts=hash_starts,
                 hash_run_lengths=hash_run_lengths,
-                dtype=self.dtype
+                dtype=self.dtype,
             )
             return
 
@@ -100,7 +102,7 @@ class FrozenFieldIndex:
             unique_hashes=unique_hashes,
             hash_starts=hash_starts,
             hash_run_lengths=hash_run_lengths,
-            dtype=self.dtype
+            dtype=self.dtype,
         )
 
     def get(self, val) -> np.ndarray:
