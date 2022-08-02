@@ -46,9 +46,10 @@ ____
 
 ## Examples
 
-### Match multiple values
+<details>
+<summary>Specify a list of values for an attribute to include / exclude values in the list.</summary>
+<br>
 
-Specify a list of values for an attribute to include / exclude values in the list.
 
 ```
 from hashbox import HashBox
@@ -73,10 +74,11 @@ hb.find(
 )  # result: order 4
 
 ```
+</details>
 
-### Nested attributes
+<details>
+<summary>Define a function to access nested attributes.</summary>
 
-Define a function to access nested attributes.
 
 ```
 from hashbox import HashBox
@@ -105,12 +107,14 @@ hb = HashBox(objects, ['size', has_cheese])
 # returns orders 1, 2 and 4
 hb.find({has_cheese: True})  
 ```
+</details>
 
 
 [Sample code](examples/nested_attributes.py)
 
 
-### Derived attributes
+<details>
+<summary>Derived attributes</summary>
 
 Find-by-function is very powerful. Here we find string objects with certain characteristics.
 
@@ -126,6 +130,7 @@ f = FrozenHashBox(objects, [o_count, len])
 f.find({len: 6})       # returns ['onions']
 f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ```
+</details>
 
 ### Recipes
  
