@@ -2,7 +2,7 @@
 
 Container for finding Python objects by matching attributes. 
 
-Uses hash-based methods for storage and retrieval, so finds are very fast.
+Uses hash-based methods for storage and retrieval, so find is very fast.
 
 ```
 pip install hashbox
