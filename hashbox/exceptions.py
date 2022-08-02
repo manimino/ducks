@@ -1,9 +1,9 @@
 class FrozenError(Exception):
-    """Raised when attempting to modify a FrozenIndex"""
+    """Raised when attempting to modify a FrozenHashBox"""
 
 
-class MissingIndexError(Exception):
-    """Raised when querying a field we don't have an index for"""
+class AttributeNotFoundError(Exception):
+    """Raised when querying an attribute we don't have"""
 
 
 class MissingAttribute(Exception):

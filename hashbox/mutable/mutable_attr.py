@@ -4,25 +4,25 @@ from cykhash import Int64Set
 
 from hashbox.constants import TUPLE_SIZE_MAX, SET_SIZE_MIN
 from hashbox.init_helpers import compute_mutable_dict
-from hashbox.utils import get_field
+from hashbox.utils import get_attribute
 
 
-class MutableFieldIndex:
+class MutableAttrIndex:
     """
-    Stores the possible values of this field in a collection of buckets.
+    Stores the possible values of this attribute in a collection of buckets.
     Several values may be allocated to the same bucket for space efficiency reasons.
     """
 
     def __init__(
         self,
-        field: Union[Callable, str],
+        attr: Union[Callable, str],
         obj_map: Dict[int, Any],
         objs: Optional[Iterable[Any]] = None,
     ):
-        self.field = field
+        self.attr = attr
         self.obj_map = obj_map
         if objs:
-            self.d = compute_mutable_dict(objs, field)
+            self.d = compute_mutable_dict(objs, attr)
         else:
             self.d = dict()
 
@@ -36,7 +36,7 @@ class MutableFieldIndex:
             return Int64Set([ids])
 
     def add(self, ptr: int, obj: Any):
-        val, success = get_field(obj, self.field)
+        val, success = get_attribute(obj, self.attr)
         if not success:
             return
         if val in self.d:
@@ -57,7 +57,7 @@ class MutableFieldIndex:
         """
         Remove a single object from the index. ptr is already known to be in the index.
         """
-        val, success = get_field(obj, self.field)
+        val, success = get_attribute(obj, self.attr)
         if not success:
             return
         obj_ids = self.d[val]

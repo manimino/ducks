@@ -2,24 +2,24 @@ import numpy as np
 
 from typing import List, Union, Callable, Optional, Any, Dict, Tuple
 
-from hashbox.exceptions import MissingIndexError, MissingAttribute
+from hashbox.exceptions import AttributeNotFoundError, MissingAttribute
 
 
-def get_field(obj: Any, field: Union[Callable, str]) -> Tuple[Any, bool]:
+def get_attribute(obj: Any, attr: Union[Callable, str]) -> Tuple[Any, bool]:
     """Get the object's attribute value. Return (value, success). Unsuccessful if attribute is missing."""
-    if callable(field):
+    if callable(attr):
         try:
-            val = field(obj)
+            val = attr(obj)
         except MissingAttribute:
             return None, False
     elif isinstance(obj, dict):
         try:
-            val = obj[field]
+            val = obj[attr]
         except KeyError:
             return None, False
     else:
         try:
-            val = getattr(obj, field)
+            val = getattr(obj, attr)
         except AttributeError:
             return None, False
     return val, True
@@ -47,7 +47,7 @@ def validate_query(
         required_indices.update(exclude.keys())
     missing_indices = required_indices.difference(indices)
     if missing_indices:
-        raise MissingIndexError
+        raise AttributeNotFoundError
 
 
 def make_empty_array(dtype: str):

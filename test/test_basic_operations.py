@@ -77,7 +77,7 @@ def test_find_exclude_only(box_class):
     assert result[0].name == "Zapdos"
 
 
-def test_two_fields(box_class):
+def test_two_attrs(box_class):
     f = make_test_data(box_class)
     result = f.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric"},
@@ -88,7 +88,7 @@ def test_two_fields(box_class):
     assert result[1].name == "Pikachu"
 
 
-def test_three_fields(box_class):
+def test_three_attrs(box_class):
     f = make_test_data(box_class)
     result = f.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric", "type2": "Flying"}

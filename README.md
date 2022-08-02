@@ -1,7 +1,8 @@
 # HashBox
 
-Container for finding Python objects by their attributes. Built on hash-based containers (`dict` and `set`), so it's 
-very fast.
+Container for finding Python objects by matching attributes. 
+
+Uses hash-based methods for storage and retrieval, so finds are very fast.
 
 ```
 pip install hashbox
@@ -39,7 +40,7 @@ The objects can be any type: class instances, namedtuples, dicts, strings, float
 
 There are two classes available.
  - HashBox: can `add()` and `remove()` objects.
- - FrozenHashBox: much faster performance, memory-efficient, and immutable.
+ - FrozenHashBox: faster finds, lower memory usage, and immutable.
 
 ____
 
@@ -48,66 +49,27 @@ ____
 ### Match multiple values
 
 Specify a list of values for an attribute to include / exclude values in the list.
+ - `match={'a': [1, 2, 3]}` matches all objects where 'a' equals 1, 2, or 3. (Read as `obj['a'] in [1, 2, 3]`).
+ - `exclude={'b': [4, 5, 6]}` excludes objects where 'b' is 4, 5, or 6. (Read as `obj['b'] not in [4, 5, 6]`).
 
-```
-from hashbox import HashBox
-
-objects = [
-    {'order': 1, 'size': 'regular', 'topping': 'smothered'}, 
-    {'order': 2, 'size': 'regular', 'topping': 'diced'}, 
-    {'order': 3, 'size': 'large', 'topping': 'covered'},
-    {'order': 4, 'size': 'triple', 'topping': 'chunked'}
-]
-
-hb = HashBox(objects, on=['size', 'topping'])
-
-hb.find(
-    match={'size': ['regular', 'large']},  # match anything with size in ['regular', 'large'] 
-    exclude={'topping': 'diced'}           # exclude where topping is 'diced'
-)  # result: orders 1 and 3
-
-hb.find(
-    match={},                               # match all objects
-    exclude={'size': ['regular', 'large']}  # where size is not in ['regular', 'large']
-)  # result: order 4
-
-```
+[Sample code](examples/match_list.py)
 
 ### Nested attributes
 
-Define a function to access nested attributes.
+Define functions to access nested attributes. The functions can be used as attributes.
 
 ```
-from hashbox import HashBox
-
-class Order:
-    def __init__(self, num, size, toppings):
-        self.num = num
-        self.size = size
-        self.toppings = toppings
-        
-    def __repr__(self):
-        return f"order: {self.num}, size: '{self.size}', toppings: {self.toppings}"
-    
-objects = [
-    Order(1, 'regular', ['scattered', 'smothered', 'covered']),
-    Order(2, 'large', ['scattered', 'covered', 'peppered']),
-    Order(3, 'large', ['scattered', 'diced', 'chunked']),
-    Order(4, 'triple', ['all the way']),
-]
-
-def has_cheese(obj):
-    return 'covered' in obj.toppings or 'all the way' in obj.toppings
-
-hb = HashBox(objects, ['size', has_cheese])
-
-# returns orders 1, 2 and 4
-hb.find({has_cheese: True})  
+def get_nested_attribute(obj):
+    return obj.arr[3]  # gets the third array element of obj.arr
+hb = HashBox(objs, [get_nested_attribute])
 ```
+
+[Sample code](examples/nested_attributes.py)
+
 
 ### Derived attributes
 
-Find-by-function adds huge flexibility. Here we find string objects with certain characteristics.
+Find-by-function is very powerful. Here we find string objects with certain characteristics.
 
 ```
 from hashbox import FrozenHashBox
@@ -125,7 +87,7 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ### Recipes
  
  - [Auto-updating](examples/update.py) - Keep HashBox updated when attribute values change
- - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make many attribute functions
+ - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
  - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
 
@@ -139,13 +101,25 @@ ____
 
 ## How it works
 
-Attribute values are stored by their hash, either in dicts (HashBox) or numpy 
-arrays (FrozenHashBox). So values don't need to be comparable by greater than / less than, they only need to be 
-hashable. This maximizes flexibility.
+In HashBox, each attribute is a dict of sets: `{attribute value: set(object IDs)}`. 
+On `find()`, object IDs are retrieved for each attribute value, and set operations are applied to get the final
+object ID set. Last, the object IDs are mapped to objects, which are then returned.
 
-For each attribute value, a [unique ID](https://docs.python.org/3/library/functions.html#id) of each matching object is 
-stored. During `find`, these IDs are retrieved as sets (HashBox) or
-[sorted numpy arrays](https://pypi.org/project/sortednp/) (FrozenHashBox). Set operations 
-such as intersection are then used to find the objects that fit all constraints.
+FrozenHashBox uses arrays instead of sets, thanks to its immutability constraint. It stores a numpy array 
+of objects. Attribute values map to indices in the object array. On `find()`, the array indices for each match are 
+retrieved. Then, very fast set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
+final set of object array indices. The objects are retrieved from the object array by index and returned.
+
+HashBox and FrozenHashBox are sparse: If an object is missing an attribute, the link from that attribute to the object
+is not stored. This improves memory efficiency when handling diverse objects.
+
+### Related projects
+
+HashBox is a type of inverted index. It is optimized for its goal of finding in-memory Python objects.
+
+Other Python inverted index implementations are aimed at things like [vector search](https://pypi.org/project/rii/) and
+[finding documents by words](https://pypi.org/project/nltk/). Outside of Python, ElasticSearch is a popular inverted
+index search tool. Each of these has goals outside of HashBox's niche; there are no plans to expand HashBox towards
+these functions.
 
 ____
