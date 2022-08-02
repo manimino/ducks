@@ -46,6 +46,8 @@ ____
 
 ## Examples
 
+Expand for sample code.
+
 <details>
 <summary>Specify a list of values for an attribute to include / exclude values in the list.</summary>
 <br>
@@ -112,7 +114,7 @@ hb.find({has_cheese: True})
 
 <details>
 <summary>Derived attributes</summary>
-
+<br />
 Find-by-function is very powerful. Here we find string objects with certain characteristics.
 
 ```
