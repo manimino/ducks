@@ -1,7 +1,8 @@
 # HashBox
 
-Container for finding Python objects by their attributes. Built on hash-based containers (`dict` and `set`), so it's 
-very fast.
+Container for finding Python objects by matching attributes. 
+
+Uses hash-based methods for storage and retrieval, so find is very fast.
 
 ```
 pip install hashbox
@@ -39,15 +40,18 @@ The objects can be any type: class instances, namedtuples, dicts, strings, float
 
 There are two classes available.
  - HashBox: can `add()` and `remove()` objects.
- - FrozenHashBox: much faster performance, memory-efficient, and immutable.
+ - FrozenHashBox: faster finds, lower memory usage, and immutable.
 
 ____
 
 ## Examples
 
-### Match multiple values
+Expand for sample code.
 
-Specify a list of values for an attribute to include / exclude values in the list.
+<details>
+<summary>Specify a list of values for an attribute to include / exclude values in the list.</summary>
+<br>
+
 
 ```
 from hashbox import HashBox
@@ -72,10 +76,11 @@ hb.find(
 )  # result: order 4
 
 ```
+</details>
 
-### Nested attributes
+<details>
+<summary>Define a function to access nested attributes.</summary>
 
-Define a function to access nested attributes.
 
 ```
 from hashbox import HashBox
@@ -104,10 +109,13 @@ hb = HashBox(objects, ['size', has_cheese])
 # returns orders 1, 2 and 4
 hb.find({has_cheese: True})  
 ```
+</details>
 
-### Derived attributes
 
-Find-by-function adds huge flexibility. Here we find string objects with certain characteristics.
+<details>
+<summary>Derived attributes</summary>
+<br />
+Find-by-function is very powerful. Here we find string objects with certain characteristics.
 
 ```
 from hashbox import FrozenHashBox
@@ -121,13 +129,15 @@ f = FrozenHashBox(objects, [o_count, len])
 f.find({len: 6})       # returns ['onions']
 f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ```
+</details>
 
 ### Recipes
  
  - [Auto-updating](examples/update.py) - Keep HashBox updated when attribute values change
- - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make many attribute functions
+ - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
  - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
+ - [Missing attributes in functions](examples/missing_function.py) - How to handle missing attributes in attribute functions
 
 ____
 
@@ -139,13 +149,25 @@ ____
 
 ## How it works
 
-Attribute values are stored by their hash, either in dicts (HashBox) or numpy 
-arrays (FrozenHashBox). So values don't need to be comparable by greater than / less than, they only need to be 
-hashable. This maximizes flexibility.
+In HashBox, each attribute is a dict of sets: `{attribute value: set(object IDs)}`. 
+On `find()`, object IDs are retrieved for each attribute value, and set operations are applied to get the final
+object ID set. Last, the object IDs are mapped to objects, which are then returned.
 
-For each attribute value, a [unique ID](https://docs.python.org/3/library/functions.html#id) of each matching object is 
-stored. During `find`, these IDs are retrieved as sets (HashBox) or
-[sorted numpy arrays](https://pypi.org/project/sortednp/) (FrozenHashBox). Set operations 
-such as intersection are then used to find the objects that fit all constraints.
+FrozenHashBox uses arrays instead of sets, thanks to its immutability constraint. It stores a numpy array 
+of objects. Attribute values map to indices in the object array. On `find()`, the array indices for each match are 
+retrieved. Then, very fast set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
+final set of object array indices. The objects are retrieved from the object array by index and returned.
+
+HashBox and FrozenHashBox are sparse: If an object is missing an attribute, the link from that attribute to the object
+is not stored. This improves memory efficiency when handling diverse objects.
+
+### Related projects
+
+HashBox is a type of inverted index. It is optimized for its goal of finding in-memory Python objects.
+
+Other Python inverted index implementations are aimed at things like [vector search](https://pypi.org/project/rii/) and
+[finding documents by words](https://pypi.org/project/nltk/). Outside of Python, ElasticSearch is a popular inverted
+index search tool. Each of these has goals outside of HashBox's niche; there are no plans to expand HashBox towards
+these functions.
 
 ____

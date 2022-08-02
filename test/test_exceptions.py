@@ -1,7 +1,7 @@
 import pytest
 
 from hashbox import HashBox, FrozenHashBox
-from hashbox.exceptions import MissingIndexError
+from hashbox.exceptions import AttributeNotFoundError
 from hashbox.constants import SIZE_THRESH
 
 from .conftest import AssertRaises, BadHash
@@ -29,7 +29,7 @@ def test_bad_query(box_class):
         f.find(match=[])
     with AssertRaises(TypeError):
         f.find(["a", 1])
-    with AssertRaises(MissingIndexError):
+    with AssertRaises(AttributeNotFoundError):
         f.find({"b": 1})
 
 

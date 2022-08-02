@@ -5,7 +5,7 @@ from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
 import sortednp as snp
 from bisect import bisect_left
-from hashbox.frozen.frozen_attr import FrozenFieldIndex
+from hashbox.frozen.frozen_attr import FrozenAttrIndex
 from hashbox.frozen.utils import snp_difference
 from hashbox.utils import make_empty_array, validate_query
 
@@ -38,8 +38,8 @@ class FrozenHashBox:
         for i, obj in enumerate(objs):
             self.obj_arr[i] = obj
 
-        for field in on:
-            self.indices[field] = FrozenFieldIndex(field, self.obj_arr, self.dtype)
+        for attr in on:
+            self.indices[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
 
         self.sorted_obj_ids = np.sort(
             [id(obj) for obj in self.obj_arr]
@@ -100,10 +100,10 @@ class FrozenHashBox:
         # perform 'match' query
         if match:
             hit_arrays = []
-            for field, value in match.items():
-                hit_array = self._match_any_of(field, value)
+            for attr, value in match.items():
+                hit_array = self._match_any_of(attr, value)
                 if len(hit_array) == 0:
-                    # this field had no matches, therefore the intersection will be empty. We can stop here.
+                    # this attr had no matches, therefore the intersection will be empty. We can stop here.
                     return make_empty_array("O")
                 hit_arrays.append(hit_array)
 
@@ -119,8 +119,8 @@ class FrozenHashBox:
         # perform 'exclude' query
         if exclude:
             exc_arrays = []
-            for field, value in exclude.items():
-                exc_arrays.append(self._match_any_of(field, value))
+            for attr, value in exclude.items():
+                exc_arrays.append(self._match_any_of(attr, value))
 
             # subtract each of the exc_arrays, starting with the largest
             for exc_array in sorted(exc_arrays, key=len, reverse=True):
@@ -131,26 +131,26 @@ class FrozenHashBox:
         return self.obj_arr[hits]
 
     def _match_any_of(
-        self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]
+        self, attr: Union[str, Callable], value: Union[Hashable, List[Hashable]]
     ) -> np.ndarray:
-        """Get matches for a single field during a find(). If multiple values specified, handle union logic.
+        """Get matches for a single attr during a find(). If multiple values specified, handle union logic.
 
         Args:
-            field: The attribute being queried.
-            value: The value of the field to match, or if list, multiple values to match.
+            attr: The attribute being queried.
+            value: The value of the attr to match, or if list, multiple values to match.
 
         Returns:
             Sorted array of object IDs.
         """
         if isinstance(value, list):
             # take the union of all matches
-            matches = [self.indices[field].get(v) for v in value]
+            matches = [self.indices[attr].get(v) for v in value]
             # note: merging sorted arrays is often done with heapq, but heapq performs much slower here.
             # order bound ain't everything.
             matches = snp.kway_merge(*matches, assume_sorted=True)
             return matches
         else:
-            return self.indices[field].get(value)
+            return self.indices[attr].get(value)
 
     def __contains__(self, obj):
         obj_id = id(obj)

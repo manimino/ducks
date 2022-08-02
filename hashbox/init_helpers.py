@@ -19,20 +19,20 @@ Running the workflow takes between 600ms (low-cardinality case) and 1.5s (high-c
 
 import numpy as np
 from typing import Tuple, Union, Callable, Any, Iterable
-from hashbox.utils import get_field, make_empty_array
+from hashbox.utils import get_attribute, make_empty_array
 from hashbox.constants import SIZE_THRESH
 from cykhash import Int64Set
 
 
 def sort_by_hash(
-    objs: np.ndarray, obj_id_arr: np.ndarray, field: Union[Callable, str]
+    objs: np.ndarray, obj_id_arr: np.ndarray, attr: Union[Callable, str]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Fetch vals from each obj. Create obj_id, val, and hash arrays, sorted by hash."""
     hash_arr = np.empty(len(objs), dtype="int64")
     val_arr = np.empty(len(objs), dtype="O")
     success = np.empty(len(objs), dtype=bool)
     for i, obj in enumerate(objs):
-        val_arr[i], success[i] = get_field(obj, field)
+        val_arr[i], success[i] = get_attribute(obj, attr)
         hash_arr[i] = hash(val_arr[i])
 
     hash_arr = hash_arr[success]
@@ -116,7 +116,7 @@ def run_length_encode(arr: np.ndarray):
     return starts, counts, arr[change_pts]
 
 
-def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
+def compute_mutable_dict(objs: Iterable[Any], attr: Union[str, Callable]):
     """Create a dict of {val: obj_ids}. Used when creating a mutable index."""
     obj_arr = np.empty(len(objs), dtype="O")
     obj_id_arr = np.empty(len(objs), dtype="int64")
@@ -124,9 +124,7 @@ def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
         obj_arr[i] = obj
         obj_id_arr[i] = id(obj)
 
-    sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(
-        obj_arr, obj_id_arr, field
-    )
+    sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(obj_arr, obj_id_arr, attr)
     group_by_val(sorted_hashes, sorted_vals, sorted_obj_ids)
     starts, counts, unique_vals = run_length_encode(sorted_vals)
     d = dict()

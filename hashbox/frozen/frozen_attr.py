@@ -37,15 +37,15 @@ class ObjsByHash:
         return self.sorted_obj_ids[start:end]
 
 
-class FrozenFieldIndex:
+class FrozenAttrIndex:
     """Stores data and handles requests that are relevant to a single attribute of a FrozenHashBox."""
 
-    def __init__(self, field: Union[str, Callable], objs: np.ndarray, dtype: str):
+    def __init__(self, attr: Union[str, Callable], objs: np.ndarray, dtype: str):
         # sort the objects by attribute value, using their hashes and handling collisions
         self.dtype = dtype
         obj_id_arr = np.arange(len(objs), dtype=self.dtype)
         sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(
-            objs, obj_id_arr, field
+            objs, obj_id_arr, attr
         )
         group_by_val(sorted_hashes, sorted_vals, sorted_obj_ids)
 

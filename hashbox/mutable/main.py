@@ -3,7 +3,7 @@ from cykhash import Int64Set
 
 from operator import itemgetter
 from hashbox.utils import validate_query
-from hashbox.mutable.mutable_attr import MutableFieldIndex
+from hashbox.mutable.mutable_attr import MutableAttrIndex
 
 
 class HashBox:
@@ -13,16 +13,16 @@ class HashBox:
         on: Iterable[Union[str, Callable]] = None,
     ):
         if not on:
-            raise ValueError("Need at least one field to index on.")
+            raise ValueError("Need at least one attribute.")
         if objs:
             self.obj_map = {id(obj): obj for obj in objs}
         else:
             self.obj_map = dict()
 
-        # Make an index for each field.
+        # Build an index for each attribute
         self.indices = {}
-        for field in on:
-            self.indices[field] = MutableFieldIndex(field, self.obj_map, objs)
+        for attr in on:
+            self.indices[attr] = MutableAttrIndex(attr, self.obj_map, objs)
 
     def find(
         self,
@@ -57,18 +57,18 @@ class HashBox:
 
         # perform 'match' query
         if match:
-            # find intersection of each field
+            # find intersection of each attr
             hit_sets = []
-            for field, value in match.items():
-                # if multiple values for a field, find each value and union those first
-                hit_set = self._match_any_of(field, value)
+            for attr, value in match.items():
+                # if multiple values for a attr, find each value and union those first
+                hit_set = self._match_any_of(attr, value)
                 if len(hit_set) == 0:
-                    # this field had no matches, therefore the intersection will be empty. We can stop here.
+                    # this attr had no matches, therefore the intersection will be empty. We can stop here.
                     return Int64Set()
                 hit_sets.append(hit_set)
 
             for i, hit_set in enumerate(sorted(hit_sets, key=len)):
-                # intersect this field's hits with our hits so far
+                # intersect this attr's hits with our hits so far
                 if i == 0:
                     hits = hit_set
                 else:
@@ -84,8 +84,8 @@ class HashBox:
         # perform 'exclude' query
         if exclude:
             exc_sets = []
-            for field, value in exclude.items():
-                exc_sets.append(self._match_any_of(field, value))
+            for attr, value in exclude.items():
+                exc_sets.append(self._match_any_of(attr, value))
 
             for exc_set in sorted(exc_sets, key=len, reverse=True):
                 hits = Int64Set.difference(hits, exc_set)
@@ -98,8 +98,8 @@ class HashBox:
         """Add a new object, evaluating any attributes and storing the results."""
         ptr = id(obj)
         self.obj_map[ptr] = obj
-        for field in self.indices:
-            self.indices[field].add(ptr, obj)
+        for attr in self.indices:
+            self.indices[attr].add(ptr, obj)
 
     def remove(self, obj):
         """Remove an object."""
@@ -107,24 +107,24 @@ class HashBox:
         if ptr not in self.obj_map:
             raise KeyError
 
-        for field in self.indices:
-            self.indices[field].remove(ptr, obj)
+        for attr in self.indices:
+            self.indices[attr].remove(ptr, obj)
         del self.obj_map[ptr]
 
-    def _match_any_of(self, field: str, value: Any):
-        """Get matches for a single field during a find(). If multiple values specified, handle union logic."""
+    def _match_any_of(self, attr: str, value: Any):
+        """Get matches for a single attr during a find(). If multiple values specified, handle union logic."""
         if isinstance(value, list):
             # take the union of all matches
             matches = Int64Set()
             for v in value:
-                v_matches = self.indices[field].get_obj_ids(v)
+                v_matches = self.indices[attr].get_obj_ids(v)
                 # union with the larger set on the left is faster in cykhash
                 if len(matches) > len(v_matches):
                     matches = matches.union(v_matches)
                 else:
                     matches = v_matches.union(matches)
         else:
-            matches = self.indices[field].get_obj_ids(value)
+            matches = self.indices[attr].get_obj_ids(value)
         return matches
 
     def __contains__(self, obj):
