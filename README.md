@@ -49,20 +49,63 @@ ____
 ### Match multiple values
 
 Specify a list of values for an attribute to include / exclude values in the list.
- - `match={'a': [1, 2, 3]}` matches all objects where 'a' equals 1, 2, or 3. (Read as `obj['a'] in [1, 2, 3]`).
- - `exclude={'b': [4, 5, 6]}` excludes objects where 'b' is 4, 5, or 6. (Read as `obj['b'] not in [4, 5, 6]`).
 
-[Sample code](examples/match_list.py)
+```
+from hashbox import HashBox
+
+objects = [
+    {'order': 1, 'size': 'regular', 'topping': 'smothered'}, 
+    {'order': 2, 'size': 'regular', 'topping': 'diced'}, 
+    {'order': 3, 'size': 'large', 'topping': 'covered'},
+    {'order': 4, 'size': 'triple', 'topping': 'chunked'}
+]
+
+hb = HashBox(objects, on=['size', 'topping'])
+
+hb.find(
+    match={'size': ['regular', 'large']},  # match anything with size in ['regular', 'large'] 
+    exclude={'topping': 'diced'}           # exclude where topping is 'diced'
+)  # result: orders 1 and 3
+
+hb.find(
+    match={},                               # match all objects
+    exclude={'size': ['regular', 'large']}  # where size is not in ['regular', 'large']
+)  # result: order 4
+
+```
 
 ### Nested attributes
 
-Define functions to access nested attributes. The functions can be used as attributes.
+Define a function to access nested attributes.
 
 ```
-def get_nested_attribute(obj):
-    return obj.arr[3]  # gets the third array element of obj.arr
-hb = HashBox(objs, [get_nested_attribute])
+from hashbox import HashBox
+
+class Order:
+    def __init__(self, num, size, toppings):
+        self.num = num
+        self.size = size
+        self.toppings = toppings
+        
+    def __repr__(self):
+        return f"order: {self.num}, size: '{self.size}', toppings: {self.toppings}"
+    
+objects = [
+    Order(1, 'regular', ['scattered', 'smothered', 'covered']),
+    Order(2, 'large', ['scattered', 'covered', 'peppered']),
+    Order(3, 'large', ['scattered', 'diced', 'chunked']),
+    Order(4, 'triple', ['all the way']),
+]
+
+def has_cheese(obj):
+    return 'covered' in obj.toppings or 'all the way' in obj.toppings
+
+hb = HashBox(objects, ['size', has_cheese])
+
+# returns orders 1, 2 and 4
+hb.find({has_cheese: True})  
 ```
+
 
 [Sample code](examples/nested_attributes.py)
 
