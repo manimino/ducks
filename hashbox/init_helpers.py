@@ -19,20 +19,28 @@ Running the workflow takes between 600ms (low-cardinality case) and 1.5s (high-c
 
 import numpy as np
 from typing import Tuple, Union, Callable, Any, Iterable
-from hashbox.utils import get_field
+from hashbox.utils import get_field, make_empty_array
 from hashbox.constants import SIZE_THRESH
 from cykhash import Int64Set
 
 
 def sort_by_hash(
-    objs: np.ndarray, obj_id_arr: np.ndarray, field: Union[Callable, str],
+        objs: np.ndarray,
+        obj_id_arr: np.ndarray,
+        field: Union[Callable, str]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Fetch vals from each obj. Create obj_id, val, and hash arrays, sorted by hash."""
     hash_arr = np.empty(len(objs), dtype="int64")
     val_arr = np.empty(len(objs), dtype="O")
+    success = np.empty(len(objs), dtype=bool)
     for i, obj in enumerate(objs):
-        val_arr[i] = get_field(obj, field)
+        val_arr[i], success[i] = get_field(obj, field)
         hash_arr[i] = hash(val_arr[i])
+
+    hash_arr = hash_arr[success]
+    val_arr = val_arr[success]
+    obj_id_arr = obj_id_arr[success]
+
     sort_order = np.argsort(hash_arr)
     val_arr = val_arr[sort_order]
     obj_id_arr = obj_id_arr[sort_order]
@@ -97,6 +105,8 @@ def run_length_encode(arr: np.ndarray):
 
     Takes 10ms for 1M objs.
     """
+    if len(arr) == 0:
+        return make_empty_array('int64'), make_empty_array('int64'), make_empty_array('int64')
     mismatch_val = arr[1:] != arr[:-1]
     change_pts = np.append(np.where(mismatch_val), len(arr) - 1)
     counts = np.diff(np.append(-1, change_pts))

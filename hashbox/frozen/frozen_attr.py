@@ -3,7 +3,7 @@ import numpy as np
 from typing import Union, Callable
 from hashbox.init_helpers import sort_by_hash, group_by_val, run_length_encode
 from hashbox.constants import SIZE_THRESH
-from hashbox.frozen.utils import make_empty_array
+from hashbox.utils import make_empty_array
 from bisect import bisect_left
 from dataclasses import dataclass
 
@@ -111,3 +111,7 @@ class FrozenFieldIndex:
             return np.sort(self.objs_by_hash.get(val))
         else:
             return make_empty_array(self.dtype)
+
+    def __len__(self):
+        tot = sum(len(v) for v in self.val_to_obj_ids.values())
+        return tot + len(self.objs_by_hash.sorted_obj_ids)
