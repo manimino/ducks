@@ -110,9 +110,6 @@ hb.find({has_cheese: True})
 </details>
 
 
-[Sample code](examples/nested_attributes.py)
-
-
 <details>
 <summary>Derived attributes</summary>
 
