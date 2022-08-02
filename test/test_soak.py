@@ -159,7 +159,9 @@ class SoakTest:
         t = self.random_obj()
         if t is not None:
             target_ts = get_field(t, "ts_sec")
-            ls = [o for o in self.objs.values() if get_field(o, "ts_sec")[0] == target_ts]
+            ls = [
+                o for o in self.objs.values() if get_field(o, "ts_sec")[0] == target_ts
+            ]
             f_ls = self.f.find({"ts_sec": target_ts})
             assert len(ls) == len(f_ls)
 

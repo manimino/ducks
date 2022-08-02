@@ -10,7 +10,7 @@ class HashBox:
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
-        on: Iterable[Union[str, Callable]] = None
+        on: Iterable[Union[str, Callable]] = None,
     ):
         if not on:
             raise ValueError("Need at least one field to index on.")

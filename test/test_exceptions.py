@@ -24,7 +24,7 @@ def test_no_index_mutable():
 
 
 def test_bad_query(box_class):
-    f = box_class([{'a': 1}], on=["a"])
+    f = box_class([{"a": 1}], on=["a"])
     with AssertRaises(TypeError):
         f.find(match=[])
     with AssertRaises(TypeError):

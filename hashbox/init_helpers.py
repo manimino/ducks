@@ -25,9 +25,7 @@ from cykhash import Int64Set
 
 
 def sort_by_hash(
-        objs: np.ndarray,
-        obj_id_arr: np.ndarray,
-        field: Union[Callable, str]
+    objs: np.ndarray, obj_id_arr: np.ndarray, field: Union[Callable, str]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Fetch vals from each obj. Create obj_id, val, and hash arrays, sorted by hash."""
     hash_arr = np.empty(len(objs), dtype="int64")
@@ -106,7 +104,11 @@ def run_length_encode(arr: np.ndarray):
     Takes 10ms for 1M objs.
     """
     if len(arr) == 0:
-        return make_empty_array('int64'), make_empty_array('int64'), make_empty_array('int64')
+        return (
+            make_empty_array("int64"),
+            make_empty_array("int64"),
+            make_empty_array("int64"),
+        )
     mismatch_val = arr[1:] != arr[:-1]
     change_pts = np.append(np.where(mismatch_val), len(arr) - 1)
     counts = np.diff(np.append(-1, change_pts))
@@ -122,7 +124,9 @@ def compute_mutable_dict(objs: Iterable[Any], field: Union[str, Callable]):
         obj_arr[i] = obj
         obj_id_arr[i] = id(obj)
 
-    sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(obj_arr, obj_id_arr, field)
+    sorted_hashes, sorted_vals, sorted_obj_ids = sort_by_hash(
+        obj_arr, obj_id_arr, field
+    )
     group_by_val(sorted_hashes, sorted_vals, sorted_obj_ids)
     starts, counts, unique_vals = run_length_encode(sorted_vals)
     d = dict()

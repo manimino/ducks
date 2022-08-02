@@ -17,7 +17,7 @@ class MutableFieldIndex:
         self,
         field: Union[Callable, str],
         obj_map: Dict[int, Any],
-        objs: Optional[Iterable[Any]] = None
+        objs: Optional[Iterable[Any]] = None,
     ):
         self.field = field
         self.obj_map = obj_map
