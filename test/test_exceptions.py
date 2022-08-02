@@ -1,7 +1,8 @@
+import pytest
+
 from hashbox import HashBox, FrozenHashBox
 from hashbox.exceptions import MissingIndexError
 from hashbox.constants import SIZE_THRESH
-import pytest
 
 from .conftest import AssertRaises, BadHash
 
@@ -23,7 +24,7 @@ def test_no_index_mutable():
 
 
 def test_bad_query(box_class):
-    f = box_class([0], on=["a"])
+    f = box_class([{'a': 1}], on=["a"])
     with AssertRaises(TypeError):
         f.find(match=[])
     with AssertRaises(TypeError):

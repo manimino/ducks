@@ -1,10 +1,11 @@
 class FrozenError(Exception):
     """Raised when attempting to modify a FrozenIndex"""
 
-    pass
-
 
 class MissingIndexError(Exception):
     """Raised when querying a field we don't have an index for"""
 
-    pass
+
+class MissingAttribute(Exception):
+    """Raise this in your attribute functions to denote that the object is missing this attribute. Finds that
+    match the attribute will never return this object. Finds that exclude the attribute will."""

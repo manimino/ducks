@@ -17,7 +17,7 @@ class MutableFieldIndex:
         self,
         field: Union[Callable, str],
         obj_map: Dict[int, Any],
-        objs: Optional[Iterable[Any]] = None,
+        objs: Optional[Iterable[Any]] = None
     ):
         self.field = field
         self.obj_map = obj_map
@@ -36,7 +36,9 @@ class MutableFieldIndex:
             return Int64Set([ids])
 
     def add(self, ptr: int, obj: Any):
-        val = get_field(obj, self.field)
+        val, success = get_field(obj, self.field)
+        if not success:
+            return
         if val in self.d:
             if isinstance(self.d[val], tuple):
                 if len(self.d[val]) == TUPLE_SIZE_MAX:
@@ -55,7 +57,9 @@ class MutableFieldIndex:
         """
         Remove a single object from the index. ptr is already known to be in the index.
         """
-        val = get_field(obj, self.field)
+        val, success = get_field(obj, self.field)
+        if not success:
+            return
         obj_ids = self.d[val]
         if isinstance(obj_ids, tuple) or isinstance(obj_ids, Int64Set):
             if isinstance(obj_ids, tuple):
@@ -68,3 +72,12 @@ class MutableFieldIndex:
                     self.d[val] = tuple(self.d[val])
         else:
             del self.d[val]
+
+    def __len__(self):
+        tot = 0
+        for key, val in self.d.items():
+            if isinstance(val, tuple) or isinstance(val, Int64Set):
+                tot += len(val)
+            else:
+                tot += 1
+        return tot

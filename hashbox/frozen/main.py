@@ -1,14 +1,13 @@
 import numpy as np
 
-from bisect import bisect_left
 from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
 import sortednp as snp
-from hashbox.utils import get_field
+from bisect import bisect_left
 from hashbox.frozen.frozen_attr import FrozenFieldIndex
-from hashbox.frozen.utils import make_empty_array, snp_difference
-from hashbox.utils import validate_query
+from hashbox.frozen.utils import snp_difference
+from hashbox.utils import make_empty_array, validate_query
 
 
 class FrozenHashBox:
@@ -41,6 +40,8 @@ class FrozenHashBox:
 
         for field in on:
             self.indices[field] = FrozenFieldIndex(field, self.obj_arr, self.dtype)
+
+        self.sorted_obj_ids = np.sort([id(obj) for obj in self.obj_arr])  # only used during contains() checks
 
     def find(
         self,
@@ -150,8 +151,11 @@ class FrozenHashBox:
             return self.indices[field].get(value)
 
     def __contains__(self, obj):
-        objs = self.find({f: get_field(obj, f) for f in self.indices})
-        return obj in objs
+        obj_id = id(obj)
+        idx = bisect_left(self.sorted_obj_ids, obj_id)
+        if idx < 0 or idx >= len(self.sorted_obj_ids):
+            return False
+        return self.sorted_obj_ids[idx] == obj_id
 
     def __iter__(self):
         return iter(self.obj_arr)

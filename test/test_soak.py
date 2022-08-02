@@ -3,9 +3,9 @@ HashBox (mutable form) is pretty complex.
 Let's run a lengthy test to make sure all the pieces work as expected across many add / remove operations.
 """
 
+import random
 import time
 from datetime import datetime
-import random
 from hashbox import HashBox
 from hashbox.utils import get_field
 
@@ -139,27 +139,27 @@ class SoakTest:
 
     def check_equal(self):
         # check a string key
-        ls = [o for o in self.objs.values() if get_field(o, "planet") == "saturn"]
+        ls = [o for o in self.objs.values() if get_field(o, "planet")[0] == "saturn"]
         f_ls = self.f.find({"planet": "saturn"})
         assert len(ls) == len(f_ls)
         # check a functional key
-        ls = [o for o in self.objs.values() if get_field(o, planet_len) == 6]
+        ls = [o for o in self.objs.values() if get_field(o, planet_len)[0] == 6]
         f_ls = self.f.find({planet_len: 6})
         assert len(ls) == len(f_ls)
         # check a null-ish key
-        ls = [o for o in self.objs.values() if get_field(o, "sometimes") is None]
-        f_ls = self.f.find({"sometimes": None})
+        ls = [o for o in self.objs.values() if get_field(o, "sometimes")[1] == False]
+        f_ls = self.f.find(exclude={"sometimes": True})
         assert len(ls) == len(f_ls)
         # check a colliding key
         c = Collider()
-        ls = [o for o in self.objs.values() if get_field(o, "collider") == c]
+        ls = [o for o in self.objs.values() if get_field(o, "collider")[0] == c]
         f_ls = self.f.find({"collider": c})
         assert len(ls) == len(f_ls)
         # check an object-ish key
         t = self.random_obj()
         if t is not None:
             target_ts = get_field(t, "ts_sec")
-            ls = [o for o in self.objs.values() if get_field(o, "ts_sec") == target_ts]
+            ls = [o for o in self.objs.values() if get_field(o, "ts_sec")[0] == target_ts]
             f_ls = self.f.find({"ts_sec": target_ts})
             assert len(ls) == len(f_ls)
 

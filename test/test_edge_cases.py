@@ -100,13 +100,6 @@ def test_get_zero(box_class):
     assert len(f.find({_f: "d"})) == 0
 
 
-def test_add_none():
-    f = HashBox(on="s")
-    f.add(None)
-    result = f.find({"s": None})
-    assert result[0] is None
-
-
 def test_double_add():
     f = HashBox(on="s")
     x = {"s": "hello"}
