@@ -90,6 +90,7 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
  - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
  - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
+ - [Missing attributes in functions](examples/missing_function.py) - How to handle missing attributes in attribute functions
 
 ____
 
