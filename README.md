@@ -8,6 +8,7 @@ Uses hash-based methods for storage and retrieval, so find is very fast.
 pip install hashbox
 ```
 
+
 [![tests Actions Status](https://github.com/manimino/hashbox/workflows/tests/badge.svg)](https://github.com/manimino/hashbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
 [![license - MIT](https://img.shields.io/static/v1?label=license&message=MIT&color=2ea44f)](/LICENSE)
@@ -133,30 +134,30 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 
 ### Recipes
  
- - [Auto-updating](examples/update.py) - Keep HashBox updated when attribute values change
- - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
- - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
- - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
- - [Missing attributes in functions](examples/missing_function.py) - How to handle missing attributes in attribute functions
+ - [Auto-updating](https://github.com/manimino/hashbox/blob/main/examples/update.py) - Keep HashBox updated when attribute values change
+ - [Wordle solver](https://github.com/manimino/hashbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
+ - [Collision detection](https://github.com/manimino/hashbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
+ - [Percentiles](https://github.com/manimino/hashbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
+ - [Missing attributes in functions](https://github.com/manimino/hashbox/blob/main/examples/missing_function.py) - How to handle missing data in function attributes
 
 ____
 
 ## Performance
 
-Demo: [HashBox going 5x~10x faster than SQLite](examples/perf_demo.ipynb)
+Demo: [HashBox going 5x~10x faster than SQLite](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
 
 ____
 
 ## How it works
 
 In HashBox, each attribute is a dict of sets: `{attribute value: set(object IDs)}`. 
-On `find()`, object IDs are retrieved for each attribute value, and set operations are applied to get the final
+On `find()`, object IDs are retrieved for each attribute value. Then, set operations are applied to get the final
 object ID set. Last, the object IDs are mapped to objects, which are then returned.
 
 FrozenHashBox uses arrays instead of sets, thanks to its immutability constraint. It stores a numpy array 
 of objects. Attribute values map to indices in the object array. On `find()`, the array indices for each match are 
-retrieved. Then, very fast set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
-final set of object array indices. The objects are retrieved from the object array by index and returned.
+retrieved. Then, set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
+final set of object array indices. Last, the objects are retrieved from the object array by index and returned.
 
 HashBox and FrozenHashBox are sparse: If an object is missing an attribute, the link from that attribute to the object
 is not stored. This improves memory efficiency when handling diverse objects.
@@ -171,3 +172,7 @@ index search tool. Each of these has goals outside of HashBox's niche; there are
 these functions.
 
 ____
+
+<div align="center">
+  <img src="https://github.com/manimino/hashbox/blob/add_logo/img/hashbox-logo.png"><br>
+</div>
