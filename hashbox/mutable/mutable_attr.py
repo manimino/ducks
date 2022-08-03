@@ -27,6 +27,7 @@ class MutableAttrIndex:
             self.d = dict()
 
     def get_obj_ids(self, val: Any) -> Int64Set:
+        """Get the object IDs associated with this value as an Int64Set."""
         ids = self.d.get(val, Int64Set())
         if isinstance(ids, tuple):
             return Int64Set(ids)
@@ -36,6 +37,7 @@ class MutableAttrIndex:
             return Int64Set([ids])
 
     def add(self, ptr: int, obj: Any):
+        """Add an object if it has this attribute."""
         val, success = get_attribute(obj, self.attr)
         if not success:
             return
@@ -54,9 +56,7 @@ class MutableAttrIndex:
             self.d[val] = ptr
 
     def remove(self, ptr: int, obj: Any):
-        """
-        Remove a single object from the index. ptr is already known to be in the index.
-        """
+        """Remove a single object from the index. ptr is already known to be in the index."""
         val, success = get_attribute(obj, self.attr)
         if not success:
             return
@@ -72,6 +72,19 @@ class MutableAttrIndex:
                     self.d[val] = tuple(self.d[val])
         else:
             del self.d[val]
+
+    def get_all_ids(self):
+        """Get the ID of every object that has this attribute.
+        Called when matching or excluding {attr: hashindex.ANY}."""
+        obj_ids = Int64Set()
+        for key, val in self.d.items():
+            if isinstance(val, tuple):
+                obj_ids = obj_ids.union(Int64Set(val))
+            elif isinstance(val, Int64Set):
+                obj_ids = obj_ids.union(val)
+            else:
+                obj_ids.add(val)
+        return obj_ids
 
     def __len__(self):
         tot = 0

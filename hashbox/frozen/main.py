@@ -1,10 +1,11 @@
-import numpy as np
-
+from bisect import bisect_left
 from collections.abc import Hashable
 from typing import Optional, Any, Dict, Union, Callable, Iterable, List
 
+import numpy as np
 import sortednp as snp
-from bisect import bisect_left
+
+from hashbox import ANY
 from hashbox.frozen.frozen_attr import FrozenAttrIndex
 from hashbox.frozen.utils import snp_difference
 from hashbox.utils import make_empty_array, validate_query
@@ -143,13 +144,11 @@ class FrozenHashBox:
             Sorted array of object IDs.
         """
         if isinstance(value, list):
-            # take the union of all matches
-            matches = [self.indices[attr].get(v) for v in value]
-            # note: merging sorted arrays is often done with heapq, but heapq performs much slower here.
-            # order bound ain't everything.
-            matches = snp.kway_merge(*matches, assume_sorted=True)
-            return matches
+            matches = [self.indices[attr].get(v) for v in set(value)]
+            return np.sort(np.concatenate(matches))
         else:
+            if value is ANY:
+                return self.indices[attr].get_all()
             return self.indices[attr].get(value)
 
     def __contains__(self, obj):

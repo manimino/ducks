@@ -2,6 +2,7 @@ import numpy as np
 
 from typing import List, Union, Callable, Optional, Any, Dict, Tuple
 
+from hashbox import ANY
 from hashbox.exceptions import AttributeNotFoundError, MissingAttribute
 
 
@@ -51,4 +52,5 @@ def validate_query(
 
 
 def make_empty_array(dtype: str):
+    """Shorthand for making a length-0 numpy array."""
     return np.empty(0, dtype=dtype)

@@ -1,6 +1,8 @@
 """
 Performs object lookup for a single attribute in a FrozenHashBox.
 
+=== HOW THIS WORKS ===
+
 There are three numpy arrays of length n_objects:
 - Array of object indices
 - Array of values
@@ -31,11 +33,11 @@ But hashes are nice; hash(obj) is just an int in the int64 range. Hashes are def
 be unique. So they're the best comparator we can hope for. We just need to handle the collisions, as detailed above.
 
 And there's one last optimization in here, to handle a hash collision scenario.
-Suppose we had two values, val1 and val2, with the same hash.
-val1 is associated with a million objects; val2 is associated with 10.
-When we look up val2, we don't want to have to crawl through all of the val1 values -- that
-would take tens of milliseconds! Every query involving val2 would be a performance disaster.
-So for values with many objects, like val1, we extract those off into their own arrays and give them
+Suppose we had two values, val_big and val_small, with the same hash.
+val1 is associated with a million objects; val2 is associated with ten.
+When we look up val_small, we don't want to have to crawl through all the val_big values -- that
+would take tens of milliseconds! Every query involving val_small would be a performance disaster.
+So for values with many objects, like val_big, we extract those off into their own arrays and give them
 a dict lookup. It adds a little code complexity and initialization time, but it makes query times predictable.
 Further, we don't need to store many copies of val1 in that case -- just one, for the dict lookup. So it saves
 memory as well. Super worth it.
@@ -44,12 +46,13 @@ memory as well. Super worth it.
 
 import numpy as np
 
+from bisect import bisect_left
+from dataclasses import dataclass
 from typing import Union, Callable
+
 from hashbox.init_helpers import sort_by_hash, group_by_val, run_length_encode
 from hashbox.constants import SIZE_THRESH
 from hashbox.utils import make_empty_array
-from bisect import bisect_left
-from dataclasses import dataclass
 
 
 @dataclass
@@ -146,6 +149,7 @@ class FrozenAttrIndex:
         )
 
     def get(self, val) -> np.ndarray:
+        """Get indices of objects whose attribute is val."""
         if val in self.val_to_obj_ids:
             # these are stored in sorted order
             return self.val_to_obj_ids[val]
@@ -153,6 +157,16 @@ class FrozenAttrIndex:
             return np.sort(self.objs_by_hash.get(val))
         else:
             return make_empty_array(self.dtype)
+
+    def get_all(self):
+        """Get indices of every object with this attribute. Used when matching ANY."""
+        if self.objs_by_hash is None:
+            arrs = []
+        else:
+            arrs = [self.objs_by_hash.sorted_obj_ids]
+        for v in self.val_to_obj_ids.values():
+            arrs.append(v)
+        return np.sort(np.concatenate(arrs))
 
     def __len__(self):
         tot = sum(len(v) for v in self.val_to_obj_ids.values())

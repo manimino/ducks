@@ -132,6 +132,12 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ```
 </details>
 
+
+<details>
+<summary>Handling missing attributes</summary>
+
+</details>
+
 ### Recipes
  
  - [Auto-updating](https://github.com/manimino/hashbox/blob/main/examples/update.py) - Keep HashBox updated when attribute values change
