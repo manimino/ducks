@@ -138,7 +138,7 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
  - [Wordle solver](https://github.com/manimino/hashbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
  - [Collision detection](https://github.com/manimino/hashbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/hashbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
- - [Missing attributes in functions](https://github.com/manimino/hashbox/blob/main/examples/missing_function.py) - How to handle missing attributes in attribute functions
+ - [Missing attributes in functions](https://github.com/manimino/hashbox/blob/main/examples/missing_function.py) - How to handle missing data in function attributes
 
 ____
 
