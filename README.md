@@ -1,7 +1,3 @@
-<div align="center">
-  <img src="https://github.com/manimino/hashbox/blob/add_logo/img/hashbox-logo.png"><br>
-</div>
-
 # HashBox
 
 Container for finding Python objects by matching attributes. 
@@ -176,3 +172,7 @@ index search tool. Each of these has goals outside of HashBox's niche; there are
 these functions.
 
 ____
+
+<div align="center">
+  <img src="https://github.com/manimino/hashbox/blob/add_logo/img/hashbox-logo.png"><br>
+</div>
