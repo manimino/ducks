@@ -1,5 +1,7 @@
 # HashBox
 
+![hashbox logo](img/hashbox-logo.png)
+
 Container for finding Python objects by matching attributes. 
 
 Uses hash-based methods for storage and retrieval, so find is very fast.
@@ -7,6 +9,7 @@ Uses hash-based methods for storage and retrieval, so find is very fast.
 ```
 pip install hashbox
 ```
+
 
 [![tests Actions Status](https://github.com/manimino/hashbox/workflows/tests/badge.svg)](https://github.com/manimino/hashbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
@@ -150,13 +153,13 @@ ____
 ## How it works
 
 In HashBox, each attribute is a dict of sets: `{attribute value: set(object IDs)}`. 
-On `find()`, object IDs are retrieved for each attribute value, and set operations are applied to get the final
+On `find()`, object IDs are retrieved for each attribute value. Then, set operations are applied to get the final
 object ID set. Last, the object IDs are mapped to objects, which are then returned.
 
 FrozenHashBox uses arrays instead of sets, thanks to its immutability constraint. It stores a numpy array 
 of objects. Attribute values map to indices in the object array. On `find()`, the array indices for each match are 
-retrieved. Then, very fast set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
-final set of object array indices. The objects are retrieved from the object array by index and returned.
+retrieved. Then, set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
+final set of object array indices. Last, the objects are retrieved from the object array by index and returned.
 
 HashBox and FrozenHashBox are sparse: If an object is missing an attribute, the link from that attribute to the object
 is not stored. This improves memory efficiency when handling diverse objects.
