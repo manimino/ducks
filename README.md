@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://github.com/manimino/hashbox/blob/add_logo/img/hashbox-logo.png"><br>
+</div>
+
 # HashBox
 
 Container for finding Python objects by matching attributes. 
@@ -134,17 +138,17 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 
 ### Recipes
  
- - [Auto-updating](examples/update.py) - Keep HashBox updated when attribute values change
- - [Wordle solver](examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
- - [Collision detection](examples/collision.py) - Find objects based on type and proximity (grid-based)
- - [Percentiles](examples/percentile.py) - Find by percentile (median, p99, etc.)
- - [Missing attributes in functions](examples/missing_function.py) - How to handle missing attributes in attribute functions
+ - [Auto-updating](https://github.com/manimino/hashbox/blob/main/examples/update.py) - Keep HashBox updated when attribute values change
+ - [Wordle solver](https://github.com/manimino/hashbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
+ - [Collision detection](https://github.com/manimino/hashbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
+ - [Percentiles](https://github.com/manimino/hashbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
+ - [Missing attributes in functions](https://github.com/manimino/hashbox/blob/main/examples/missing_function.py) - How to handle missing attributes in attribute functions
 
 ____
 
 ## Performance
 
-Demo: [HashBox going 5x~10x faster than SQLite](examples/perf_demo.ipynb)
+Demo: [HashBox going 5x~10x faster than SQLite](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
 
 ____
 
@@ -172,5 +176,3 @@ index search tool. Each of these has goals outside of HashBox's niche; there are
 these functions.
 
 ____
-
-![hashbox logo](img/hashbox-logo.png)
