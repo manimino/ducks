@@ -1,7 +1,9 @@
+from operator import itemgetter
 from typing import Optional, List, Any, Dict, Callable, Union, Iterable
+
 from cykhash import Int64Set
 
-from operator import itemgetter
+from hashbox import ANY
 from hashbox.utils import validate_query
 from hashbox.mutable.mutable_attr import MutableAttrIndex
 
@@ -102,7 +104,7 @@ class HashBox:
             self.indices[attr].add(ptr, obj)
 
     def remove(self, obj):
-        """Remove an object."""
+        """Remove an object. Raises KeyError if not present."""
         ptr = id(obj)
         if ptr not in self.obj_map:
             raise KeyError
@@ -123,9 +125,12 @@ class HashBox:
                     matches = matches.union(v_matches)
                 else:
                     matches = v_matches.union(matches)
+            return matches
         else:
-            matches = self.indices[attr].get_obj_ids(value)
-        return matches
+            if value is ANY:
+                return self.indices[attr].get_all_ids()
+            else:
+                return self.indices[attr].get_obj_ids(value)
 
     def __contains__(self, obj):
         return id(obj) in self.obj_map

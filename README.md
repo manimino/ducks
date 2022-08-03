@@ -50,7 +50,7 @@ ____
 Expand for sample code.
 
 <details>
-<summary>Specify a list of values for an attribute to include / exclude values in the list.</summary>
+<summary>Specify a list of values for an attribute to include / exclude values in the list</summary>
 <br>
 
 
@@ -80,7 +80,7 @@ hb.find(
 </details>
 
 <details>
-<summary>Define a function to access nested attributes.</summary>
+<summary>Define a function to access nested attributes</summary>
 
 
 ```
@@ -132,13 +132,39 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ```
 </details>
 
+<details>
+<summary>Handling missing attributes</summary>
+
+- Objects that are missing an attribute will not be stored under that attribute. This saves lots of memory.
+- To find all objects that have an attribute, match the special value ANY. 
+- To find objects missing the attribute, exclude ANY.
+- In functions, raise MissingAttribute to tell HashBox the object is missing.
+
+```
+from hashbox import HashBox, ANY
+from hashbox.exceptions import MissingAttribute
+
+def get_a(obj):
+    try:
+        return obj['a']
+    except KeyError:
+        raise MissingAttribute  # tell HashBox this attribute is missing
+
+objs = [{'a': 1}, {'a': 2}, {}]
+hb = HashBox(objs, ['a', get_a])
+
+hb.find({'a': ANY})          # result: [{'a': 1}, {'a': 2}]
+hb.find({get_a: ANY})        # result: [{'a': 1}, {'a': 2}]
+hb.find(exclude={'a': ANY})  # result: [{}]
+```
+</details>
+
 ### Recipes
  
  - [Auto-updating](https://github.com/manimino/hashbox/blob/main/examples/update.py) - Keep HashBox updated when attribute values change
  - [Wordle solver](https://github.com/manimino/hashbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
  - [Collision detection](https://github.com/manimino/hashbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/hashbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
- - [Missing attributes in functions](https://github.com/manimino/hashbox/blob/main/examples/missing_function.py) - How to handle missing data in function attributes
 
 ____
 
@@ -159,9 +185,6 @@ of objects. Attribute values map to indices in the object array. On `find()`, th
 retrieved. Then, set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
 final set of object array indices. Last, the objects are retrieved from the object array by index and returned.
 
-HashBox and FrozenHashBox are sparse: If an object is missing an attribute, the link from that attribute to the object
-is not stored. This improves memory efficiency when handling diverse objects.
-
 ### Related projects
 
 HashBox is a type of inverted index. It is optimized for its goal of finding in-memory Python objects.
@@ -174,5 +197,5 @@ these functions.
 ____
 
 <div align="center">
-  <img src="https://github.com/manimino/hashbox/blob/add_logo/img/hashbox-logo.png"><br>
+  <img src="https://github.com/manimino/hashbox/blob/main/img/hashbox-logo.png"><br>
 </div>
