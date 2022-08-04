@@ -67,9 +67,11 @@ class FrozenHashBox:
                 Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
                 Value is any hashable type, or it can be a list of values.
 
-                There is an implicit "and" between elements. match={'a': 1, 'b': 2} matches all objects with 'a'==1 and 'b'==2.
+                There is an implicit "and" between elements. match={'a': 1, 'b': 2} matches all objects with 'a'==1
+                and 'b'==2.
 
-                When the value is a list, all objects containing any value in the list will match. {'a': [1, 2, 3]} matches any object with an 'a' of 1, 2, or 3. Read it as ('a' in [1, 2, 3]).
+                When the value is a list, all objects containing any value in the list will match. `{'a': [1, 2, 3]}`
+                matches any object with an 'a' of 1, 2, or 3. Read it as ('a' in [1, 2, 3]).
 
                 If an attribute value is None, objects that are missing the attribute will be matched, as well as
                 any objects that have the attribute equal to None.
@@ -78,10 +80,10 @@ class FrozenHashBox:
 
             exclude: Specifies the subset of objects that do not match.
 
-                exclude={'a': 1, 'b': 2} ensures that no objects with 'a'==1 will be in the output, and no
+                `exclude={'a': 1, 'b': 2}` ensures that no objects with 'a'==1 will be in the output, and no
                 objects with 'b'==2 will be in the output. Read it as ('a' != 1 and 'b' != 2).
 
-                exclude={'a': [1, 2, 3]} ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
+                `exclude={'a': [1, 2, 3]}` ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
                 Read it as ('a' not in [1, 2, 3]).
 
         Returns:
