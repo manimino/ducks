@@ -6,10 +6,11 @@ Container for finding Python objects by matching attributes.
 
 Uses hash-based methods for storage and retrieval, so find is very fast.
 
+[Finding objects in HashBox can be 5-10x faster than SQLite.](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
+
 ```
 pip install hashbox
 ```
-
 
 [![tests Actions Status](https://github.com/manimino/hashbox/workflows/tests/badge.svg)](https://github.com/manimino/hashbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
@@ -186,12 +187,6 @@ hb.find(exclude={'a': ANY})  # result: [{}]
  - [Wordle solver](https://github.com/manimino/hashbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
  - [Collision detection](https://github.com/manimino/hashbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/hashbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
-
-____
-
-## Performance
-
-Demo: [HashBox going 5x~10x faster than SQLite](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
 
 ____
 
