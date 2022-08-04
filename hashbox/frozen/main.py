@@ -79,9 +79,11 @@ class FrozenHashBox:
                 match=None means all objects will be matched.
 
             exclude: Specifies the subset of objects that do not match.
-                `exclude={'a': 1, 'b': 2}` ensures that no objects with 'a'==1 will be in the output, and no
+            
+                excluding `{'a': 1, 'b': 2}` ensures that no objects with 'a'==1 will be in the output, and no
                 objects with 'b'==2 will be in the output. Read it as ('a' != 1 and 'b' != 2).
-                `exclude={'a': [1, 2, 3]}` ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
+
+                excluding `{'a': [1, 2, 3]}` ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
                 Read it as ('a' not in [1, 2, 3]).
 
         Returns:
