@@ -31,7 +31,10 @@ class FrozenHashBox:
             raise ValueError(
                 "Cannot build an empty FrozenHashBox; at least 1 object is required."
             )
-        self.on = on
+        if not on:
+            raise ValueError("Need at least one attribute.")
+        if isinstance(on, str):
+            on = [on]
         self.indices = {}
 
         self.obj_arr = np.empty(len(objs), dtype="O")

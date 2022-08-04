@@ -16,6 +16,9 @@ class HashBox:
     ):
         if not on:
             raise ValueError("Need at least one attribute.")
+        if isinstance(on, str):
+            on = [on]
+
         if objs:
             self.obj_map = {id(obj): obj for obj in objs}
         else:

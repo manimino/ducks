@@ -132,6 +132,25 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ```
 </details>
 
+
+<details>
+<summary>Greater than / less than</summary>
+<br />
+HashBox and FrozenHashBox have a function `get_values(attr)` which gets the set of unique values
+for an attribute. 
+
+Here's how to use that to find objects where x < 2.
+```
+from hashbox import HashBox
+
+data = [{'x': i // 2} for i in range(10)]
+hb = HashBox(data, ['x'])
+vals = hb.get_values('x')                       # returns the set of distinct values, {0, 1, 2, 3, 4, 5}
+small_vals = [val for val in vals if val < 2]   # small_vals is [0, 1]
+hb.find({'x': small_vals})                      # result: [{'x': 0}, {'x': 0}, {'x': 1}, {'x': 1}]
+```
+</details>
+
 <details>
 <summary>Handling missing attributes</summary>
 
