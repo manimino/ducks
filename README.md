@@ -1,6 +1,6 @@
 # HashBox
 
-<img src="https://github.com/manimino/hashbox/blob/main/img/hashbox-logo.png"><br>
+<img src="https://github.com/manimino/hashbox/blob/main/docs/hashbox-logo.png"><br>
 
 Container for finding Python objects by matching attributes. 
 
@@ -31,10 +31,8 @@ hb.find({'color': 'green', 'type': 'frog'})                                     
 The objects can be any type: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
 There are two classes available.
- - HashBox: can `add()` and `remove()` objects.
- - FrozenHashBox: faster finds, lower memory usage, and immutable.
-
-[API docs]()
+ - HashBox: can `add()` and `remove()` objects. [API](https://github.com/manimino/hashbox/blob/main/docs/HashBox.md)
+ - FrozenHashBox: faster finds, lower memory usage, and immutable. [API](https://github.com/manimino/hashbox/blob/main/docs/FrozenHashBox.md)
 
 ____
 

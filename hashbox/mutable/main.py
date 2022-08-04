@@ -35,6 +35,36 @@ class HashBox:
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> List:
         hits = self._find_ids(match, exclude)
+        """Find objects in the HashBox that satisfy the match and exclude constraints.
+
+        Args:
+            match: Specifies the subset of objects that match.
+                
+                Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+                Value is any hashable type, or it can be a list of values.
+                
+                There is an implicit "and" between elements.
+                match={'a': 1, 'b': 2} matches all objects with 'a'==1 and 'b'==2.
+
+                When the value is a list, all objects containing any value in the list will match.
+                {'a': [1, 2, 3]} matches any object with an 'a' of 1, 2, or 3. Read it as ('a' in [1, 2, 3]).
+
+                If an attribute value is None, objects that are missing the attribute will be matched, as well as
+                any objects that have the attribute equal to None.
+
+                match=None means all objects will be matched.
+
+            exclude: Specifies the subset of objects that do not match.
+
+                exclude={'a': 1, 'b': 2} ensures that no objects with 'a'==1 will be in the output, and no
+                objects with 'b'==2 will be in the output. Read it as ('a' != 1 and 'b' != 2).
+
+                exclude={'a': [1, 2, 3]} ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
+                Read it as ('a' not in [1, 2, 3]).
+
+        Returns:
+            List of objects matching the constraints.
+        """
         # itemgetter is about 10% faster than doing a comprehension like [self.objs[ptr] for ptr in hits]
         if len(hits) == 0:
             return []
@@ -100,14 +130,14 @@ class HashBox:
         return hits
 
     def add(self, obj: Any):
-        """Add a new object, evaluating any attributes and storing the results."""
+        """Add the object, evaluating any attributes and storing the results."""
         ptr = id(obj)
         self.obj_map[ptr] = obj
         for attr in self.indices:
             self.indices[attr].add(ptr, obj)
 
     def remove(self, obj: Any):
-        """Remove an object. Raises KeyError if not present."""
+        """Remove the object. Raises KeyError if not present."""
         ptr = id(obj)
         if ptr not in self.obj_map:
             raise KeyError
@@ -117,7 +147,14 @@ class HashBox:
         del self.obj_map[ptr]
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
-        """Get the unique values we have for the given attribute. Useful for deciding what to find() on."""
+        """Get the unique values we have for the given attribute. Useful for deciding what to find() on.
+
+        Args:
+            attr: The attribute to get values for.
+
+        Returns:
+            Set of all unique values for this attribute.
+        """
         return self.indices[attr].get_values()
 
     def _match_any_of(self, attr: Union[str, Callable], value: Any):
