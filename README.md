@@ -1,5 +1,7 @@
 # HashBox
 
+<img src="https://github.com/manimino/hashbox/blob/main/img/hashbox-logo.png"><br>
+
 Container for finding Python objects by matching attributes. 
 
 Uses hash-based methods for storage and retrieval, so find is very fast.
@@ -214,7 +216,3 @@ index search tool. Each of these has goals outside of HashBox's niche; there are
 these functions.
 
 ____
-
-<div align="center">
-  <img src="https://github.com/manimino/hashbox/blob/main/img/hashbox-logo.png"><br>
-</div>
