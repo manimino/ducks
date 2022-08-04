@@ -24,8 +24,7 @@ class FrozenHashBox:
             on (Iterable of attributes): The attributes that FrozenHashBox will build indices on.
                 Must contain at least one.
 
-        Objects in obj do not need to have all of the attributes in 'on'. Objects will be considered to have a
-        None value for missing attributes.
+        Objects in obj do not need to have all of the attributes in 'on'.
         """
         if not objs:
             raise ValueError(
