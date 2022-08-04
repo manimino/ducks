@@ -64,11 +64,9 @@ Find objects in the FrozenHashBox that satisfy the match and exclude constraints
   Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
   Value is any hashable type, or it can be a list of values.
   
-  There is an implicit "and" between elements.
-- `match={'a'` - 1, 'b': 2} matches all objects with 'a'==1 and 'b'==2.
+  There is an implicit "and" between elements. match={'a': 1, 'b': 2} matches all objects with 'a'==1 and 'b'==2.
   
-  When the value is a list, all objects containing any value in the list will match.
-- `{'a'` - [1, 2, 3]} matches any object with an 'a' of 1, 2, or 3. Read it as ('a' in [1, 2, 3]).
+  When the value is a list, all objects containing any value in the list will match. {'a': [1, 2, 3]} matches any object with an 'a' of 1, 2, or 3. Read it as ('a' in [1, 2, 3]).
   
   If an attribute value is None, objects that are missing the attribute will be matched, as well as
   any objects that have the attribute equal to None.
