@@ -1,18 +1,18 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /home/theo/repos/hashbox
+rootdir: /home/theo/repos
 plugins: anyio-2.2.0, cov-3.0.0
-collected 147 items
+collected 155 items
 
-test/test_basic_operations.py ........................                   [ 16%]
+test/test_basic_operations.py ..........................                 [ 16%]
 test/test_container_ops.py ..............                                [ 25%]
 test/test_edge_cases.py ......................                           [ 40%]
-test/test_examples.py ....                                               [ 43%]
-test/test_exceptions.py ........                                         [ 48%]
-test/test_fancy_gets.py ........                                         [ 54%]
-test/test_hash_collisions.py ........                                    [ 59%]
-test/test_missing_attribute.py .......................                   [ 75%]
-test/test_mixed_cardinality.py ............                              [ 83%]
+test/test_examples.py ....                                               [ 42%]
+test/test_exceptions.py ........                                         [ 47%]
+test/test_fancy_gets.py ........                                         [ 52%]
+test/test_hash_collisions.py ........                                    [ 58%]
+test/test_missing_attribute.py .............................             [ 76%]
+test/test_mixed_cardinality.py ............                              [ 84%]
 test/test_mutations.py ..........                                        [ 90%]
 test/test_soak.py .                                                      [ 91%]
 test/test_stale_objects.py .............                                 [100%]
@@ -24,17 +24,17 @@ hashbox/__init__.py                   3      0   100%
 hashbox/constants.py                 10      0   100%
 hashbox/exceptions.py                 3      0   100%
 hashbox/frozen/__init__.py            0      0   100%
-hashbox/frozen/frozen_attr.py        76      0   100%
-hashbox/frozen/main.py               62      0   100%
+hashbox/frozen/frozen_attr.py        81      0   100%
+hashbox/frozen/main.py               64      0   100%
 hashbox/frozen/utils.py               8      0   100%
 hashbox/init_helpers.py              75      0   100%
 hashbox/mutable/__init__.py           0      0   100%
-hashbox/mutable/main.py              78      0   100%
-hashbox/mutable/mutable_attr.py      63      0   100%
+hashbox/mutable/main.py              80      0   100%
+hashbox/mutable/mutable_attr.py      65      0   100%
 hashbox/perf.py                       0      0   100%
 hashbox/utils.py                     37      0   100%
 -----------------------------------------------------
-TOTAL                               415      0   100%
+TOTAL                               426      0   100%
 
 
-============================= 147 passed in 5.35s ==============================
+============================= 155 passed in 5.80s ==============================

@@ -1,5 +1,5 @@
 from operator import itemgetter
-from typing import Optional, List, Any, Dict, Callable, Union, Iterable
+from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 
 from cykhash import Int64Set
 
@@ -16,6 +16,9 @@ class HashBox:
     ):
         if not on:
             raise ValueError("Need at least one attribute.")
+        if isinstance(on, str):
+            on = [on]
+
         if objs:
             self.obj_map = {id(obj): obj for obj in objs}
         else:
@@ -96,14 +99,14 @@ class HashBox:
 
         return hits
 
-    def add(self, obj):
+    def add(self, obj: Any):
         """Add a new object, evaluating any attributes and storing the results."""
         ptr = id(obj)
         self.obj_map[ptr] = obj
         for attr in self.indices:
             self.indices[attr].add(ptr, obj)
 
-    def remove(self, obj):
+    def remove(self, obj: Any):
         """Remove an object. Raises KeyError if not present."""
         ptr = id(obj)
         if ptr not in self.obj_map:
@@ -113,7 +116,11 @@ class HashBox:
             self.indices[attr].remove(ptr, obj)
         del self.obj_map[ptr]
 
-    def _match_any_of(self, attr: str, value: Any):
+    def get_values(self, attr: Union[str, Callable]) -> Set:
+        """Get the unique values we have for the given attribute. Useful for deciding what to find() on."""
+        return self.indices[attr].get_values()
+
+    def _match_any_of(self, attr: Union[str, Callable], value: Any):
         """Get matches for a single attr during a find(). If multiple values specified, handle union logic."""
         if isinstance(value, list):
             # take the union of all matches
@@ -132,7 +139,7 @@ class HashBox:
             else:
                 return self.indices[attr].get_obj_ids(value)
 
-    def __contains__(self, obj):
+    def __contains__(self, obj: Any):
         return id(obj) in self.obj_map
 
     def __iter__(self):

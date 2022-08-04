@@ -1,13 +1,16 @@
 # HashBox
 
+<img src="https://github.com/manimino/hashbox/blob/main/img/hashbox-logo.png"><br>
+
 Container for finding Python objects by matching attributes. 
 
 Uses hash-based methods for storage and retrieval, so find is very fast.
 
+[Finding objects in HashBox can be 5-10x faster than SQLite.](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
+
 ```
 pip install hashbox
 ```
-
 
 [![tests Actions Status](https://github.com/manimino/hashbox/workflows/tests/badge.svg)](https://github.com/manimino/hashbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
@@ -132,6 +135,25 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 ```
 </details>
 
+
+<details>
+<summary>Greater than / less than</summary>
+<br />
+HashBox and FrozenHashBox have a function `get_values(attr)` which gets the set of unique values
+for an attribute. 
+
+Here's how to use that to find objects where x < 2.
+```
+from hashbox import HashBox
+
+data = [{'x': i // 2} for i in range(10)]
+hb = HashBox(data, ['x'])
+vals = hb.get_values('x')                       # returns the set of distinct values, {0, 1, 2, 3, 4, 5}
+small_vals = [val for val in vals if val < 2]   # small_vals is [0, 1]
+hb.find({'x': small_vals})                      # result: [{'x': 0}, {'x': 0}, {'x': 1}, {'x': 1}]
+```
+</details>
+
 <details>
 <summary>Handling missing attributes</summary>
 
@@ -168,12 +190,6 @@ hb.find(exclude={'a': ANY})  # result: [{}]
 
 ____
 
-## Performance
-
-Demo: [HashBox going 5x~10x faster than SQLite](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
-
-____
-
 ## How it works
 
 In HashBox, each attribute is a dict of sets: `{attribute value: set(object IDs)}`. 
@@ -195,7 +211,3 @@ index search tool. Each of these has goals outside of HashBox's niche; there are
 these functions.
 
 ____
-
-<div align="center">
-  <img src="https://github.com/manimino/hashbox/blob/main/img/hashbox-logo.png"><br>
-</div>

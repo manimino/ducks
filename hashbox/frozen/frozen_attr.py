@@ -48,7 +48,7 @@ import numpy as np
 
 from bisect import bisect_left
 from dataclasses import dataclass
-from typing import Union, Callable
+from typing import Union, Callable, Set
 
 from hashbox.init_helpers import sort_by_hash, group_by_val, run_length_encode
 from hashbox.constants import SIZE_THRESH
@@ -167,6 +167,13 @@ class FrozenAttrIndex:
         for v in self.val_to_obj_ids.values():
             arrs.append(v)
         return np.sort(np.concatenate(arrs))
+
+    def get_values(self) -> Set:
+        """Get each value we have objects for."""
+        vals = set(self.val_to_obj_ids.keys())
+        if self.objs_by_hash is not None:
+            vals = vals.union(self.objs_by_hash.sorted_vals)
+        return vals
 
     def __len__(self):
         tot = sum(len(v) for v in self.val_to_obj_ids.values())
