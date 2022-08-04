@@ -98,3 +98,15 @@ def test_many_missing(box_class, n_items):
     hb = box_class(data, ["a"])
     assert len(hb.find({'a': ANY})) == n_items // 2
     assert len(hb.find(exclude={'a': ANY})) == n_items // 2
+
+
+@pytest.mark.parametrize('n_items', [2, 10, SIZE_THRESH*2+2])
+def test_get_values(box_class, n_items):
+    data = []
+    for i in range(n_items):
+        if i % 2:
+            data.append({'a': 1})
+        else:
+            data.append({})
+    hb = box_class(data, ["a"])
+    assert hb.get_values('a') == {1}
