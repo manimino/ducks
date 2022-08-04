@@ -12,7 +12,7 @@ from hashbox.utils import make_empty_array, validate_query
 
 
 class FrozenHashBox:
-    """A much faster HashBox that lacks the ability to add or remove objects."""
+    """Like HashBox, but faster, more memory-efficient, and immutable. Great for making APIs to serve static data."""
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
         """Create a FrozenHashBox containing the objs, queryable by the 'on' attributes.

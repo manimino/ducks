@@ -18,7 +18,7 @@
 class FrozenHashBox()
 ```
 
-A much faster HashBox that lacks the ability to add or remove objects.
+Like HashBox, but faster, more memory-efficient, and immutable. Great for making APIs to serve static data.
 
 <a id="hashbox.frozen.main.FrozenHashBox.__init__"></a>
 
