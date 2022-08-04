@@ -86,6 +86,10 @@ class MutableAttrIndex:
                 obj_ids.add(val)
         return obj_ids
 
+    def get_values(self):
+        """Get unique values we have objects for."""
+        return set(self.d.keys())
+
     def __len__(self):
         tot = 0
         for key, val in self.d.items():

@@ -1,6 +1,6 @@
 from bisect import bisect_left
 from collections.abc import Hashable
-from typing import Optional, Any, Dict, Union, Callable, Iterable, List
+from typing import Optional, Any, Dict, Union, Callable, Iterable, List, Set
 
 import numpy as np
 import sortednp as snp
@@ -130,6 +130,10 @@ class FrozenHashBox:
                     break
 
         return self.obj_arr[hits]
+
+    def get_values(self, attr: Union[str, Callable]) -> Set:
+        """Get the unique values we have for the given attribute. Useful for deciding what to find() on."""
+        return self.indices[attr].get_values()
 
     def _match_any_of(
         self, attr: Union[str, Callable], value: Union[Hashable, List[Hashable]]
