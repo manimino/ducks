@@ -15,7 +15,7 @@ class HashBox:
         on: Iterable[Union[str, Callable]] = None,
     ):
         """
-        Create a HashBox containing the objs, queryable by the 'on' attributes.
+        Create a HashBox containing the ``objs``, queryable by the ``on`` attributes.
 
         Args:
             objs: The objects that HashBox will contain initially.
@@ -24,10 +24,10 @@ class HashBox:
             on: The attributes that will be used for finding objects.
                 Must contain at least one.
 
-        It's OK if the objects in `objs` are missing some or all of the attributes in `on`. They will still be
-        stored, and can found with find().
+        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
+        stored, and can found with ``find()``.
 
-        For the objects that do contain the attributes on "on", those attribute values must be hashable.
+        For the objects that do contain the ``on`` attributes, those attribute values must be hashable.
         """
         if not on:
             raise ValueError("Need at least one attribute.")
@@ -52,27 +52,25 @@ class HashBox:
         """Find objects in the HashBox that satisfy the match and exclude constraints.
 
         Args:
-            match: Specifies the subset of objects that match.
-                If unspecified, all objects will match.
+            match: Dict of ``{attribute: value}`` defining the subset of objects that match.
+                If ``None``, all objects will match.
 
-                Specify a dictionary of {attribute: value} to constrain the objects that match.
-
-                The attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
                 Value can be any of the following:
-                 : A single hashable value, which will match all objects with that value for the attribute.
-                 : A list of hashable values, which matches each object having any of the values for the attribute.
-                 : hashbox.ANY, which matches all objects having the attribute.
-                  
-            exclude: Specifies the subset of objects that do not match.
-                If unspecified, no objects will be excluded.
+                 - A single hashable value, which will match all objects with that value for the attribute.
+                 - A list of hashable values, which matches each object having any of the values for the attribute.
+                 - ``hashbox.ANY``, which matches all objects having the attribute.
 
-                Specify a dictionary of {attribute: value} to exclude objects from the results.
+            exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
+                If ``None``, no objects will be excluded.
+
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
                 Value can be any of the following:
-                 : A single hashable value, which will exclude all objects with that value for the attribute.
-                 : A list of hashable values, which excludes each object having any of the values for the attribute.
-                 : hashbox.ANY, which excludes all objects having the attribute.
+                 - A single hashable value, which will exclude all objects with that value for the attribute.
+                 - A list of hashable values, which excludes each object having any of the values for the attribute.
+                 - ``hashbox.ANY``, which excludes all objects having the attribute.
 
         Returns:
             List of objects matching the constraints.

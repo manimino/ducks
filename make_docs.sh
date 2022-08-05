@@ -1,3 +1,6 @@
 #!/bin/bash
 
-pdoc3 --html hashbox --force -o docs/html/
+pushd docs/
+sphinx-apidoc ../hashbox -o source; make html
+popd
+
