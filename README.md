@@ -46,80 +46,43 @@ Expand for sample code.
 from hashbox import HashBox
 
 objects = [
-    {'order': 1, 'size': 'regular', 'topping': 'smothered'}, 
-    {'order': 2, 'size': 'regular', 'topping': 'diced'}, 
-    {'order': 3, 'size': 'large', 'topping': 'covered'},
-    {'order': 4, 'size': 'triple', 'topping': 'chunked'}
+    {'item': 1, 'size': 10, 'flavor': 'melon'}, 
+    {'item': 2, 'size': 10, 'flavor': 'lychee'}, 
+    {'item': 3, 'size': 20, 'flavor': 'peach'},
+    {'item': 4, 'size': 30, 'flavor': 'apple'}
 ]
 
-hb = HashBox(objects, on=['size', 'topping'])
+hb = HashBox(objects, on=['size', 'flavor'])
 
 hb.find(
-    match={'size': ['regular', 'large']},  # match anything with size in ['regular', 'large'] 
-    exclude={'topping': 'diced'}           # exclude where topping is 'diced'
-)  # result: orders 1 and 3
-
-hb.find(
-    match={},                               # match all objects
-    exclude={'size': ['regular', 'large']}  # where size is not in ['regular', 'large']
-)  # result: order 4
-
-```
-</details>
-
-
-<details>
-<summary>Greater than, less than</summary>
-<br />
-HashBox and FrozenHashBox have a function <code>get_values(attr)</code> which gets the set of unique values
-for an attribute. 
-
-Here's how to use that to find objects having <code>x < 2</code>.
-```
-from hashbox import HashBox
-
-data = [{'x': i // 2} for i in range(10)]
-hb = HashBox(data, ['x'])
-vals = hb.get_values('x')                       # get the set of values: {0, 1, 2, 3, 4, 5}
-small_vals = [val for val in vals if val < 2]   # small_vals is [0, 1]
-hb.find({'x': small_vals})                      # result: [{'x': 0}, {'x': 0}, {'x': 1}, {'x': 1}]
+    match={'size': [10, 20]},                # match anything with size in [10, 20] 
+    exclude={'flavor': ['lychee', 'peach']}  # where flavor is not in ['lychee', 'peach']
+)  
+# result: [{'item': 1, 'size': 10, 'flavor': 'melon'}]
 ```
 </details>
 
 <details>
-<summary>Use function attributes to access nested data</summary>
+<summary>Accessing nested attributes</summary>
 
-You can use functions as attributes. Define a function that gets a nested attribute from each object.
+You can use functions as attributes to extract values from deep in objects.
 
 ```
 from hashbox import HashBox
 
-class Order:
-    def __init__(self, num, size, toppings):
-        self.num = num
-        self.size = size
-        self.toppings = toppings
-        
-    def __repr__(self):
-        return f"order: {self.num}, size: '{self.size}', toppings: {self.toppings}"
-    
-objects = [
-    Order(1, 'regular', ['scattered', 'smothered', 'covered']),
-    Order(2, 'large', ['scattered', 'covered', 'peppered']),
-    Order(3, 'large', ['scattered', 'diced', 'chunked']),
-    Order(4, 'triple', ['all the way']),
+objs = [
+    {'a': {'b': [1, 2, 3]}},
+    {'a': {'b': [4, 5, 6]}}
 ]
 
-def has_cheese(obj):
-    return 'covered' in obj.toppings or 'all the way' in obj.toppings
+def get_nested(obj):
+    return obj['a']['b'][0]
 
-hb = HashBox(objects, ['size', has_cheese])
-
-# returns orders 1, 2 and 4
-hb.find({has_cheese: True})  
+hb = HashBox(objs, [get_nested])
+hb.find({get_nested: 4})  
+# result: {'a': {'b': [4, 5, 6]}}
 ```
 </details>
-
 
 <details>
 <summary>Derived attributes</summary>
@@ -137,6 +100,24 @@ def o_count(obj):
 f = FrozenHashBox(objects, [o_count, len])
 f.find({len: 6})       # returns ['onions']
 f.find({o_count: 2})   # returns ['mushrooms', 'onions']
+```
+</details>
+
+<details>
+<summary>Greater than, less than</summary>
+<br />
+HashBox and FrozenHashBox have a function <code>get_values(attr)</code> which gets the set of unique values
+for an attribute. 
+
+Here's how to use that to find objects having <code>x >= 3</code>.
+```
+from hashbox import HashBox
+
+data = [{'x': i} for i in [1, 1, 2, 3, 5]]
+hb = HashBox(data, ['x'])
+vals = hb.get_values('x')                      # get the set of unique values: {1, 2, 3, 5}
+big_vals = [val for val in vals if val >= 3]   # big_vals is [3, 5]
+hb.find({'x': big_vals})                       # result: [{'x': 3}, {'x': 5}
 ```
 </details>
 
