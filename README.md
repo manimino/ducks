@@ -80,7 +80,7 @@ from hashbox import HashBox
 
 data = [{'x': i // 2} for i in range(10)]
 hb = HashBox(data, ['x'])
-vals = hb.get_values('x')                       # returns the set of distinct values, {0, 1, 2, 3, 4, 5}
+vals = hb.get_values('x')                       # get the set of values: {0, 1, 2, 3, 4, 5}
 small_vals = [val for val in vals if val < 2]   # small_vals is [0, 1]
 hb.find({'x': small_vals})                      # result: [{'x': 0}, {'x': 0}, {'x': 1}, {'x': 1}]
 ```
