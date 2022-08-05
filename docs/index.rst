@@ -9,4 +9,4 @@ HashBox API Reference
 
 The examples `in the README`_ are the best way to get started.
 
-.. _in the README: https://github.com/manimino/hashbox
+.. _in the README: https://pypi.org/project/hashbox/
