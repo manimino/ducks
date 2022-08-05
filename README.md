@@ -2,7 +2,9 @@
 
 Container for finding Python objects by matching attributes. 
 
-[Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+Stores objects pre-filtered by attribute value, so it can find them much faster than `filter()`, 
+and in many cases faster than SQLite. 
+[Speed demo](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ```
 pip install filterbox
