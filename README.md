@@ -115,9 +115,9 @@ from hashbox import HashBox
 
 data = [{'x': i} for i in [1, 1, 2, 3, 5]]
 hb = HashBox(data, ['x'])
-vals = hb.get_values('x')                      # get the set of unique values: {1, 2, 3, 5}
-big_vals = [val for val in vals if val >= 3]   # big_vals is [3, 5]
-hb.find({'x': big_vals})                       # result: [{'x': 3}, {'x': 5}
+vals = hb.get_values('x')                # get the set of unique values: {1, 2, 3, 5}
+big_vals = [x for x in vals if x >= 3]   # big_vals is [3, 5]
+hb.find({'x': big_vals})                 # result: [{'x': 3}, {'x': 5}
 ```
 </details>
 
