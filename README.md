@@ -123,7 +123,8 @@ hb.find({'x': big_vals})                 # result: [{'x': 3}, {'x': 5}
 
 <details>
 <summary>Handling missing attributes</summary>
-
+<br />
+Objects don't need to have every attribute.
 - Objects that are missing an attribute will not be stored under that attribute. This saves lots of memory.
 - To find all objects that have an attribute, match the special value <code>ANY</code>. 
 - To find objects missing the attribute, exclude <code>ANY</code>.
