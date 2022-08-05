@@ -1,7 +1,5 @@
 # HashBox
 
-<img src="https://github.com/manimino/hashbox/blob/main/docs/hashbox-logo.png"><br>
-
 Container for finding Python objects by matching attributes. 
 
 Uses hash-based methods for storage and retrieval, so find is very fast.
@@ -22,13 +20,14 @@ pip install hashbox
 
 ```
 from hashbox import HashBox
-hb = HashBox(                                                                   # make a HashBox
-    [{'color': 'green', 'type': 'apple'}, {'color': 'green', 'type': 'frog'}]   # containing any type of object
-    on=['color', 'type'])                                                       # define attributes to find by
-hb.find({'color': 'green', 'type': 'frog'})                                     # find by attribute match
+hb = HashBox(                                # Make a HashBox
+    [{'color': 'green', 'type': 'apple'},    
+    {'color': 'green', 'type': 'frog'}]      # Containing any type of objects
+    on=['color', 'type'])                    # Define attributes to find by
+hb.find({'color': 'green', 'type': 'frog'})  # Find by attribute match
 ```
 
-The objects can be any type: class instances, namedtuples, dicts, strings, floats, ints, etc.
+The objects can be anything: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
 There are two classes available.
  - HashBox: can `add()` and `remove()` objects. 
@@ -72,10 +71,10 @@ hb.find(
 <details>
 <summary>Greater than, less than</summary>
 <br />
-HashBox and FrozenHashBox have a function `get_values(attr)` which gets the set of unique values
+HashBox and FrozenHashBox have a function <pre>get_values(attr)</pre> which gets the set of unique values
 for an attribute. 
 
-Here's how to use that to find objects where x < 2.
+Here's how to use that to find objects having <pre>x < 2</pre>.
 ```
 from hashbox import HashBox
 
@@ -145,8 +144,8 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 <summary>Handling missing attributes</summary>
 
 - Objects that are missing an attribute will not be stored under that attribute. This saves lots of memory.
-- To find all objects that have an attribute, match the special value ANY. 
-- To find objects missing the attribute, exclude ANY.
+- To find all objects that have an attribute, match the special value <pre>ANY</pre>. 
+- To find objects missing the attribute, exclude <pre>ANY</pre>.
 - In functions, raise MissingAttribute to tell HashBox the object is missing.
 
 ```
@@ -193,8 +192,8 @@ of objects. Attribute values map to indices in the object array. On `find()`, th
 retrieved. Then, set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
 final set of object array indices. Last, the objects are retrieved from the object array by index and returned.
 
-For a lot more detail, see the "how it works" pages for [HashBox](hashbox/how_it_works.md) and 
-[FrozenHashBox](frozen/how_it_works.md).
+For a lot more detail, see the "how it works" pages for [HashBox](hashbox/mutable/how_it_works.md) and 
+[FrozenHashBox](hashbox/frozen/how_it_works.md).
 
 ### Related projects
 
@@ -206,3 +205,7 @@ index search tool. Each of these has goals outside of HashBox's niche; there are
 these functions.
 
 ____
+
+<div align="center">
+<img src="https://github.com/manimino/hashbox/blob/main/docs/hashbox-logo.png"><br>
+</div>
