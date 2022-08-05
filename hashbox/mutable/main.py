@@ -46,7 +46,7 @@ class HashBox:
 
                 Value can be any of the following.
                   - A single hashable value, which will match all objects with that value for the attribute.
-                  - A list of hashable values, which matches each object containing any of the values.
+                  - A list of hashable values, which matches each object having any of the values for the attribute.
                   - hashbox.ANY, which matches all objects having the attribute.
                   
             exclude: Specifies the subset of objects that do not match.
@@ -55,11 +55,8 @@ class HashBox:
                 Specify a dictionary of {attribute﹕ value}  to exclude objects from the results.
 
                 Value can be any of the following.
-
                   - A single hashable value, which will exclude all objects with that value for the attribute.
-
-                  - A list of hashable values, which excludes each object containing any of the values.
-                  
+                  - A list of hashable values, which excludes each object having any of the values for the attribute.
                   - hashbox.ANY, which excludes all objects having the attribute.
 
         Returns:
