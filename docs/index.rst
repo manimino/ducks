@@ -1,7 +1,7 @@
-.. hashbox documentation master file, created by
+.. filterbox documentation master file, created by
    sphinx-quickstart on Fri Aug  5 07:18:13 2022.
 
-HashBox API Reference
+FilterBox API Reference
 =====================
 
 * :ref:`modindex`
@@ -9,4 +9,4 @@ HashBox API Reference
 
 The examples `in the README`_ are the best way to get started.
 
-.. _in the README: https://pypi.org/project/hashbox/
+.. _in the README: https://pypi.org/project/filterbox/

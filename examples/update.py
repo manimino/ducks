@@ -1,14 +1,14 @@
-from hashbox import HashBox
+from filterbox import FilterBox
 
 
 class Changey:
-    """A class containing a variable _n that changes. On change, it will update each HashBox in its listeners."""
+    """A class containing a variable _n that changes. On change, it will update each FilterBox in its listeners."""
 
     def __init__(self, n):
         self._n = n
         self.listeners = []
 
-    def add_listener(self, f: HashBox):
+    def add_listener(self, f: FilterBox):
         self.listeners.append(f)
 
     @property
@@ -26,7 +26,7 @@ class Changey:
 
 def main():
     objs = [Changey(1) for _ in range(10)]
-    f = HashBox(objs, ["n"])
+    f = FilterBox(objs, ["n"])
     for obj in objs:
         obj.add_listener(f)
     assert len(f.find({"n": 1})) == 10
@@ -34,7 +34,7 @@ def main():
     # change an object
     objs[0].n = 2
 
-    # see that changes are propagated to HashBox
+    # see that changes are propagated to FilterBox
     assert len(f.find({"n": 1})) == 9
     assert len(f.find({"n": 2})) == 1
 

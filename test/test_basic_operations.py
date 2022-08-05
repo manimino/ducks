@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Union
 
-from hashbox import HashBox, FrozenHashBox
-from hashbox.utils import get_attributes
+from filterbox import FilterBox, FrozenFilterBox
+from filterbox.utils import get_attributes
 from .conftest import AssertRaises
 
 
@@ -22,7 +22,7 @@ class Pokemon:
         return hash(t)
 
 
-def make_test_hashbox(box_class) -> Union[HashBox, FrozenHashBox]:
+def make_test_filterbox(box_class) -> Union[FilterBox, FrozenFilterBox]:
     zapdos = Pokemon("Zapdos", "Electric", "Flying")
     pikachu_1 = Pokemon("Pikachu", "Electric", None)
     pikachu_2 = Pokemon("Pikachu", "Electric", None)
@@ -32,25 +32,25 @@ def make_test_hashbox(box_class) -> Union[HashBox, FrozenHashBox]:
 
 
 def test_find_one(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find({"name": ["Zapdos"]})
     assert len(result) == 1
 
 
 def test_find_union(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
 
 
 def test_find_union_with_mismatch(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find({"name": ["Pikachu", "Shykadu"]})
     assert len(result) == 2
 
 
 def test_find_list_of_one(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find({"name": ["Pikachu"]})
     assert len(result) == 2
 
@@ -71,14 +71,14 @@ def test_find_sub_obj(box_class):
 
 
 def test_find_exclude_only(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find(exclude={"type2": None})  # Zapdos is the only one with a type2
     assert len(result) == 1
     assert result[0].name == "Zapdos"
 
 
 def test_two_attrs(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric"},
         exclude={"type2": "Flying"},
@@ -89,7 +89,7 @@ def test_two_attrs(box_class):
 
 
 def test_three_attrs(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find(
         match={"name": ["Pikachu", "Zapdos"], "type1": "Electric", "type2": "Flying"}
     )
@@ -98,16 +98,16 @@ def test_three_attrs(box_class):
 
 
 def test_exclude_all(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f.find(exclude={"type1": ["Electric", "Normal"]})
     assert len(result) == 0
 
 
 def test_remove(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     two_chus = f.find({"name": "Pikachu"})
     assert len(two_chus) == 2
-    if box_class == FrozenHashBox:
+    if box_class == FrozenFilterBox:
         with AssertRaises(AttributeError):
             f.remove(two_chus[1])
     else:
@@ -117,9 +117,9 @@ def test_remove(box_class):
 
 
 def test_add(box_class):
-    f = make_test_hashbox(box_class)
+    f = make_test_filterbox(box_class)
     glaceon = Pokemon("Glaceon", "Ice", None)
-    if box_class == FrozenHashBox:
+    if box_class == FrozenFilterBox:
         with AssertRaises(AttributeError):
             f.add(glaceon)
     else:
@@ -129,14 +129,14 @@ def test_add(box_class):
 
 
 def test_multi_exclude(box_class):
-    hb = make_test_hashbox(box_class)
-    res = hb.find(exclude={"name": "Pikachu", "type1": ["Normal"]})
-    zapdos_ls = [p for p in hb if p.name == "Zapdos"]
+    fb = make_test_filterbox(box_class)
+    res = fb.find(exclude={"name": "Pikachu", "type1": ["Normal"]})
+    zapdos_ls = [p for p in fb if p.name == "Zapdos"]
     assert res == zapdos_ls
 
 
 def test_get_values(box_class):
-    hb = make_test_hashbox(box_class)
-    assert hb.get_values('name') == {'Zapdos', 'Pikachu', 'Eevee'}
-    assert hb.get_values('type1') == {'Electric', 'Normal'}
-    assert hb.get_values('type2') == {'Flying', None}
+    fb = make_test_filterbox(box_class)
+    assert fb.get_values('name') == {'Zapdos', 'Pikachu', 'Eevee'}
+    assert fb.get_values('type1') == {'Electric', 'Normal'}
+    assert fb.get_values('type2') == {'Flying', None}

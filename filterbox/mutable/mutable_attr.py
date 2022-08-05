@@ -2,13 +2,13 @@ from typing import Callable, Union, Dict, Any, Iterable, Optional
 
 from cykhash import Int64Set
 
-from hashbox.constants import TUPLE_SIZE_MAX, SET_SIZE_MIN
-from hashbox.init_helpers import compute_mutable_dict
-from hashbox.utils import get_attribute
+from filterbox.constants import TUPLE_SIZE_MAX, SET_SIZE_MIN
+from filterbox.init_helpers import compute_mutable_dict
+from filterbox.utils import get_attribute
 
 
 class MutableAttrIndex:
-    """Stores data and handles requests that are relevant to a single attribute of a HashBox."""
+    """Stores data and handles requests that are relevant to a single attribute of a FilterBox."""
 
     def __init__(
         self,

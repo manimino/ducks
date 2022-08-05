@@ -8,7 +8,7 @@ import flask
 import pickle
 import sys
 
-from hashbox import HashBox
+from filterbox import FilterBox
 
 
 def serve():
@@ -21,7 +21,7 @@ def build():
 
 def print_usage():
     print(
-        'Usage: \ncrossword.py serve \ncrossword.py build \n"serve" runs the server, "build" builds the HashBox.'
+        'Usage: \ncrossword.py serve \ncrossword.py build \n"serve" runs the server, "build" builds the FilterBox.'
     )
 
 

@@ -5,19 +5,19 @@ from typing import Optional, Any, Dict, Union, Callable, Iterable, List, Set
 import numpy as np
 import sortednp as snp
 
-from hashbox import ANY
-from hashbox.frozen.frozen_attr import FrozenAttrIndex
-from hashbox.frozen.utils import snp_difference
-from hashbox.utils import make_empty_array, validate_query
+from filterbox import ANY
+from filterbox.frozen.frozen_attr import FrozenAttrIndex
+from filterbox.frozen.utils import snp_difference
+from filterbox.utils import make_empty_array, validate_query
 
 
-class FrozenHashBox:
+class FrozenFilterBox:
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
-        """Create a FrozenHashBox containing the objs, queryable by the 'on' attributes.
+        """Create a FrozenFilterBox containing the objs, queryable by the 'on' attributes.
 
         Args:
-            objs: The objects that FrozenHashBox will contain.
+            objs: The objects that FrozenFilterBox will contain.
                 Objects do not need to be hashable, any object works.
 
             on: The attributes that will be used for finding objects.
@@ -30,7 +30,7 @@ class FrozenHashBox:
         """
         if not objs:
             raise ValueError(
-                "Cannot build an empty FrozenHashBox; at least 1 object is required."
+                "Cannot build an empty FrozenFilterBox; at least 1 object is required."
             )
         if not on:
             raise ValueError("Need at least one attribute.")
@@ -59,7 +59,7 @@ class FrozenHashBox:
             Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
         ] = None,
     ) -> np.ndarray:
-        """Find objects in the FrozenHashBox that satisfy the match and exclude constraints.
+        """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
 
         Args:
             match: Dict of ``{attribute: value}`` defining the subset of objects that match.
@@ -70,7 +70,7 @@ class FrozenHashBox:
                 Value can be any of the following:
                  - A single hashable value, which will match all objects with that value for the attribute.
                  - A list of hashable values, which matches each object having any of the values for the attribute.
-                 - ``hashbox.ANY``, which matches all objects having the attribute.
+                 - ``filterbox.ANY``, which matches all objects having the attribute.
 
             exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
@@ -80,7 +80,7 @@ class FrozenHashBox:
                 Value can be any of the following:
                  - A single hashable value, which will exclude all objects with that value for the attribute.
                  - A list of hashable values, which excludes each object having any of the values for the attribute.
-                 - ``hashbox.ANY``, which excludes all objects having the attribute.
+                 - ``filterbox.ANY``, which excludes all objects having the attribute.
 
         Returns:
             Numpy array of objects matching the constraints.

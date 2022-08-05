@@ -1,5 +1,5 @@
-from hashbox import HashBox
-from hashbox.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
+from filterbox import FilterBox
+from filterbox.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 import pytest
 
 
@@ -41,7 +41,7 @@ def test_edge_hash_mutable(n_items, delete_bucket):
     for i in range(n_items):
         arrs[i % 3].append({"z": EdgeHash(i % 3)})
 
-    f = HashBox(on=["z"])
+    f = FilterBox(on=["z"])
     for arr in arrs:
         for obj in arr:
             f.add(obj)
@@ -75,7 +75,7 @@ def test_grouped_hash(delete_bucket):
     for i in range(SIZE_THRESH * 3 + 3):
         arrs[i % 3].append({"z": GroupedHash(i % 3)})
 
-    f = HashBox(on=["z"])
+    f = FilterBox(on=["z"])
     for arr in arrs:
         for gh in arr:
             f.add(gh)
@@ -101,7 +101,7 @@ def test_get_zero(box_class):
 
 
 def test_double_add():
-    f = HashBox(on="s")
+    f = FilterBox(on="s")
     x = {"s": "hello"}
     f.add(x)
     f.add(x)
@@ -113,14 +113,14 @@ def test_double_add():
 
 
 def test_empty_mutable_index():
-    f = HashBox([], on=["stuff"])
+    f = FilterBox([], on=["stuff"])
     result = f.find({"stuff": 3})
     assert len(result) == 0
 
 
 def test_arg_order():
     data = [{"a": i % 5, "b": i % 3} for i in range(100)]
-    f = HashBox(data, ["a", "b"])
+    f = FilterBox(data, ["a", "b"])
     assert len(f.find({"a": 1, "b": 2})) == len(f.find({"b": 2, "a": 1}))
 
 
@@ -139,7 +139,7 @@ def test_unsortable_values(box_class):
     """We need to support values that are hashable, even if they cannot be sorted."""
     objs = [{"a": NoSort(0)}, {"a": NoSort(1)}]
     f = box_class(objs, ["a"])
-    if isinstance(box_class, HashBox):
+    if isinstance(box_class, FilterBox):
         objs.append(NoSort(2))
         f.add(objs[2])
     assert len(f) == len(objs)

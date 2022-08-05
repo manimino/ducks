@@ -1,6 +1,6 @@
 ## How It Works, Frozen Edition
 
-FrozenHashBox can use arrays instead of sets, thanks to its immutability constraint. It stores a numpy array of objects. 
+FrozenFilterBox can use arrays instead of sets, thanks to its immutability constraint. It stores a numpy array of objects. 
 Attribute values map to indices in the object array. On `find()`, the array indices for each match are retrieved. 
 Then, set operations provided by `sortednp` are used to get a final set of object array indices. Last, the objects are 
 retrieved from the object array by index and returned.

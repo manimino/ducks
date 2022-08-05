@@ -1,5 +1,5 @@
 filterbox package
-===============
+=================
 
 Subpackages
 -----------
@@ -14,7 +14,7 @@ Submodules
 ----------
 
 filterbox.constants module
-------------------------
+--------------------------
 
 .. automodule:: filterbox.constants
    :members:
@@ -22,7 +22,7 @@ filterbox.constants module
    :show-inheritance:
 
 filterbox.exceptions module
--------------------------
+---------------------------
 
 .. automodule:: filterbox.exceptions
    :members:
@@ -30,7 +30,7 @@ filterbox.exceptions module
    :show-inheritance:
 
 filterbox.init\_helpers module
-----------------------------
+------------------------------
 
 .. automodule:: filterbox.init_helpers
    :members:
@@ -38,7 +38,7 @@ filterbox.init\_helpers module
    :show-inheritance:
 
 filterbox.perf module
--------------------
+---------------------
 
 .. automodule:: filterbox.perf
    :members:
@@ -46,7 +46,7 @@ filterbox.perf module
    :show-inheritance:
 
 filterbox.utils module
---------------------
+----------------------
 
 .. automodule:: filterbox.utils
    :members:

@@ -1,11 +1,11 @@
 filterbox.mutable package
-=======================
+=========================
 
 Submodules
 ----------
 
 filterbox.mutable.main module
----------------------------
+-----------------------------
 
 .. automodule:: filterbox.mutable.main
    :members:
@@ -13,7 +13,7 @@ filterbox.mutable.main module
    :show-inheritance:
 
 filterbox.mutable.mutable\_attr module
-------------------------------------
+--------------------------------------
 
 .. automodule:: filterbox.mutable.mutable_attr
    :members:

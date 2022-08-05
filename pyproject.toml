@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "hashbox"
-version = "0.5.1"
-description = "Find Python objects by exact match on their attributes."
+name = "filterbox"
+version = "0.6.0"
+description = "Container for finding Python objects by matching attributes."
 authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/manimino/hashbox/"
-documentation = "https://pypi.org/project/hashbox/"
+repository = "https://github.com/manimino/filterbox/"
+documentation = "https://pypi.org/project/filterbox/"
 readme = "README.md"
 
 [tool.poetry.dependencies]

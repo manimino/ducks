@@ -1,24 +1,24 @@
 # Table of Contents
 
-* [hashbox.mutable.main](#hashbox.mutable.main)
-  * [HashBox](#hashbox.mutable.main.HashBox)
-    * [add](#hashbox.mutable.main.HashBox.add)
-    * [remove](#hashbox.mutable.main.HashBox.remove)
-    * [get\_values](#hashbox.mutable.main.HashBox.get_values)
+* [filterbox.mutable.main](#filterbox.mutable.main)
+  * [FilterBox](#filterbox.mutable.main.FilterBox)
+    * [add](#filterbox.mutable.main.FilterBox.add)
+    * [remove](#filterbox.mutable.main.FilterBox.remove)
+    * [get\_values](#filterbox.mutable.main.FilterBox.get_values)
 
-<a id="hashbox.mutable.main"></a>
+<a id="filterbox.mutable.main"></a>
 
-# hashbox.mutable.main
+# filterbox.mutable.main
 
-<a id="hashbox.mutable.main.HashBox"></a>
+<a id="filterbox.mutable.main.FilterBox"></a>
 
-## HashBox Objects
+## FilterBox Objects
 
 ```python
-class HashBox()
+class FilterBox()
 ```
 
-<a id="hashbox.mutable.main.HashBox.add"></a>
+<a id="filterbox.mutable.main.FilterBox.add"></a>
 
 #### add
 
@@ -28,7 +28,7 @@ def add(obj: Any)
 
 Add a new object, evaluating any attributes and storing the results.
 
-<a id="hashbox.mutable.main.HashBox.remove"></a>
+<a id="filterbox.mutable.main.FilterBox.remove"></a>
 
 #### remove
 
@@ -38,7 +38,7 @@ def remove(obj: Any)
 
 Remove an object. Raises KeyError if not present.
 
-<a id="hashbox.mutable.main.HashBox.get_values"></a>
+<a id="filterbox.mutable.main.FilterBox.get_values"></a>
 
 #### get\_values
 

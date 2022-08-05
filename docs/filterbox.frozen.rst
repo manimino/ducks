@@ -1,11 +1,11 @@
 filterbox.frozen package
-======================
+========================
 
 Submodules
 ----------
 
 filterbox.frozen.frozen\_attr module
-----------------------------------
+------------------------------------
 
 .. automodule:: filterbox.frozen.frozen_attr
    :members:
@@ -13,7 +13,7 @@ filterbox.frozen.frozen\_attr module
    :show-inheritance:
 
 filterbox.frozen.main module
---------------------------
+----------------------------
 
 .. automodule:: filterbox.frozen.main
    :members:
@@ -21,7 +21,7 @@ filterbox.frozen.main module
    :show-inheritance:
 
 filterbox.frozen.utils module
----------------------------
+-----------------------------
 
 .. automodule:: filterbox.frozen.utils
    :members:

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from hashbox.constants import SIZE_THRESH
+from filterbox.constants import SIZE_THRESH
 
 """
 @pytest.mark.parametrize(
