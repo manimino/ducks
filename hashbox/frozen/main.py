@@ -12,20 +12,21 @@ from hashbox.utils import make_empty_array, validate_query
 
 
 class FrozenHashBox:
-    """A much faster HashBox that lacks the ability to add or remove objects."""
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
         """Create a FrozenHashBox containing the objs, queryable by the 'on' attributes.
 
         Args:
-            objs (Any iterable containing any types): The objects that FrozenHashBox will contain.
-                Must contain at least one object. Objects do not need to be hashable, any object works.
+            objs: The objects that FrozenHashBox will contain.
+                Objects do not need to be hashable, any object works.
 
-            on (Iterable of attributes): The attributes that FrozenHashBox will build indices on.
+            on: The attributes that will be used for finding objects.
                 Must contain at least one.
 
-        Objects in obj do not need to have all of the attributes in 'on'. Objects will be considered to have a
-        None value for missing attributes.
+        It's OK if the objects in `objs` are missing some or all of the attributes in `on`. They will still be
+        stored, and can found with find().
+
+        For the objects that do contain the attributes on "on", those attribute values must be hashable.
         """
         if not objs:
             raise ValueError(
@@ -61,42 +62,28 @@ class FrozenHashBox:
         """Find objects in the FrozenHashBox that satisfy the match and exclude constraints.
 
         Args:
-            match (Dict of {attribute: value}, or None): Specifies the subset of objects that match.
-                Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
-                Value is any hashable type, or it can be a list of values.
+            match: Dict of ``{attribute: value}`` defining the subset of objects that match.
+                If ``None``, all objects will match.
 
-                There is an implicit "and" between elements.
-                Example: match={'a': 1, 'b': 2} matches all objects with 'a'==1 and 'b'==2.
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
-                When the value is a list, all objects containing any value in the list will match.
-                Example: {'a': [1, 2, 3]} matches any object with an 'a' of 1, 2, or 3.
+                Value can be any of the following:
+                 - A single hashable value, which will match all objects with that value for the attribute.
+                 - A list of hashable values, which matches each object having any of the values for the attribute.
+                 - ``hashbox.ANY``, which matches all objects having the attribute.
 
-                If an attribute value is None, objects that are missing the attribute will be matched, as well as
-                any objects that have the attribute equal to None.
+            exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
+                If ``None``, no objects will be excluded.
 
-                match=None means all objects will be matched.
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
-            exclude (Dict of {attribute: value}, or None): Specifies the subset of objects that do not match.
-                exclude={'a': 1, 'b': 2} ensures that no objects with 'a'==1 will be in the output, and no
-                objects with 'b'==2 will be in the output.
-
-                You can also read this as "a != 1 and b != 2".
-
-                exclude={'a': [1, 2, 3]} ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
+                Value can be any of the following:
+                 - A single hashable value, which will exclude all objects with that value for the attribute.
+                 - A list of hashable values, which excludes each object having any of the values for the attribute.
+                 - ``hashbox.ANY``, which excludes all objects having the attribute.
 
         Returns:
             Numpy array of objects matching the constraints.
-
-        Example:
-            find(
-                match={'a': 1, 'b': [1, 2, 3]},
-                exclude={'c': 1, 'd': 1}
-            )
-            This is analogous to:
-            filter(
-                lambda obj: obj.a == 1 and obj.b in [1, 2, 3] and obj.c != 1 and obj.d != 1,
-                objects
-            )
         """
 
         validate_query(self.indices, match, exclude)
@@ -135,7 +122,14 @@ class FrozenHashBox:
         return self.obj_arr[hits]
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
-        """Get the unique values we have for the given attribute. Useful for deciding what to find() on."""
+        """Get the unique values we have for the given attribute. Useful for deciding what to find() on.
+
+        Args:
+            attr: The attribute to get values for.
+
+        Returns:
+            Set of all unique values for this attribute.
+        """
         return self.indices[attr].get_values()
 
     def _match_any_of(

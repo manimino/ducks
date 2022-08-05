@@ -14,6 +14,21 @@ class HashBox:
         objs: Optional[Iterable[Any]] = None,
         on: Iterable[Union[str, Callable]] = None,
     ):
+        """
+        Create a HashBox containing the ``objs``, queryable by the ``on`` attributes.
+
+        Args:
+            objs: The objects that HashBox will contain initially.
+                Objects do not need to be hashable, any object works.
+
+            on: The attributes that will be used for finding objects.
+                Must contain at least one.
+
+        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
+        stored, and can found with ``find()``.
+
+        For the objects that do contain the ``on`` attributes, those attribute values must be hashable.
+        """
         if not on:
             raise ValueError("Need at least one attribute.")
         if isinstance(on, str):
@@ -34,7 +49,34 @@ class HashBox:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> List:
+        """Find objects in the HashBox that satisfy the match and exclude constraints.
+
+        Args:
+            match: Dict of ``{attribute: value}`` defining the subset of objects that match.
+                If ``None``, all objects will match.
+
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+
+                Value can be any of the following:
+                 - A single hashable value, which will match all objects with that value for the attribute.
+                 - A list of hashable values, which matches each object having any of the values for the attribute.
+                 - ``hashbox.ANY``, which matches all objects having the attribute.
+
+            exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
+                If ``None``, no objects will be excluded.
+
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+
+                Value can be any of the following:
+                 - A single hashable value, which will exclude all objects with that value for the attribute.
+                 - A list of hashable values, which excludes each object having any of the values for the attribute.
+                 - ``hashbox.ANY``, which excludes all objects having the attribute.
+
+        Returns:
+            List of objects matching the constraints.
+        """
         hits = self._find_ids(match, exclude)
+
         # itemgetter is about 10% faster than doing a comprehension like [self.objs[ptr] for ptr in hits]
         if len(hits) == 0:
             return []
@@ -52,12 +94,7 @@ class HashBox:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> Int64Set:
-        """
-        Perform lookup based on given values. Return a set of object IDs matching constraints.
-
-        If "having" is None / empty, it matches all objects.
-        There is an implicit "AND" joining all constraints.
-        """
+        """Perform lookup based on given constraints. Return a set of object IDs."""
         validate_query(self.indices, match, exclude)
 
         # perform 'match' query
@@ -100,14 +137,14 @@ class HashBox:
         return hits
 
     def add(self, obj: Any):
-        """Add a new object, evaluating any attributes and storing the results."""
+        """Add the object, evaluating any attributes and storing the results."""
         ptr = id(obj)
         self.obj_map[ptr] = obj
         for attr in self.indices:
             self.indices[attr].add(ptr, obj)
 
     def remove(self, obj: Any):
-        """Remove an object. Raises KeyError if not present."""
+        """Remove the object. Raises KeyError if not present."""
         ptr = id(obj)
         if ptr not in self.obj_map:
             raise KeyError
@@ -117,7 +154,14 @@ class HashBox:
         del self.obj_map[ptr]
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
-        """Get the unique values we have for the given attribute. Useful for deciding what to find() on."""
+        """Get the unique values we have for the given attribute. Useful for deciding what to find() on.
+
+        Args:
+            attr: The attribute to get values for.
+
+        Returns:
+            Set of all unique values for this attribute.
+        """
         return self.indices[attr].get_values()
 
     def _match_any_of(self, attr: Union[str, Callable], value: Any):

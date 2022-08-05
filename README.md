@@ -1,12 +1,12 @@
 # HashBox
 
-<img src="https://github.com/manimino/hashbox/blob/main/img/hashbox-logo.png"><br>
+<img src="https://github.com/manimino/hashbox/blob/main/docs/hashbox-logo.png"><br>
 
 Container for finding Python objects by matching attributes. 
 
 Uses hash-based methods for storage and retrieval, so find is very fast.
 
-[Finding objects in HashBox can be 5-10x faster than SQLite.](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
+[Finding objects using HashBox can be 5-10x faster than SQLite.](https://github.com/manimino/hashbox/blob/main/examples/perf_demo.ipynb)
 
 ```
 pip install hashbox
@@ -22,29 +22,17 @@ pip install hashbox
 
 ```
 from hashbox import HashBox
-
-objects = [
-    {'a': 1, 'b': 2}, 
-    {'a': 1, 'b': 3}
-]
-
-hb = HashBox(
-    objects,
-    on=['a', 'b']
-)
-
-hb.find(
-    match={'a': 1}, 
-    exclude={'b': 3}
-)  
-# result: [{'a': 1, 'b': 2}]
+hb = HashBox(                                                                   # make a HashBox
+    [{'color': 'green', 'type': 'apple'}, {'color': 'green', 'type': 'frog'}]   # containing any type of object
+    on=['color', 'type'])                                                       # define attributes to find by
+hb.find({'color': 'green', 'type': 'frog'})                                     # find by attribute match
 ```
 
 The objects can be any type: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
 There are two classes available.
- - HashBox: can `add()` and `remove()` objects.
- - FrozenHashBox: faster finds, lower memory usage, and immutable.
+ - HashBox: can `add()` and `remove()` objects. [(API)](https://hashbox.readthedocs.io/en/latest/hashbox.mutable.html)
+ - FrozenHashBox: faster finds, lower memory usage, and immutable. [(API)](https://hashbox.readthedocs.io/en/latest/hashbox.frozen.html)
 
 ____
 
@@ -53,7 +41,7 @@ ____
 Expand for sample code.
 
 <details>
-<summary>Specify a list of values for an attribute to include / exclude values in the list</summary>
+<summary>Match and exclude multiple values</summary>
 <br>
 
 
@@ -82,9 +70,29 @@ hb.find(
 ```
 </details>
 
-<details>
-<summary>Define a function to access nested attributes</summary>
 
+<details>
+<summary>Greater than, less than</summary>
+<br />
+HashBox and FrozenHashBox have a function `get_values(attr)` which gets the set of unique values
+for an attribute. 
+
+Here's how to use that to find objects where x < 2.
+```
+from hashbox import HashBox
+
+data = [{'x': i // 2} for i in range(10)]
+hb = HashBox(data, ['x'])
+vals = hb.get_values('x')                       # returns the set of distinct values, {0, 1, 2, 3, 4, 5}
+small_vals = [val for val in vals if val < 2]   # small_vals is [0, 1]
+hb.find({'x': small_vals})                      # result: [{'x': 0}, {'x': 0}, {'x': 1}, {'x': 1}]
+```
+</details>
+
+<details>
+<summary>Use function attributes to access nested data</summary>
+
+You can use functions as attributes. Define a function that gets a nested attribute from each object.
 
 ```
 from hashbox import HashBox
@@ -119,7 +127,7 @@ hb.find({has_cheese: True})
 <details>
 <summary>Derived attributes</summary>
 <br />
-Find-by-function is very powerful. Here we find string objects with certain characteristics.
+Function attributes are very powerful. Here we find string objects with certain characteristics.
 
 ```
 from hashbox import FrozenHashBox
@@ -132,25 +140,6 @@ def o_count(obj):
 f = FrozenHashBox(objects, [o_count, len])
 f.find({len: 6})       # returns ['onions']
 f.find({o_count: 2})   # returns ['mushrooms', 'onions']
-```
-</details>
-
-
-<details>
-<summary>Greater than / less than</summary>
-<br />
-HashBox and FrozenHashBox have a function `get_values(attr)` which gets the set of unique values
-for an attribute. 
-
-Here's how to use that to find objects where x < 2.
-```
-from hashbox import HashBox
-
-data = [{'x': i // 2} for i in range(10)]
-hb = HashBox(data, ['x'])
-vals = hb.get_values('x')                       # returns the set of distinct values, {0, 1, 2, 3, 4, 5}
-small_vals = [val for val in vals if val < 2]   # small_vals is [0, 1]
-hb.find({'x': small_vals})                      # result: [{'x': 0}, {'x': 0}, {'x': 1}, {'x': 1}]
 ```
 </details>
 
