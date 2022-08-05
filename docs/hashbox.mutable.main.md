@@ -101,8 +101,3 @@ remove(obj: Any)
 Remove the object. Raises KeyError if not present. 
 
 
-
-
----
-
-_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._
