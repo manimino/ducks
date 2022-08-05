@@ -35,19 +35,16 @@ asizeof(set([1]))
 # Yep, says 248. Yes, that's actually bytes and not bits.
 ```
 
-Imagine if all our attribute values were unique, and we're storing a dict of millions of sets of size 1.
-Ouch. Yeah, let's not do that. In fact, let's not use Python set() at all! We're only storing numbers, so a typed set
-will be much more efficient. The cykhash sets are just perfect for this. They're about as fast as Python sets,
+Imagine if all our attribute values were unique. We'd have to store a dict of millions of sets of size 1.
+Ouch! Yeah, let's not do that. In fact, let's not use Python `set()` at all! We're only storing numbers, so a typed set
+will be much more efficient. The `cykhash` sets are just perfect for this. They're about as fast as Python sets,
 and around 1/4 the RAM.
 
-For smaller collections, below 100 numbers, cykhash is a bit inefficient, so we use tuples there instead.
+For smaller collections, below ~100 numbers, cykhash is a bit inefficient, so we use tuples there instead.
 While they are immutable, it's not a big deal to discard a tuple of size 100 and make another one.
 
-And for collections of size 1... we just store the number.
+And for collections of size 1... we just store the number, no container needed.
 
 Using different collection sizes like this helps keep our memory usage from going too crazy.
-A naive implementation would spend a gigabyte of RAM indexing a few million integers. While this
-adds a bit of code complexity, it's a pretty great trade. Just gotta test it for each collection size, and we do.
-
-For the FrozenHashBox, we use numpy arrays, because they're the best. As long as you don't need to add or remove
-objects, anyway.
+While this adds a bit of code complexity, it's a pretty great trade. Uses 1/4 to 1/10 as much RAM.
+Just need thorough testing for each collection size, which we have.
