@@ -64,8 +64,8 @@ hb.find(
 
 <details>
 <summary>Accessing nested attributes</summary>
-
-You can use functions as attributes to extract values from deep in objects.
+<br />
+Attributes can be functions. Function attributes are used to get values from nested data structures.
 
 ```
 from hashbox import HashBox
