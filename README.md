@@ -31,8 +31,8 @@ hb.find({'color': 'green', 'type': 'frog'})                                     
 The objects can be any type: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
 There are two classes available.
- - HashBox: can `add()` and `remove()` objects. [(API)](https://github.com/manimino/hashbox/blob/main/docs/HashBox.md)
- - FrozenHashBox: faster finds, lower memory usage, and immutable. [(API)](https://github.com/manimino/hashbox/blob/main/docs/FrozenHashBox.md)
+ - HashBox: can `add()` and `remove()` objects. [(API)](https://hashbox.readthedocs.io/en/latest/hashbox.mutable.html)
+ - FrozenHashBox: faster finds, lower memory usage, and immutable. [(API)](https://hashbox.readthedocs.io/en/latest/hashbox.frozen.html)
 
 ____
 
