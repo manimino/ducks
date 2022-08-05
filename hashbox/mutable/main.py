@@ -42,18 +42,18 @@ class HashBox:
                 If unspecified, all objects will match.
                 Specify a dictionary of {attribute: value} to constrain the objects that match.
                 The attribute is a string or Callable. Must be one of the attributes specified in the constructor.
-                Value can be:
-                  - A single hashable value, which will match all objects with that value for the attribute.
-                  - A list of hashable values, which matches each object containing any of the values.
-                  - hashbox.ANY, which matches all objects having the attribute.
+                Value can be any of the following.
+                  (1) A single hashable value, which will match all objects with that value for the attribute.
+                  (2) A list of hashable values, which matches each object containing any of the values.
+                  (3) hashbox.ANY, which matches all objects having the attribute.
                   
             exclude: Specifies the subset of objects that do not match.
                 If unspecified, no objects will be excluded.
                 Specify a dictionary of {attribute: value} to exclude objects from the results.
-                Value can be:
-                  - A single hashable value, which will exclude all objects with that value for the attribute.
-                  - A list of hashable values, which excludes each object containing any of the values.
-                  - hashbox.ANY, which excludes all objects having the attribute.
+                Value can be any of the following.
+                  (1) A single hashable value, which will exclude all objects with that value for the attribute.
+                  (2) A list of hashable values, which excludes each object containing any of the values.
+                  (3) hashbox.ANY, which excludes all objects having the attribute.
 
         Returns:
             List of objects matching the constraints.
