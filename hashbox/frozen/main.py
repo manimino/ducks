@@ -12,7 +12,6 @@ from hashbox.utils import make_empty_array, validate_query
 
 
 class FrozenHashBox:
-    """Like HashBox, but faster, more memory-efficient, and immutable. Great for making APIs to serve static data."""
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
         """Create a FrozenHashBox containing the objs, queryable by the 'on' attributes.
@@ -21,11 +20,11 @@ class FrozenHashBox:
             objs: The objects that FrozenHashBox will contain.
                 Objects do not need to be hashable, any object works.
 
-            on: The attributes that FrozenHashBox will build indices on.
+            on: The attributes that will be used for finding objects.
                 Must contain at least one.
 
-        It's OK if the objects in "objs" are missing some or all of the attributes in "on". They will still be
-        stored, and can found with find(), e.g. when matching all objects or objects missing an attribute.
+        It's OK if the objects in `objs` are missing some or all of the attributes in `on`. They will still be
+        stored, and can found with find().
 
         For the objects that do contain the attributes on "on", those attribute values must be hashable.
         """
@@ -64,27 +63,26 @@ class FrozenHashBox:
 
         Args:
             match: Specifies the subset of objects that match.
-                Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
-                Value is any hashable type, or it can be a list of values.
+                If unspecified, all objects will match.
 
-                There is an implicit "and" between elements. match={'a': 1, 'b': 2} matches all objects with 'a'==1
-                and 'b'==2.
+                Specify a dictionary of {attribute: value} to constrain the objects that match.
 
-                When the value is a list, all objects containing any value in the list will match. `{'a': [1, 2, 3]}`
-                matches any object with an 'a' of 1, 2, or 3. Read it as ('a' in [1, 2, 3]).
+                The attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
-                If an attribute value is None, objects that are missing the attribute will be matched, as well as
-                any objects that have the attribute equal to None.
-
-                match=None means all objects will be matched.
+                Value can be any of the following:
+                 : A single hashable value, which will match all objects with that value for the attribute.
+                 : A list of hashable values, which matches each object having any of the values for the attribute.
+                 : hashbox.ANY, which matches all objects having the attribute.
 
             exclude: Specifies the subset of objects that do not match.
+                If unspecified, no objects will be excluded.
 
-                Excluding `{'a': 1, 'b': 2}` ensures that no objects with 'a'==1 will be in the output, and no
-                objects with 'b'==2 will be in the output. Read it as ('a' != 1 and 'b' != 2).
+                Specify a dictionary of {attribute: value} to exclude objects from the results.
 
-                Excluding `{'a': [1, 2, 3]}` ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
-                Read it as ('a' not in [1, 2, 3]).
+                Value can be any of the following:
+                 : A single hashable value, which will exclude all objects with that value for the attribute.
+                 : A list of hashable values, which excludes each object having any of the values for the attribute.
+                 : hashbox.ANY, which excludes all objects having the attribute.
 
         Returns:
             Numpy array of objects matching the constraints.

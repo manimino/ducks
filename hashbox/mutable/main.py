@@ -14,6 +14,21 @@ class HashBox:
         objs: Optional[Iterable[Any]] = None,
         on: Iterable[Union[str, Callable]] = None,
     ):
+        """
+        Create a HashBox containing the objs, queryable by the 'on' attributes.
+
+        Args:
+            objs: The objects that HashBox will contain initially.
+                Objects do not need to be hashable, any object works.
+
+            on: The attributes that will be used for finding objects.
+                Must contain at least one.
+
+        It's OK if the objects in `objs` are missing some or all of the attributes in `on`. They will still be
+        stored, and can found with find().
+
+        For the objects that do contain the attributes on "on", those attribute values must be hashable.
+        """
         if not on:
             raise ValueError("Need at least one attribute.")
         if isinstance(on, str):
@@ -40,24 +55,24 @@ class HashBox:
             match: Specifies the subset of objects that match.
                 If unspecified, all objects will match.
 
-                Specify a dictionary of {attribute﹕ value} to constrain the objects that match.
+                Specify a dictionary of {attribute: value} to constrain the objects that match.
 
                 The attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
-                Value can be any of the following.
-                    - A single hashable value, which will match all objects with that value for the attribute.
-                    - A list of hashable values, which matches each object having any of the values for the attribute.
-                    - hashbox.ANY, which matches all objects having the attribute.
+                Value can be any of the following:
+                 : A single hashable value, which will match all objects with that value for the attribute.
+                 : A list of hashable values, which matches each object having any of the values for the attribute.
+                 : hashbox.ANY, which matches all objects having the attribute.
                   
             exclude: Specifies the subset of objects that do not match.
                 If unspecified, no objects will be excluded.
 
-                Specify a dictionary of {attribute﹕ value}  to exclude objects from the results.
+                Specify a dictionary of {attribute: value} to exclude objects from the results.
 
-                Value can be any of the following.
-                    - A single hashable value, which will exclude all objects with that value for the attribute.
-                    - A list of hashable values, which excludes each object having any of the values for the attribute.
-                    - hashbox.ANY, which excludes all objects having the attribute.
+                Value can be any of the following:
+                 : A single hashable value, which will exclude all objects with that value for the attribute.
+                 : A list of hashable values, which excludes each object having any of the values for the attribute.
+                 : hashbox.ANY, which excludes all objects having the attribute.
 
         Returns:
             List of objects matching the constraints.
@@ -81,12 +96,7 @@ class HashBox:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> Int64Set:
-        """
-        Perform lookup based on given values. Return a set of object IDs matching constraints.
-
-        If "having" is None / empty, it matches all objects.
-        There is an implicit "AND" joining all constraints.
-        """
+        """Perform lookup based on given constraints. Return a set of object IDs."""
         validate_query(self.indices, match, exclude)
 
         # perform 'match' query

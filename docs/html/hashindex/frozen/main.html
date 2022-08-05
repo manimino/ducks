@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>hashindex.frozen.main API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>hashindex.frozen.main</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+
+from collections.abc import Hashable
+from typing import Optional, Any, Dict, Union, Callable, Iterable, List
+
+from hashindex.frozen.frozen_field import FrozenFieldIndex
+from hashindex.frozen.array_pair import ArrayPair, make_empty_array_pair, make_array_pair
+from hashindex.utils import validate_query
+
+
+class FrozenHashIndex:
+    &#34;&#34;&#34;A much faster HashIndex that lacks the ability to add or remove objects.&#34;&#34;&#34;
+
+    def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
+        &#34;&#34;&#34;Create a FrozenHashIndex containing the objs, queryable by the &#39;on&#39; attributes.
+
+        Args:
+            objs (Any iterable containing any types): The objects that FrozenHashIndex will contain.
+                Must contain at least one object. Objects do not need to be hashable, any object works.
+
+            on (Iterable of attributes): The attributes that FrozenHashIndex will build indices on.
+                Must contain at least one.
+
+        Objects in obj do not need to have all of the attributes in &#39;on&#39;. Objects will be considered to have a
+        None value for missing attributes.
+        &#34;&#34;&#34;
+        if not objs:
+            raise ValueError(
+                &#34;Cannot build an empty FrozenHashIndex; at least 1 object is required.&#34;
+            )
+        self.on = on
+        self.indices = {}
+
+        obj_arr = np.empty(len(objs), dtype=&#39;O&#39;)
+        for i, obj in enumerate(objs):
+            obj_arr[i] = obj
+        self.all = make_array_pair(np.array(obj_arr, dtype=&#39;O&#39;))
+        for field in on:
+            self.indices[field] = FrozenFieldIndex(field, obj_arr)
+
+    def find(
+        self,
+        match: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+    ) -&gt; np.ndarray:
+        &#34;&#34;&#34;Find objects in the FrozenHashIndex that satisfy the match and exclude constraints.
+
+        Args:
+            match (Dict of {attribute: value}, or None): Specifies the subset of objects that match.
+                Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+                Value is any hashable type, or it can be a list of values.
+
+                There is an implicit &#34;and&#34; between elements.
+                Example: match={&#39;a&#39;: 1, &#39;b&#39;: 2} matches all objects with &#39;a&#39;==1 and &#39;b&#39;==2.
+
+                When the value is a list, all objects containing any value in the list will match.
+                Example: {&#39;a&#39;: [1, 2, 3]} matches any object with an &#39;a&#39; of 1, 2, or 3.
+
+                If an attribute value is None, objects that are missing the attribute will be matched, as well as
+                any objects that have the attribute equal to None.
+
+                match=None means all objects will be matched.
+
+            exclude (Dict of {attribute: value}, or None): Specifies the subset of objects that do not match.
+                exclude={&#39;a&#39;: 1, &#39;b&#39;: 2} ensures that no objects with &#39;a&#39;==1 will be in the output, and no
+                objects with &#39;b&#39;==2 will be in the output.
+
+                You can also read this as &#34;a != 1 and b != 2&#34;.
+
+                exclude={&#39;a&#39;: [1, 2, 3]} ensures that no objects with &#39;a&#39; equal to 1, 2, or 3 will be in the output.
+
+        Returns:
+            Numpy array of objects matching the constraints.
+
+        Example:
+            find(
+                match={&#39;a&#39;: 1, &#39;b&#39;: [1, 2, 3]},
+                exclude={&#39;c&#39;: 1, &#39;d&#39;: 1}
+            )
+            This is analogous to:
+            filter(
+                lambda obj: obj.a == 1 and obj.b in [1, 2, 3] and obj.c != 1 and obj.d != 1,
+                objects
+            )
+        &#34;&#34;&#34;
+
+        validate_query(self.indices, match, exclude)
+
+        # perform &#39;match&#39; query
+        hits = None
+        if match:
+            # find intersection of each field
+            for field, value in match.items():
+                # if multiple values for a field, find each value and union those first
+                field_hits = self._match_any_of(field, value)
+                if hits is None:  # first field
+                    hits = field_hits
+                if field_hits:
+                    # intersect this field&#39;s hits with our hits so far
+                    hits.apply_intersection(field_hits)
+                else:
+                    # this field had no matches, therefore the intersection will be empty. We can stop here.
+                    return make_empty_array_pair().obj_arr
+        else:
+            # &#39;match&#39; is unspecified, so match all objects
+            hits = self.all
+
+        # perform &#39;exclude&#39; query
+        if exclude:
+            for field, value in exclude.items():
+                field_hits = self._match_any_of(field, value)
+                hits.apply_difference(field_hits)
+                if len(hits) == 0:
+                    break
+
+        return hits.obj_arr
+
+    def _match_any_of(self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]) -&gt; ArrayPair:
+        &#34;&#34;&#34;Get matches for a single field during a find(). If multiple values specified, handle union logic.
+
+        Args:
+            field: The attribute being queried.
+            value: The value of the field to match, or if list, multiple values to match.
+
+        Returns:
+            ArrayPair of matched objects and their IDs, both sorted by ID.
+        &#34;&#34;&#34;
+        if isinstance(value, list):
+            # take the union of all matches
+            matches = None
+            for v in value:
+                v_matches = self.indices[field].get(v)
+                if matches is None:
+                    matches = v_matches
+                else:
+                    matches.apply_union(v_matches)
+            return matches
+        else:
+            return self.indices[field].get(value)
+
+    def __contains__(self, obj):
+        return obj in self.all
+
+    def __iter__(self):
+        return iter(self.all.obj_arr)
+
+    def __len__(self):
+        return len(self.all)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="hashindex.frozen.main.FrozenHashIndex"><code class="flex name class">
+<span>class <span class="ident">FrozenHashIndex</span></span>
+<span>(</span><span>objs: Iterable[Any], on: Iterable[Union[str, Callable]])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A much faster HashIndex that lacks the ability to add or remove objects.</p>
+<p>Create a FrozenHashIndex containing the objs, queryable by the 'on' attributes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>objs</code></strong> :&ensp;<code>Any iterable containing any types</code></dt>
+<dd>The objects that FrozenHashIndex will contain.
+Must contain at least one object. Objects do not need to be hashable, any object works.</dd>
+<dt><strong><code>on</code></strong> :&ensp;<code>Iterable</code> of <code>attributes</code></dt>
+<dd>The attributes that FrozenHashIndex will build indices on.
+Must contain at least one.</dd>
+</dl>
+<p>Objects in obj do not need to have all of the attributes in 'on'. Objects will be considered to have a
+None value for missing attributes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FrozenHashIndex:
+    &#34;&#34;&#34;A much faster HashIndex that lacks the ability to add or remove objects.&#34;&#34;&#34;
+
+    def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
+        &#34;&#34;&#34;Create a FrozenHashIndex containing the objs, queryable by the &#39;on&#39; attributes.
+
+        Args:
+            objs (Any iterable containing any types): The objects that FrozenHashIndex will contain.
+                Must contain at least one object. Objects do not need to be hashable, any object works.
+
+            on (Iterable of attributes): The attributes that FrozenHashIndex will build indices on.
+                Must contain at least one.
+
+        Objects in obj do not need to have all of the attributes in &#39;on&#39;. Objects will be considered to have a
+        None value for missing attributes.
+        &#34;&#34;&#34;
+        if not objs:
+            raise ValueError(
+                &#34;Cannot build an empty FrozenHashIndex; at least 1 object is required.&#34;
+            )
+        self.on = on
+        self.indices = {}
+
+        obj_arr = np.empty(len(objs), dtype=&#39;O&#39;)
+        for i, obj in enumerate(objs):
+            obj_arr[i] = obj
+        self.all = make_array_pair(np.array(obj_arr, dtype=&#39;O&#39;))
+        for field in on:
+            self.indices[field] = FrozenFieldIndex(field, obj_arr)
+
+    def find(
+        self,
+        match: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+    ) -&gt; np.ndarray:
+        &#34;&#34;&#34;Find objects in the FrozenHashIndex that satisfy the match and exclude constraints.
+
+        Args:
+            match (Dict of {attribute: value}, or None): Specifies the subset of objects that match.
+                Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+                Value is any hashable type, or it can be a list of values.
+
+                There is an implicit &#34;and&#34; between elements.
+                Example: match={&#39;a&#39;: 1, &#39;b&#39;: 2} matches all objects with &#39;a&#39;==1 and &#39;b&#39;==2.
+
+                When the value is a list, all objects containing any value in the list will match.
+                Example: {&#39;a&#39;: [1, 2, 3]} matches any object with an &#39;a&#39; of 1, 2, or 3.
+
+                If an attribute value is None, objects that are missing the attribute will be matched, as well as
+                any objects that have the attribute equal to None.
+
+                match=None means all objects will be matched.
+
+            exclude (Dict of {attribute: value}, or None): Specifies the subset of objects that do not match.
+                exclude={&#39;a&#39;: 1, &#39;b&#39;: 2} ensures that no objects with &#39;a&#39;==1 will be in the output, and no
+                objects with &#39;b&#39;==2 will be in the output.
+
+                You can also read this as &#34;a != 1 and b != 2&#34;.
+
+                exclude={&#39;a&#39;: [1, 2, 3]} ensures that no objects with &#39;a&#39; equal to 1, 2, or 3 will be in the output.
+
+        Returns:
+            Numpy array of objects matching the constraints.
+
+        Example:
+            find(
+                match={&#39;a&#39;: 1, &#39;b&#39;: [1, 2, 3]},
+                exclude={&#39;c&#39;: 1, &#39;d&#39;: 1}
+            )
+            This is analogous to:
+            filter(
+                lambda obj: obj.a == 1 and obj.b in [1, 2, 3] and obj.c != 1 and obj.d != 1,
+                objects
+            )
+        &#34;&#34;&#34;
+
+        validate_query(self.indices, match, exclude)
+
+        # perform &#39;match&#39; query
+        hits = None
+        if match:
+            # find intersection of each field
+            for field, value in match.items():
+                # if multiple values for a field, find each value and union those first
+                field_hits = self._match_any_of(field, value)
+                if hits is None:  # first field
+                    hits = field_hits
+                if field_hits:
+                    # intersect this field&#39;s hits with our hits so far
+                    hits.apply_intersection(field_hits)
+                else:
+                    # this field had no matches, therefore the intersection will be empty. We can stop here.
+                    return make_empty_array_pair().obj_arr
+        else:
+            # &#39;match&#39; is unspecified, so match all objects
+            hits = self.all
+
+        # perform &#39;exclude&#39; query
+        if exclude:
+            for field, value in exclude.items():
+                field_hits = self._match_any_of(field, value)
+                hits.apply_difference(field_hits)
+                if len(hits) == 0:
+                    break
+
+        return hits.obj_arr
+
+    def _match_any_of(self, field: Union[str, Callable], value: Union[Hashable, List[Hashable]]) -&gt; ArrayPair:
+        &#34;&#34;&#34;Get matches for a single field during a find(). If multiple values specified, handle union logic.
+
+        Args:
+            field: The attribute being queried.
+            value: The value of the field to match, or if list, multiple values to match.
+
+        Returns:
+            ArrayPair of matched objects and their IDs, both sorted by ID.
+        &#34;&#34;&#34;
+        if isinstance(value, list):
+            # take the union of all matches
+            matches = None
+            for v in value:
+                v_matches = self.indices[field].get(v)
+                if matches is None:
+                    matches = v_matches
+                else:
+                    matches.apply_union(v_matches)
+            return matches
+        else:
+            return self.indices[field].get(value)
+
+    def __contains__(self, obj):
+        return obj in self.all
+
+    def __iter__(self):
+        return iter(self.all.obj_arr)
+
+    def __len__(self):
+        return len(self.all)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="hashindex.frozen.main.FrozenHashIndex.find"><code class="name flex">
+<span>def <span class="ident">find</span></span>(<span>self, match: Optional[Dict[Union[str, Callable], Union[collections.abc.Hashable, List[collections.abc.Hashable]]]] = None, exclude: Optional[Dict[Union[str, Callable], Union[collections.abc.Hashable, List[collections.abc.Hashable]]]] = None) ‑> numpy.ndarray</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find objects in the FrozenHashIndex that satisfy the match and exclude constraints.</p>
+<h2 id="args">Args</h2>
+<p>match (Dict of {attribute: value}, or None): Specifies the subset of objects that match.
+Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+Value is any hashable type, or it can be a list of values.</p>
+<pre><code>There is an implicit "and" between elements.
+Example: match={'a': 1, 'b': 2} matches all objects with 'a'==1 and 'b'==2.
+
+When the value is a list, all objects containing any value in the list will match.
+Example: {'a': [1, 2, 3]} matches any object with an 'a' of 1, 2, or 3.
+
+If an attribute value is None, objects that are missing the attribute will be matched, as well as
+any objects that have the attribute equal to None.
+
+match=None means all objects will be matched.
+</code></pre>
+<p>exclude (Dict of {attribute: value}, or None): Specifies the subset of objects that do not match.
+exclude={'a': 1, 'b': 2} ensures that no objects with 'a'==1 will be in the output, and no
+objects with 'b'==2 will be in the output.</p>
+<pre><code>You can also read this as "a != 1 and b != 2".
+
+exclude={'a': [1, 2, 3]} ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
+</code></pre>
+<h2 id="returns">Returns</h2>
+<p>Numpy array of objects matching the constraints.</p>
+<h2 id="example">Example</h2>
+<p>find(
+match={'a': 1, 'b': [1, 2, 3]},
+exclude={'c': 1, 'd': 1}
+)
+This is analogous to:
+filter(
+lambda obj: obj.a == 1 and obj.b in [1, 2, 3] and obj.c != 1 and obj.d != 1,
+objects
+)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find(
+    self,
+    match: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+    exclude: Optional[Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]] = None,
+) -&gt; np.ndarray:
+    &#34;&#34;&#34;Find objects in the FrozenHashIndex that satisfy the match and exclude constraints.
+
+    Args:
+        match (Dict of {attribute: value}, or None): Specifies the subset of objects that match.
+            Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+            Value is any hashable type, or it can be a list of values.
+
+            There is an implicit &#34;and&#34; between elements.
+            Example: match={&#39;a&#39;: 1, &#39;b&#39;: 2} matches all objects with &#39;a&#39;==1 and &#39;b&#39;==2.
+
+            When the value is a list, all objects containing any value in the list will match.
+            Example: {&#39;a&#39;: [1, 2, 3]} matches any object with an &#39;a&#39; of 1, 2, or 3.
+
+            If an attribute value is None, objects that are missing the attribute will be matched, as well as
+            any objects that have the attribute equal to None.
+
+            match=None means all objects will be matched.
+
+        exclude (Dict of {attribute: value}, or None): Specifies the subset of objects that do not match.
+            exclude={&#39;a&#39;: 1, &#39;b&#39;: 2} ensures that no objects with &#39;a&#39;==1 will be in the output, and no
+            objects with &#39;b&#39;==2 will be in the output.
+
+            You can also read this as &#34;a != 1 and b != 2&#34;.
+
+            exclude={&#39;a&#39;: [1, 2, 3]} ensures that no objects with &#39;a&#39; equal to 1, 2, or 3 will be in the output.
+
+    Returns:
+        Numpy array of objects matching the constraints.
+
+    Example:
+        find(
+            match={&#39;a&#39;: 1, &#39;b&#39;: [1, 2, 3]},
+            exclude={&#39;c&#39;: 1, &#39;d&#39;: 1}
+        )
+        This is analogous to:
+        filter(
+            lambda obj: obj.a == 1 and obj.b in [1, 2, 3] and obj.c != 1 and obj.d != 1,
+            objects
+        )
+    &#34;&#34;&#34;
+
+    validate_query(self.indices, match, exclude)
+
+    # perform &#39;match&#39; query
+    hits = None
+    if match:
+        # find intersection of each field
+        for field, value in match.items():
+            # if multiple values for a field, find each value and union those first
+            field_hits = self._match_any_of(field, value)
+            if hits is None:  # first field
+                hits = field_hits
+            if field_hits:
+                # intersect this field&#39;s hits with our hits so far
+                hits.apply_intersection(field_hits)
+            else:
+                # this field had no matches, therefore the intersection will be empty. We can stop here.
+                return make_empty_array_pair().obj_arr
+    else:
+        # &#39;match&#39; is unspecified, so match all objects
+        hits = self.all
+
+    # perform &#39;exclude&#39; query
+    if exclude:
+        for field, value in exclude.items():
+            field_hits = self._match_any_of(field, value)
+            hits.apply_difference(field_hits)
+            if len(hits) == 0:
+                break
+
+    return hits.obj_arr</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="hashindex.frozen" href="index.html">hashindex.frozen</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="hashindex.frozen.main.FrozenHashIndex" href="#hashindex.frozen.main.FrozenHashIndex">FrozenHashIndex</a></code></h4>
+<ul class="">
+<li><code><a title="hashindex.frozen.main.FrozenHashIndex.find" href="#hashindex.frozen.main.FrozenHashIndex.find">find</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
