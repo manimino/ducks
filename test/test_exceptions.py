@@ -1,26 +1,26 @@
 import pytest
 
-from hashbox import HashBox, FrozenHashBox
-from hashbox.exceptions import AttributeNotFoundError
-from hashbox.constants import SIZE_THRESH
+from filterbox import FilterBox, FrozenFilterBox
+from filterbox.exceptions import AttributeNotFoundError
+from filterbox.constants import SIZE_THRESH
 
 from .conftest import AssertRaises, BadHash
 
 
 def test_remove_empty():
-    f = HashBox([], on=["stuff"])
+    f = FilterBox([], on=["stuff"])
     with AssertRaises(KeyError):
         f.remove("nope")
 
 
 def test_empty_frozen():
     with AssertRaises(ValueError):
-        FrozenHashBox([], on=["stuff"])
+        FrozenFilterBox([], on=["stuff"])
 
 
 def test_no_index_mutable():
     with AssertRaises(ValueError):
-        HashBox(["a"])
+        FilterBox(["a"])
 
 
 def test_bad_query(box_class):
@@ -40,7 +40,7 @@ def test_remove_missing_value(n_items):
     an empty result correctly retrieved?
     """
     data = [BadHash(i) for i in range(5)]
-    f = HashBox(data, ["n"])
+    f = FilterBox(data, ["n"])
     assert len(f.find({"n": -1})) == 0
     with AssertRaises(KeyError):
         f.remove(BadHash(-1))

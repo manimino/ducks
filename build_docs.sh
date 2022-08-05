@@ -1,6 +1,6 @@
 #!/bin/bash
 
 pushd docs/
-sphinx-apidoc ../hashbox -o .; make html
+sphinx-apidoc ../filterbox -o .; make html
 popd
 

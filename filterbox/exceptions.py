@@ -1,5 +1,5 @@
 class FrozenError(Exception):
-    """Raised when attempting to modify a FrozenHashBox"""
+    """Raised when attempting to modify a FrozenFilterBox"""
 
 
 class AttributeNotFoundError(Exception):

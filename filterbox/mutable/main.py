@@ -3,22 +3,22 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 
 from cykhash import Int64Set
 
-from hashbox import ANY
-from hashbox.utils import validate_query
-from hashbox.mutable.mutable_attr import MutableAttrIndex
+from filterbox import ANY
+from filterbox.utils import validate_query
+from filterbox.mutable.mutable_attr import MutableAttrIndex
 
 
-class HashBox:
+class FilterBox:
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
         on: Iterable[Union[str, Callable]] = None,
     ):
         """
-        Create a HashBox containing the ``objs``, queryable by the ``on`` attributes.
+        Create a FilterBox containing the ``objs``, queryable by the ``on`` attributes.
 
         Args:
-            objs: The objects that HashBox will contain initially.
+            objs: The objects that FilterBox will contain initially.
                 Objects do not need to be hashable, any object works.
 
             on: The attributes that will be used for finding objects.
@@ -49,7 +49,7 @@ class HashBox:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> List:
-        """Find objects in the HashBox that satisfy the match and exclude constraints.
+        """Find objects in the FilterBox that satisfy the match and exclude constraints.
 
         Args:
             match: Dict of ``{attribute: value}`` defining the subset of objects that match.
@@ -60,7 +60,7 @@ class HashBox:
                 Value can be any of the following:
                  - A single hashable value, which will match all objects with that value for the attribute.
                  - A list of hashable values, which matches each object having any of the values for the attribute.
-                 - ``hashbox.ANY``, which matches all objects having the attribute.
+                 - ``filterbox.ANY``, which matches all objects having the attribute.
 
             exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
@@ -70,7 +70,7 @@ class HashBox:
                 Value can be any of the following:
                  - A single hashable value, which will exclude all objects with that value for the attribute.
                  - A list of hashable values, which excludes each object having any of the values for the attribute.
-                 - ``hashbox.ANY``, which excludes all objects having the attribute.
+                 - ``filterbox.ANY``, which excludes all objects having the attribute.
 
         Returns:
             List of objects matching the constraints.

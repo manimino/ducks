@@ -1,5 +1,5 @@
 """
-Performs object lookup for a single attribute in a FrozenHashBox.
+Performs object lookup for a single attribute in a FrozenFilterBox.
 """
 
 
@@ -9,9 +9,9 @@ from bisect import bisect_left
 from dataclasses import dataclass
 from typing import Union, Callable, Set
 
-from hashbox.init_helpers import sort_by_hash, group_by_val, run_length_encode
-from hashbox.constants import SIZE_THRESH
-from hashbox.utils import make_empty_array
+from filterbox.init_helpers import sort_by_hash, group_by_val, run_length_encode
+from filterbox.constants import SIZE_THRESH
+from filterbox.utils import make_empty_array
 
 
 @dataclass
@@ -43,7 +43,7 @@ class ObjsByHash:
 
 
 class FrozenAttrIndex:
-    """Stores data and handles requests that are relevant to a single attribute of a FrozenHashBox."""
+    """Stores data and handles requests that are relevant to a single attribute of a FrozenFilterBox."""
 
     def __init__(self, attr: Union[str, Callable], objs: np.ndarray, dtype: str):
         # sort the objects by attribute value, using their hashes and handling collisions

@@ -1,7 +1,7 @@
-hashbox
-=======
+filterbox
+=========
 
 .. toctree::
    :maxdepth: 4
 
-   hashbox
+   filterbox

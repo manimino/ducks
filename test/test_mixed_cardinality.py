@@ -8,9 +8,9 @@ def test_thresh(box_class, thresh):
 
     n_items = 10 ** 4
     objs = [{"size": i} for i in range(n_items)]
-    hb = box_class(objs, [size_thresh_n])
-    assert len(hb.find({size_thresh_n: True})) == thresh
-    assert len(hb.find({size_thresh_n: False})) == n_items - thresh
+    fb = box_class(objs, [size_thresh_n])
+    assert len(fb.find({size_thresh_n: True})) == thresh
+    assert len(fb.find({size_thresh_n: False})) == n_items - thresh
 
 
 def test_bad_hash_mixed(box_class):

@@ -1,8 +1,8 @@
 import pytest
-from hashbox import HashBox, FrozenHashBox
+from filterbox import FilterBox, FrozenFilterBox
 
 
-@pytest.fixture(params=[HashBox, FrozenHashBox])
+@pytest.fixture(params=[FilterBox, FrozenFilterBox])
 def box_class(request):
     return request.param
 

@@ -2,8 +2,8 @@ import numpy as np
 
 from typing import List, Union, Callable, Optional, Any, Dict, Tuple
 
-from hashbox import ANY
-from hashbox.exceptions import AttributeNotFoundError, MissingAttribute
+from filterbox import ANY
+from filterbox.exceptions import AttributeNotFoundError, MissingAttribute
 
 
 def get_attribute(obj: Any, attr: Union[Callable, str]) -> Tuple[Any, bool]:

@@ -1,26 +1,26 @@
 # Table of Contents
 
-* [hashbox.frozen.main](#hashbox.frozen.main)
-  * [FrozenHashBox](#hashbox.frozen.main.FrozenHashBox)
-    * [\_\_init\_\_](#hashbox.frozen.main.FrozenHashBox.__init__)
-    * [find](#hashbox.frozen.main.FrozenHashBox.find)
-    * [get\_values](#hashbox.frozen.main.FrozenHashBox.get_values)
+* [filterbox.frozen.main](#filterbox.frozen.main)
+  * [FrozenFilterBox](#filterbox.frozen.main.FrozenFilterBox)
+    * [\_\_init\_\_](#filterbox.frozen.main.FrozenFilterBox.__init__)
+    * [find](#filterbox.frozen.main.FrozenFilterBox.find)
+    * [get\_values](#filterbox.frozen.main.FrozenFilterBox.get_values)
 
-<a id="hashbox.frozen.main"></a>
+<a id="filterbox.frozen.main"></a>
 
-# hashbox.frozen.main
+# filterbox.frozen.main
 
-<a id="hashbox.frozen.main.FrozenHashBox"></a>
+<a id="filterbox.frozen.main.FrozenFilterBox"></a>
 
-## FrozenHashBox Objects
+## FrozenFilterBox Objects
 
 ```python
-class FrozenHashBox()
+class FrozenFilterBox()
 ```
 
-A much faster HashBox that lacks the ability to add or remove objects.
+A much faster FilterBox that lacks the ability to add or remove objects.
 
-<a id="hashbox.frozen.main.FrozenHashBox.__init__"></a>
+<a id="filterbox.frozen.main.FrozenFilterBox.__init__"></a>
 
 #### \_\_init\_\_
 
@@ -28,19 +28,19 @@ A much faster HashBox that lacks the ability to add or remove objects.
 def __init__(objs: Iterable[Any], on: Iterable[Union[str, Callable]])
 ```
 
-Create a FrozenHashBox containing the objs, queryable by the 'on' attributes.
+Create a FrozenFilterBox containing the objs, queryable by the 'on' attributes.
 
 **Arguments**:
 
-- `objs` _Any iterable containing any types_ - The objects that FrozenHashBox will contain.
+- `objs` _Any iterable containing any types_ - The objects that FrozenFilterBox will contain.
   Must contain at least one object. Objects do not need to be hashable, any object works.
   
-- `on` _Iterable of attributes_ - The attributes that FrozenHashBox will build indices on.
+- `on` _Iterable of attributes_ - The attributes that FrozenFilterBox will build indices on.
   Must contain at least one.
   
   Objects in obj do not need to have all of the attributes in 'on'.
 
-<a id="hashbox.frozen.main.FrozenHashBox.find"></a>
+<a id="filterbox.frozen.main.FrozenFilterBox.find"></a>
 
 #### find
 
@@ -53,7 +53,7 @@ def find(
 ) -> np.ndarray
 ```
 
-Find objects in the FrozenHashBox that satisfy the match and exclude constraints.
+Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
 
 **Arguments**:
 
@@ -98,7 +98,7 @@ Find objects in the FrozenHashBox that satisfy the match and exclude constraints
   objects
   )
 
-<a id="hashbox.frozen.main.FrozenHashBox.get_values"></a>
+<a id="filterbox.frozen.main.FrozenFilterBox.get_values"></a>
 
 #### get\_values
 

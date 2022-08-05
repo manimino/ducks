@@ -1,6 +1,6 @@
 ## How It Works, Mutable Edition
 
-In HashBox, each attribute is a dict of sets: {attribute value: set(object IDs)}. On find(), object IDs are retrieved 
+In FilterBox, each attribute is a dict of sets: {attribute value: set(object IDs)}. On find(), object IDs are retrieved 
 for each attribute value. Then, set operations are applied to get the final object ID set. Last, the object IDs are 
 mapped to objects, which are then returned.
 
