@@ -1,7 +1,3 @@
-"""
-
-"""
-
 from typing import Callable, Union, Dict, Any, Iterable, Optional
 
 from cykhash import Int64Set
@@ -12,10 +8,7 @@ from hashbox.utils import get_attribute
 
 
 class MutableAttrIndex:
-    """
-    Stores the possible values of this attribute in a collection of buckets.
-    Several values may be allocated to the same bucket for space efficiency reasons.
-    """
+    """Stores data and handles requests that are relevant to a single attribute of a HashBox."""
 
     def __init__(
         self,
@@ -79,7 +72,7 @@ class MutableAttrIndex:
 
     def get_all_ids(self):
         """Get the ID of every object that has this attribute.
-        Called when matching or excluding {attr: hashindex.ANY}."""
+        Called when matching or excluding ``{attr: hashindex.ANY}``."""
         obj_ids = Int64Set()
         for key, val in self.d.items():
             if isinstance(val, tuple):
