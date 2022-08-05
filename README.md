@@ -31,10 +31,8 @@ hb.find({'color': 'green', 'type': 'frog'})                                     
 The objects can be any type: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
 There are two classes available.
- - HashBox: can `add()` and `remove()` objects. [(API)](https://hashbox.readthedocs.io/en/latest/hashbox.mutable.html)
- - FrozenHashBox: faster finds, lower memory usage, and immutable. [(API)](https://hashbox.readthedocs.io/en/latest/hashbox.frozen.html)
-
-____
+ - HashBox: can `add()` and `remove()` objects. 
+ - FrozenHashBox: faster finds, lower memory usage, and immutable. 
 
 ## Examples
 
@@ -170,12 +168,17 @@ hb.find(exclude={'a': ANY})  # result: [{}]
 ```
 </details>
 
+Consult the API docs for [HashBox](https://hashbox.readthedocs.io/en/latest/hashbox.mutable.html#hashbox.mutable.main.HashBox)
+and [FrozenHashBox](https://hashbox.readthedocs.io/en/latest/hashbox.frozen.html#hashbox.frozen.main.FrozenHashBox)
+for more info.
+
 ### Recipes
  
  - [Auto-updating](https://github.com/manimino/hashbox/blob/main/examples/update.py) - Keep HashBox updated when attribute values change
  - [Wordle solver](https://github.com/manimino/hashbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
  - [Collision detection](https://github.com/manimino/hashbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/hashbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
+
 
 ____
 
@@ -189,6 +192,9 @@ FrozenHashBox uses arrays instead of sets, thanks to its immutability constraint
 of objects. Attribute values map to indices in the object array. On `find()`, the array indices for each match are 
 retrieved. Then, set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
 final set of object array indices. Last, the objects are retrieved from the object array by index and returned.
+
+For a lot more detail, see the "how it works" pages for [HashBox](hashbox/how_it_works.md) and 
+[FrozenHashBox](frozen/how_it_works.md).
 
 ### Related projects
 

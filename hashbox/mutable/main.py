@@ -154,7 +154,7 @@ class HashBox:
         del self.obj_map[ptr]
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
-        """Get the unique values we have for the given attribute. Useful for deciding what to find() on.
+        """Get the unique values we have for the given attribute. Useful for deciding what to ``find()`` on.
 
         Args:
             attr: The attribute to get values for.
@@ -165,7 +165,7 @@ class HashBox:
         return self.indices[attr].get_values()
 
     def _match_any_of(self, attr: Union[str, Callable], value: Any):
-        """Get matches for a single attr during a find(). If multiple values specified, handle union logic."""
+        """Get matches for a single attr during a ``find()``. If multiple values specified, handle union logic."""
         if isinstance(value, list):
             # take the union of all matches
             matches = Int64Set()
