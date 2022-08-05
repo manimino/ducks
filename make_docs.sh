@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pdoc --html hashbox --force -o docs/html/
+pdoc3 --html hashbox --force -o docs/html/
