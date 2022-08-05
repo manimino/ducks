@@ -165,7 +165,7 @@ ____
 
 For every attribute in HashBox, it holds a dict that maps each unique value to the set of objects with that value. 
 
-At a high level: 
+HashBox is roughly this: 
 ```
 HashBox = {
     'attribute1': {val1: {objs}, val2: {more_objs}},
