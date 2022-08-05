@@ -148,10 +148,6 @@ hb.find(exclude={'a': ANY})  # result: [{}]
 ```
 </details>
 
-Consult the API docs for [HashBox](https://hashbox.readthedocs.io/en/latest/hashbox.mutable.html#hashbox.mutable.main.HashBox)
-and [FrozenHashBox](https://hashbox.readthedocs.io/en/latest/hashbox.frozen.html#hashbox.frozen.main.FrozenHashBox)
-for more info.
-
 ### Recipes
  
  - [Auto-updating](https://github.com/manimino/hashbox/blob/main/examples/update.py) - Keep HashBox updated when attribute values change
@@ -159,22 +155,29 @@ for more info.
  - [Collision detection](https://github.com/manimino/hashbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/hashbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
+### API documentation:
+ - [HashBox](https://hashbox.readthedocs.io/en/latest/hashbox.mutable.html#hashbox.mutable.main.HashBox)
+ - [FrozenHashBox](https://hashbox.readthedocs.io/en/latest/hashbox.frozen.html#hashbox.frozen.main.FrozenHashBox)
 
 ____
 
 ## How it works
 
-In HashBox, each attribute is a dict of sets: `{attribute value: set(object IDs)}`. 
-On `find()`, object IDs are retrieved for each attribute value. Then, set operations are applied to get the final
-object ID set. Last, the object IDs are mapped to objects, which are then returned.
+For every attribute in HashBox, it holds a dict that maps each unique value to the set of objects with that value. 
 
-FrozenHashBox uses arrays instead of sets, thanks to its immutability constraint. It stores a numpy array 
-of objects. Attribute values map to indices in the object array. On `find()`, the array indices for each match are 
-retrieved. Then, set operations provided by [sortednp](https://pypi.org/project/sortednp/) are used to get a 
-final set of object array indices. Last, the objects are retrieved from the object array by index and returned.
+You can think of it as: 
+```
+HashBox = {
+    'attribute1': {val1: {objs}, val2: {more_objs}},
+    'attribute2': {val3: {objs}, val4: {more_objs}}
+}
+```
 
-For a lot more detail, see the "how it works" pages for [HashBox](hashbox/mutable/how_it_works.md) and 
-[FrozenHashBox](hashbox/frozen/how_it_works.md).
+During `find()`, the object sets matching the query values are retrieved, and set operations like `union`, 
+`intersect`, and `difference` are applied to get the final result.
+
+That's a simplified version; for way more detail, See the "how it 
+works" pages for [HashBox](hashbox/mutable/how_it_works.md) and [FrozenHashBox](hashbox/frozen/how_it_works.md).
 
 ### Related projects
 

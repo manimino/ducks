@@ -1,6 +1,10 @@
 ## How It Works, Mutable Edition
 
-MutableAttrIndex contains a dict of set of object IDs.
+In HashBox, each attribute is a dict of sets: {attribute value: set(object IDs)}. On find(), object IDs are retrieved 
+for each attribute value. Then, set operations are applied to get the final object ID set. Last, the object IDs are 
+mapped to objects, which are then returned.
+
+Each MutableAttrIndex contains a dict of set of object IDs.
 
 Well, ok, it's a little more complicated than that. We don't always
 use sets, because sets are REALLY inefficient for small collections.
@@ -22,9 +26,9 @@ For example, a set containing a SINGLE INTEGER is actually 248 bytes.
 
 **Bytes.**
 
-To store a single 8-byte integer.
+**For a single 8-byte integer.**
 
-Seriously, you can check it yourself.
+Not kidding, you can check it yourself.
 ```
 from pympler.asizeof import asizeof
 asizeof(set([1]))
