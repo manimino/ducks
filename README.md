@@ -132,6 +132,7 @@ Objects don't need to have every attribute.
  - To find objects missing the attribute, exclude <code>ANY</code>.
  - In functions, raise MissingAttribute to tell HashBox the object is missing.
 
+Example:
 ```
 from hashbox import HashBox, ANY
 from hashbox.exceptions import MissingAttribute
