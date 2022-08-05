@@ -71,10 +71,10 @@ hb.find(
 <details>
 <summary>Greater than, less than</summary>
 <br />
-HashBox and FrozenHashBox have a function <pre>get_values(attr)</pre> which gets the set of unique values
+HashBox and FrozenHashBox have a function <code>get_values(attr)</code> which gets the set of unique values
 for an attribute. 
 
-Here's how to use that to find objects having <pre>x < 2</pre>.
+Here's how to use that to find objects having <code>x < 2</code>.
 ```
 from hashbox import HashBox
 
@@ -144,8 +144,8 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 <summary>Handling missing attributes</summary>
 
 - Objects that are missing an attribute will not be stored under that attribute. This saves lots of memory.
-- To find all objects that have an attribute, match the special value <pre>ANY</pre>. 
-- To find objects missing the attribute, exclude <pre>ANY</pre>.
+- To find all objects that have an attribute, match the special value <code>ANY</code>. 
+- To find objects missing the attribute, exclude <code>ANY</code>.
 - In functions, raise MissingAttribute to tell HashBox the object is missing.
 
 ```
