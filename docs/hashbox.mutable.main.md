@@ -38,7 +38,7 @@ __init__(
 
 ---
 
-<a href="../hashbox/mutable/main.py#L125"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L131"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `add`
 
@@ -61,13 +61,41 @@ find(
 ) → List
 ```
 
+Find objects in the HashBox that satisfy the match and exclude constraints. 
 
 
 
+**Args:**
+ 
+ - <b>`match`</b>:  Specifies the subset of objects that match.  If unspecified, all objects will match. 
+
+ Specify a dictionary of {attribute﹕ value} to constrain the objects that match. 
+
+ The attribute is a string or Callable. Must be one of the attributes specified in the constructor. 
+
+ Value can be any of the following. 
+          - A single hashable value, which will match all objects with that value for the attribute. 
+          - A list of hashable values, which matches each object containing any of the values. 
+          - hashbox.ANY, which matches all objects having the attribute.  
+
+
+ - <b>`exclude`</b>:  Specifies the subset of objects that do not match.  If unspecified, no objects will be excluded. 
+
+ Specify a dictionary of {attribute﹕ value}  to exclude objects from the results. 
+
+ Value can be any of the following. 
+          - A single hashable value, which will exclude all objects with that value for the attribute. 
+          - A list of hashable values, which excludes each object containing any of the values. 
+          - hashbox.ANY, which excludes all objects having the attribute. 
+
+
+
+**Returns:**
+ List of objects matching the constraints. 
 
 ---
 
-<a href="../hashbox/mutable/main.py#L142"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L148"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_values`
 
@@ -90,7 +118,7 @@ Get the unique values we have for the given attribute. Useful for deciding what 
 
 ---
 
-<a href="../hashbox/mutable/main.py#L132"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L138"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `remove`
 
@@ -101,3 +129,8 @@ remove(obj: Any)
 Remove the object. Raises KeyError if not present. 
 
 
+
+
+---
+
+_This file was automatically generated via [lazydocs](https://github.com/ml-tooling/lazydocs)._
