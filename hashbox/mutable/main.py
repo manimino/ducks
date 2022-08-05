@@ -39,27 +39,21 @@ class HashBox:
 
         Args:
             match: Specifies the subset of objects that match.
-                Attribute is a string or Callable. Must be one of the attributes specified in the constructor.
-                Value is any hashable type, or it can be a list of values.
-
-                There is an implicit "and" between elements. match={'a': 1, 'b': 2} matches all objects with 'a'==1
-                and 'b'==2.
-
-                When the value is a list, all objects containing any value in the list will match. `{'a': [1, 2, 3]}`
-                matches any object with an 'a' of 1, 2, or 3. Read it as ('a' in [1, 2, 3]).
-
-                If an attribute value is None, objects that are missing the attribute will be matched, as well as
-                any objects that have the attribute equal to None.
-
-                match=None means all objects will be matched.
-
+                If unspecified, all objects will match.
+                Specify a dictionary of {attribute: value} to constrain the objects that match.
+                The attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+                Value can be:
+                  - A single hashable value, which will match all objects with that value for the attribute.
+                  - A list of hashable values, which matches each object containing any of the values.
+                  - hashbox.ANY, which matches all objects having the attribute.
+                  
             exclude: Specifies the subset of objects that do not match.
-            
-                Excluding `{'a': 1, 'b': 2}` ensures that no objects with 'a'==1 will be in the output, and no
-                objects with 'b'==2 will be in the output. Read it as ('a' != 1 and 'b' != 2).
-
-                Excluding `{'a': [1, 2, 3]}` ensures that no objects with 'a' equal to 1, 2, or 3 will be in the output.
-                Read it as ('a' not in [1, 2, 3]).
+                If unspecified, no objects will be excluded.
+                Specify a dictionary of {attribute: value} to exclude objects from the results.
+                Value can be:
+                  - A single hashable value, which will exclude all objects with that value for the attribute.
+                  - A list of hashable values, which excludes each object containing any of the values.
+                  - hashbox.ANY, which excludes all objects having the attribute.
 
         Returns:
             List of objects matching the constraints.

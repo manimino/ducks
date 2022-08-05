@@ -38,7 +38,7 @@ __init__(
 
 ---
 
-<a href="../hashbox/mutable/main.py#L131"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L125"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `add`
 
@@ -67,7 +67,7 @@ find(
 
 ---
 
-<a href="../hashbox/mutable/main.py#L148"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L142"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_values`
 
@@ -90,7 +90,7 @@ Get the unique values we have for the given attribute. Useful for deciding what 
 
 ---
 
-<a href="../hashbox/mutable/main.py#L138"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L132"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `remove`
 
