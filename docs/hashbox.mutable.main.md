@@ -38,7 +38,7 @@ __init__(
 
 ---
 
-<a href="../hashbox/mutable/main.py#L131"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L134"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `add`
 
@@ -84,8 +84,14 @@ Find objects in the HashBox that satisfy the match and exclude constraints.
  Specify a dictionary of {attribute﹕ value}  to exclude objects from the results. 
 
  Value can be any of the following. 
+
+
           - A single hashable value, which will exclude all objects with that value for the attribute. 
-          - A list of hashable values, which excludes each object containing any of the values. 
+
+
+          - A list of hashable values, which excludes each object containing any of the values.  
+
+
           - hashbox.ANY, which excludes all objects having the attribute. 
 
 
@@ -95,7 +101,7 @@ Find objects in the HashBox that satisfy the match and exclude constraints.
 
 ---
 
-<a href="../hashbox/mutable/main.py#L148"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L151"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `get_values`
 
@@ -118,7 +124,7 @@ Get the unique values we have for the given attribute. Useful for deciding what 
 
 ---
 
-<a href="../hashbox/mutable/main.py#L138"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../hashbox/mutable/main.py#L141"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>method</kbd> `remove`
 
