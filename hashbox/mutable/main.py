@@ -55,8 +55,11 @@ class HashBox:
                 Specify a dictionary of {attribute﹕ value}  to exclude objects from the results.
 
                 Value can be any of the following.
+
                   - A single hashable value, which will exclude all objects with that value for the attribute.
+
                   - A list of hashable values, which excludes each object containing any of the values.
+                  
                   - hashbox.ANY, which excludes all objects having the attribute.
 
         Returns:
