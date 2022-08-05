@@ -1,5 +1,5 @@
 filterbox
-=======
+=========
 
 .. toctree::
    :maxdepth: 4

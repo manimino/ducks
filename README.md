@@ -191,7 +191,3 @@ index search tool. Each of these has goals outside of FilterBox's niche; there a
 these functions.
 
 ____
-
-<div align="center">
-<img src="https://github.com/manimino/filterbox/blob/main/docs/filterbox-logo.png"><br>
-</div>
