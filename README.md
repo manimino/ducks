@@ -3,8 +3,7 @@
 Container for finding Python objects by matching attributes. 
 
 Stores objects pre-filtered by attribute value, so it can find them much faster than `filter()`, 
-and in many cases faster than SQLite. 
-[Speed demo](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+and in many cases faster than SQLite. [Speed demo](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ```
 pip install filterbox
@@ -28,6 +27,8 @@ fb.find({'color': 'green', 'type': 'frog'})  # Find by attribute match
 ```
 
 The objects can be anything: class instances, namedtuples, dicts, strings, floats, ints, etc.
+
+Attributes can be either strings or functions evaluated on the object.
 
 There are two classes available.
  - FilterBox: can `add()` and `remove()` objects. 
@@ -63,9 +64,9 @@ fb.find(
 </details>
 
 <details>
-<summary>Accessing nested attributes</summary>
+<summary>Accessing nested attributes using functions</summary>
 <br />
-Attributes can be functions. Function attributes are used to get values from nested data structures.
+Function attributes are used to get values from nested data structures.
 
 ```
 from filterbox import FilterBox
@@ -85,7 +86,7 @@ fb.find({get_nested: 4})
 </details>
 
 <details>
-<summary>Derived attributes</summary>
+<summary>Derived attributes using functions</summary>
 <br />
 Function attributes are very powerful. Here we find string objects with certain characteristics.
 
