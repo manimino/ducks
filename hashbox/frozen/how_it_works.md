@@ -1,4 +1,4 @@
-## HOW THIS WORKS
+## How It Works, Frozen Edition
 
 FrozenAttrIndex contains three numpy arrays of length n_objects:
  - Array of object indices

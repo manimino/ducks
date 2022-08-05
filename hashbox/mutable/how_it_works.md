@@ -1,4 +1,4 @@
-## How It Works
+## How It Works, Mutable Edition
 
 MutableAttrIndex contains a dict of set of object IDs.
 
@@ -17,8 +17,11 @@ Bytes per integer, by collection size
 Those numbers were measured by examining process-level memory usage before and after
 collections were created, so there's a little +/- there.
 For example, a set containing a SINGLE INTEGER is actually 248 bytes.
-248.
-Bytes.
+
+**248.**
+
+**Bytes.**
+
 To store a single 8-byte integer.
 
 Seriously, you can check it yourself.
