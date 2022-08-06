@@ -31,14 +31,14 @@ Custom functions can be used as attributes:
 ```
 from filterbox import FilterBox
 
-objects = ['mushrooms', 'peppers', 'onions']  # let's find strings
+objects = ['mushrooms', 'peppers', 'onions']  # Let's find strings
 
 def o_count(obj):                             # by how many 'o's they have
     return obj.count('o')
 
-f = FilterBox(objects, [o_count, len])        # build the container 
-f.find({len: 6})                              # find by length
-f.find({o_count: 2})                          # find by 'o' count
+f = FilterBox(objects, [o_count, len])        # Make the FilterBox 
+f.find({len: 6})                              # Find by length
+f.find({o_count: 2})                          # Find by 'o' count
 ```
 
 There are two classes available.
