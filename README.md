@@ -96,8 +96,6 @@ fb.find({get_nested: 4})
 </details>
 
 <details>
-
-<details>
 <summary>Greater than, less than</summary>
 <br />
 
