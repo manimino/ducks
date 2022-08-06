@@ -2,8 +2,7 @@
 
 Container for finding Python objects by matching attributes. 
 
-Stores objects pre-filtered by attribute value, so it can find them much faster than `filter()`, 
-and in many cases faster than SQLite. [Speed demo](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+Stores objects pre-filtered by attribute value, so find-by-attribute is very fast. 
 
 ```
 pip install filterbox
@@ -28,7 +27,7 @@ fb.find({'color': 'green', 'type': 'frog'})  # Find by attribute match
 
 The objects can be anything: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
-Attributes can be either strings or functions evaluated on the object.
+Just like with Python's `filter()`, custom functions can be used as attributes.
 
 There are two classes available.
  - FilterBox: can `add()` and `remove()` objects. 
@@ -41,7 +40,6 @@ Expand for sample code.
 <details>
 <summary>Match and exclude multiple values</summary>
 <br>
-
 
 ```
 from filterbox import FilterBox
@@ -107,10 +105,14 @@ f.find({o_count: 2})   # returns ['mushrooms', 'onions']
 <details>
 <summary>Greater than, less than</summary>
 <br />
-FilterBox and FrozenFilterBox have a function <code>get_values(attr)</code> which gets the set of unique values
-for an attribute. 
 
-Here's how to use that to find objects having <code>x >= 3</code>.
+Suppose you need to find objects where x >= some number. If the number is constant, a filter function that returns 
+<code>obj.x >= constant</code> will work. 
+
+Otherwise, FilterBox and FrozenFilterBox have a function <code>get_values(attr)</code> which gets the set of 
+unique values for an attribute. 
+
+Here's how to use it to find objects having <code>x >= 3</code>.
 ```
 from filterbox import FilterBox
 
@@ -120,6 +122,9 @@ vals = fb.get_values('x')                # get the set of unique values: {1, 2, 
 big_vals = [x for x in vals if x >= 3]   # big_vals is [3, 5]
 fb.find({'x': big_vals})                 # result: [{'x': 3}, {'x': 5}
 ```
+
+If x is a float or has many unique values, consider making a function attribute on x that rounds it or puts it
+into a bin of similar values. Discretizing x will make lookups faster.
 </details>
 
 <details>
@@ -183,6 +188,10 @@ During `find()`, the object sets matching the query values are retrieved, and se
 
 That's a simplified version; for way more detail, See the "how it 
 works" pages for [FilterBox](filterbox/mutable/how_it_works.md) and [FrozenFilterBox](filterbox/frozen/how_it_works.md).
+
+### Performance
+
+[Notebook comparing speeds against filter, sqlite, etc.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ### Related projects
 
