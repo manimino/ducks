@@ -37,8 +37,8 @@ def o_count(obj):                             # by how many 'o's they have
     return obj.count('o')
 
 f = FilterBox(objects, [o_count, len])        # build the container 
-f.find({len: 6})       # returns ['onions']   # find by length
-f.find({o_count: 2})   # returns ['mushrooms', 'onions']  # find by 'o' count
+f.find({len: 6})                              # find by length
+f.find({o_count: 2})                          # find by 'o' count
 ```
 
 There are two classes available.
