@@ -1,8 +1,8 @@
 # FilterBox
 
-Container for finding Python objects by matching attributes. 
+Container for finding Python objects by their attributes. 
 
-Stores objects pre-filtered by attribute value, so find-by-attribute is very fast. 
+Stores objects by attribute value, so finding by value is very fast. 
 
 ```
 pip install filterbox
@@ -27,7 +27,19 @@ fb.find({'color': 'green', 'type': 'frog'})  # Find by attribute match
 
 The objects can be anything: class instances, namedtuples, dicts, strings, floats, ints, etc.
 
-Just like with Python's `filter()`, custom functions can be used as attributes.
+Custom functions can be used as attributes:
+```
+from filterbox import FilterBox
+
+objects = ['mushrooms', 'peppers', 'onions']  # let's find strings
+
+def o_count(obj):                             # by how many 'o's they have
+    return obj.count('o')
+
+f = FilterBox(objects, [o_count, len])        # build the container 
+f.find({len: 6})       # returns ['onions']   # find by length
+f.find({o_count: 2})   # returns ['mushrooms', 'onions']  # find by 'o' count
+```
 
 There are two classes available.
  - FilterBox: can `add()` and `remove()` objects. 
@@ -84,23 +96,6 @@ fb.find({get_nested: 4})
 </details>
 
 <details>
-<summary>Derived attributes using functions</summary>
-<br />
-Function attributes are very powerful. Here we find string objects with certain characteristics.
-
-```
-from filterbox import FrozenFilterBox
-
-objects = ['mushrooms', 'peppers', 'onions']
-
-def o_count(obj):
-    return obj.count('o')
-
-f = FrozenFilterBox(objects, [o_count, len])
-f.find({len: 6})       # returns ['onions']
-f.find({o_count: 2})   # returns ['mushrooms', 'onions']
-```
-</details>
 
 <details>
 <summary>Greater than, less than</summary>
