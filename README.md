@@ -20,7 +20,7 @@ pip install filterbox
 from filterbox import FilterBox
 fb = FilterBox(                              # Make a FilterBox
     [{'color': 'green', 'type': 'apple'},    
-    {'color': 'green', 'type': 'frog'}]      # Containing any type of objects
+    {'color': 'green', 'type': 'frog'}],     # Containing any type of objects
     on=['color', 'type'])                    # Define attributes to find by
 fb.find({'color': 'green', 'type': 'frog'})  # Find by attribute match
 ```
