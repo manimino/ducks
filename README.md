@@ -37,7 +37,8 @@ fb = FilterBox(               # make a FilterBox
     on=[is_windy, 'sky']      # functions + attributes to find by
 )
 
-fb.find({is_windy: True, 'sky': 'sunny'})
+# find objects by function and / or attribute values
+fb.find({is_windy: True, 'sky': 'sunny'})  
 # result: [{'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'}]
 ```
 
@@ -45,7 +46,7 @@ There are two classes available.
  - FilterBox: can `add()` and `remove()` objects after creation.
  - FrozenFilterBox: faster finds, lower memory usage, and immutable.
 
-## Examples
+## More Examples
 
 Expand for sample code.
 
