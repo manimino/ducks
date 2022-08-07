@@ -16,16 +16,16 @@ pip install filterbox
 
 ### Usage:
 
-Find which day will be good for flying a kite. It needs to be sunny and windy.
+Find which day will be good for flying a kite. It needs to be windy and sunny.
 
 ```
 from filterbox import FilterBox
 
 days = [
-    {'day': 'Saturday', 'sky': 'sunny', 'wind_speed': 1},
-    {'day': 'Sunday', 'sky': 'rainy', 'wind_speed': 3},
-    {'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7},
-    {'day': 'Tuesday', 'sky': 'rainy', 'wind_speed': 9}
+    {'day': 'Saturday', 'wind_speed': 1, 'sky': 'sunny',},
+    {'day': 'Sunday', 'wind_speed': 3, 'sky': 'rainy'},
+    {'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'},
+    {'day': 'Tuesday', 'wind_speed': 9, 'sky': 'rainy'}
 ]
 
 # define a filter function
@@ -39,7 +39,7 @@ fb = FilterBox(               # make a FilterBox
 )
 
 fb.find({is_windy: True, 'sky': 'sunny'})
-# result: [{'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7}]
+# result: [{'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'}]
 ```
 
 There are two classes available.
@@ -77,7 +77,7 @@ fb.find(
 <details>
 <summary>Accessing nested data using functions</summary>
 <br />
-Functions are used to get values from nested data structures.
+Use functions to get values from nested data structures.
 
 ```
 from filterbox import FilterBox
@@ -100,10 +100,10 @@ fb.find({get_nested: 4})
 <summary>Greater than, less than</summary>
 <br />
 
-Suppose you need to find objects where x >= some number. If the number is constant, a filter function that returns 
+Suppose you need to find objects where x >= some number. If the number is constant, a function that returns 
 <code>obj.x >= constant</code> will work. 
 
-Otherwise, FilterBox and FrozenFilterBox have a function <code>get_values(attr)</code> which gets the set of 
+Otherwise, FilterBox and FrozenFilterBox have a method <code>get_values(attr)</code> which gets the set of 
 unique values for an attribute. 
 
 Here's how to use it to find objects having <code>x >= 3</code>.
@@ -117,8 +117,8 @@ big_vals = [x for x in vals if x >= 3]   # big_vals is [3, 5]
 fb.find({'x': big_vals})                 # result: [{'x': 3}, {'x': 5}
 ```
 
-If x is a float or has many unique values, consider making a function attribute on x that rounds it or puts it
-into a bin of similar values. Discretizing x will make lookups faster.
+If x is a float or has many unique values, consider making a function on x that rounds it or puts it
+into a bin of similar values. Discretizing x in ths way will make lookups faster.
 </details>
 
 <details>
@@ -155,7 +155,7 @@ fb.find(exclude={'a': ANY})  # result: [{}]
 ### Recipes
  
  - [Auto-updating](https://github.com/manimino/filterbox/blob/main/examples/update.py) - Keep FilterBox updated when attribute values change
- - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
+ - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Solve string matching problems faster than regex
  - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
