@@ -2,7 +2,7 @@
 
 Container for finding Python objects by matching attributes. 
 
-[Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+Finds are very fast. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ```
 pip install filterbox
@@ -34,8 +34,8 @@ def is_windy(obj):
 
 # make a FilterBox
 fb = FilterBox(               # make a FilterBox
-    days,                     # provide objects of any Python type
-    on=[is_windy, 'sky']      # provide functions + attributes
+    days,                     # add objects of any Python type
+    on=[is_windy, 'sky']      # functions + attributes to find by
 )
 
 fb.find({is_windy: True, 'sky': 'sunny'})
