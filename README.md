@@ -1,8 +1,5 @@
 # FilterBox
-
-Container for finding Python objects by their attributes. 
-
-Stores objects by attribute value, so finding by value is very fast. 
+ 
 
 ```
 pip install filterbox
@@ -16,34 +13,39 @@ pip install filterbox
 
 ### Usage:
 
-```
-from filterbox import FilterBox
-fb = FilterBox(                              # Make a FilterBox
-    [{'color': 'green', 'type': 'apple'},    
-    {'color': 'green', 'type': 'frog'}],     # Containing any type of objects
-    on=['color', 'type'])                    # Define attributes to find by
-fb.find({'color': 'green', 'type': 'frog'})  # Find by attribute
-```
+Find which day will be good for flying a kite. It needs to be sunny and windy.
 
-The objects can be anything: class instances, namedtuples, dicts, strings, floats, ints, etc.
-
-Custom functions can be used as attributes:
 ```
 from filterbox import FilterBox
 
-objects = ['mushrooms', 'peppers', 'onions']  # Let's find strings
+days = [
+    {'day': 'Saturday', 'sky': 'sunny', 'wind_speed': 1},
+    {'day': 'Sunday', 'sky': 'rainy', 'wind_speed': 3},
+    {'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7},
+    {'day': 'Tuesday', 'sky': 'rainy', 'wind_speed': 9}
+]
 
-def o_count(obj):                             # by how many 'o's they have
-    return obj.count('o')
+# define a filter function
+def is_windy(obj):
+    return obj['wind_speed'] > 5
 
-f = FilterBox(objects, [o_count, len])        # Make the FilterBox 
-f.find({len: 6})                              # Find by length
-f.find({o_count: 2})                          # Find by 'o' count
+# make a FilterBox
+fb = FilterBox(               # make a FilterBox
+    days,                     # provide objects of any Python type
+    on=[is_windy, 'sky']      # provide functions + attributes
+)
+
+fb.find({is_windy: True, 'sky': 'sunny'})
+# result: [{'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7}]
 ```
+
+Python provides several ways to do this kind of search, such as list comprehension, `filter`, Pandas, and SQLite.
+FilterBox is faster than any of these for many kinds of tasks. It can handle as many objects as you have memory for;
+typically up to 100 million ~ 1 billion. Find speed stays fast no matter how many objects are in the FilterBox.
 
 There are two classes available.
- - FilterBox: can `add()` and `remove()` objects. 
- - FrozenFilterBox: faster finds, lower memory usage, and immutable. 
+ - FilterBox: can `add()` and `remove()` objects after creation.
+ - FrozenFilterBox: faster finds, lower memory usage, and immutable.
 
 ## Examples
 
@@ -74,9 +76,9 @@ fb.find(
 </details>
 
 <details>
-<summary>Accessing nested attributes using functions</summary>
+<summary>Accessing nested data using functions</summary>
 <br />
-Function attributes are used to get values from nested data structures.
+Functions are used to get values from nested data structures.
 
 ```
 from filterbox import FilterBox
@@ -168,7 +170,7 @@ ____
 
 For every attribute in FilterBox, it holds a dict that maps each unique value to the set of objects with that value. 
 
-FilterBox is roughly this: 
+FilterBox works something like this: 
 ```
 FilterBox = {
     'attribute1': {val1: {objs}, val2: {more_objs}},
