@@ -28,7 +28,6 @@ days = [
     {'day': 'Tuesday', 'wind_speed': 9, 'sky': 'rainy'}
 ]
 
-# define a filter function
 def is_windy(obj):
     return obj['wind_speed'] > 5
 
@@ -169,15 +168,15 @@ ____
 
 For every attribute in FilterBox, it holds a dict that maps each unique value to the set of objects with that value. 
 
-FilterBox works something like this: 
+This is the rough idea of the FilterBox data structure: 
 ```
 FilterBox = {
-    'attribute1': {val1: {objs}, val2: {more_objs}},
-    'attribute2': {val3: {objs}, val4: {more_objs}}
+    'attribute1': {val1: set(some_objs), val2: set(other_objs)},
+    'attribute2': {val3: set(some_objs), val4: set(other_objs)}
 }
 ```
 
-During `find()`, the object sets matching the query values are retrieved, and set operations like `union`, 
+During `find()`, the object sets matching each query value are retrieved. Then set operations like `union`, 
 `intersect`, and `difference` are applied to get the final result.
 
 That's a simplified version; for way more detail, See the "how it 
