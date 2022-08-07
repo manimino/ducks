@@ -2,7 +2,7 @@
 
 Container for finding Python objects by matching attributes. 
 
-[Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+Finds are very fast. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ```
 pip install filterbox
@@ -16,29 +16,43 @@ pip install filterbox
 
 ### Usage:
 
+Find which day will be good for flying a kite. It needs to be windy and sunny.
+
 ```
 from filterbox import FilterBox
-fb = FilterBox(                              # Make a FilterBox
-    [{'color': 'green', 'type': 'apple'},    
-    {'color': 'green', 'type': 'frog'}]      # Containing any type of objects
-    on=['color', 'type'])                    # Define attributes to find by
-fb.find({'color': 'green', 'type': 'frog'})  # Find by attribute match
+
+days = [
+    {'day': 'Saturday', 'wind_speed': 1, 'sky': 'sunny',},
+    {'day': 'Sunday', 'wind_speed': 3, 'sky': 'rainy'},
+    {'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'},
+    {'day': 'Tuesday', 'wind_speed': 9, 'sky': 'rainy'}
+]
+
+def is_windy(obj):
+    return obj['wind_speed'] > 5
+
+# make a FilterBox
+fb = FilterBox(               # make a FilterBox
+    days,                     # add objects of any Python type
+    on=[is_windy, 'sky']      # functions + attributes to find by
+)
+
+# find objects by function and / or attribute values
+fb.find({is_windy: True, 'sky': 'sunny'})  
+# result: [{'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'}]
 ```
 
-The objects can be anything: class instances, namedtuples, dicts, strings, floats, ints, etc.
-
 There are two classes available.
- - FilterBox: can `add()` and `remove()` objects. 
- - FrozenFilterBox: faster finds, lower memory usage, and immutable. 
+ - FilterBox: can `add()` and `remove()` objects after creation.
+ - FrozenFilterBox: faster finds, lower memory usage, and immutable.
 
-## Examples
+## More Examples
 
 Expand for sample code.
 
 <details>
 <summary>Match and exclude multiple values</summary>
 <br>
-
 
 ```
 from filterbox import FilterBox
@@ -61,9 +75,9 @@ fb.find(
 </details>
 
 <details>
-<summary>Accessing nested attributes</summary>
+<summary>Accessing nested data using functions</summary>
 <br />
-Attributes can be functions. Function attributes are used to get values from nested data structures.
+Use functions to get values from nested data structures.
 
 ```
 from filterbox import FilterBox
@@ -83,31 +97,16 @@ fb.find({get_nested: 4})
 </details>
 
 <details>
-<summary>Derived attributes</summary>
-<br />
-Function attributes are very powerful. Here we find string objects with certain characteristics.
-
-```
-from filterbox import FrozenFilterBox
-
-objects = ['mushrooms', 'peppers', 'onions']
-
-def o_count(obj):
-    return obj.count('o')
-
-f = FrozenFilterBox(objects, [o_count, len])
-f.find({len: 6})       # returns ['onions']
-f.find({o_count: 2})   # returns ['mushrooms', 'onions']
-```
-</details>
-
-<details>
 <summary>Greater than, less than</summary>
 <br />
-FilterBox and FrozenFilterBox have a function <code>get_values(attr)</code> which gets the set of unique values
-for an attribute. 
 
-Here's how to use that to find objects having <code>x >= 3</code>.
+Suppose you need to find objects where x >= some number. If the number is constant, a function that returns 
+<code>obj.x >= constant</code> will work. 
+
+Otherwise, FilterBox and FrozenFilterBox have a method <code>get_values(attr)</code> which gets the set of 
+unique values for an attribute. 
+
+Here's how to use it to find objects having <code>x >= 3</code>.
 ```
 from filterbox import FilterBox
 
@@ -117,6 +116,9 @@ vals = fb.get_values('x')                # get the set of unique values: {1, 2, 
 big_vals = [x for x in vals if x >= 3]   # big_vals is [3, 5]
 fb.find({'x': big_vals})                 # result: [{'x': 3}, {'x': 5}
 ```
+
+If x is a float or has many unique values, consider making a function on x that rounds it or puts it
+into a bin of similar values. Discretizing x in ths way will make lookups faster.
 </details>
 
 <details>
@@ -153,7 +155,7 @@ fb.find(exclude={'a': ANY})  # result: [{}]
 ### Recipes
  
  - [Auto-updating](https://github.com/manimino/filterbox/blob/main/examples/update.py) - Keep FilterBox updated when attribute values change
- - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Demonstrates using `functools.partials` to make attribute functions
+ - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Solve string matching problems faster than regex
  - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
@@ -167,15 +169,15 @@ ____
 
 For every attribute in FilterBox, it holds a dict that maps each unique value to the set of objects with that value. 
 
-FilterBox is roughly this: 
+This is the rough idea of the FilterBox data structure: 
 ```
 FilterBox = {
-    'attribute1': {val1: {objs}, val2: {more_objs}},
-    'attribute2': {val3: {objs}, val4: {more_objs}}
+    'attribute1': {val1: set(some_objs), val2: set(other_objs)},
+    'attribute2': {val3: set(some_objs), val4: set(other_objs)}
 }
 ```
 
-During `find()`, the object sets matching the query values are retrieved, and set operations like `union`, 
+During `find()`, the object sets matching each query value are retrieved. Then set operations like `union`, 
 `intersect`, and `difference` are applied to get the final result.
 
 That's a simplified version; for way more detail, See the "how it 
