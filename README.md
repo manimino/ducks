@@ -1,5 +1,8 @@
 # FilterBox
- 
+
+Container for finding Python objects by matching attributes. 
+
+[Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ```
 pip install filterbox
@@ -38,10 +41,6 @@ fb = FilterBox(               # make a FilterBox
 fb.find({is_windy: True, 'sky': 'sunny'})
 # result: [{'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7}]
 ```
-
-Python provides several ways to do this kind of search, such as list comprehension, `filter`, Pandas, and SQLite.
-FilterBox is faster than any of these for many kinds of tasks. It can handle as many objects as you have memory for;
-typically up to 100 million ~ 1 billion. Find speed stays fast no matter how many objects are in the FilterBox.
 
 There are two classes available.
  - FilterBox: can `add()` and `remove()` objects after creation.
@@ -183,10 +182,6 @@ During `find()`, the object sets matching the query values are retrieved, and se
 
 That's a simplified version; for way more detail, See the "how it 
 works" pages for [FilterBox](filterbox/mutable/how_it_works.md) and [FrozenFilterBox](filterbox/frozen/how_it_works.md).
-
-### Performance
-
-[Notebook comparing speeds against filter, sqlite, etc.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ### Related projects
 
