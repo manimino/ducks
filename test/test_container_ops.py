@@ -49,3 +49,5 @@ def test_not_contains(box_class):
     f = box_class([yes], "i")
     no = {"i": -1000}
     assert no not in f
+    no = {"i": 1000}
+    assert no not in f
