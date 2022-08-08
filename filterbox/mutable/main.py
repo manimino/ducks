@@ -40,9 +40,9 @@ class FilterBox:
             self.obj_map = dict()
 
         # Build an index for each attribute
-        self.indices = {}
+        self._indices = {}
         for attr in on:
-            self.indices[attr] = MutableAttrIndex(attr, self.obj_map, objs)
+            self._indices[attr] = MutableAttrIndex(attr, self.obj_map, objs)
 
     def find(
         self,
@@ -95,7 +95,7 @@ class FilterBox:
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> Int64Set:
         """Perform lookup based on given constraints. Return a set of object IDs."""
-        validate_query(self.indices, match, exclude)
+        validate_query(self._indices, match, exclude)
 
         # perform 'match' query
         if match:
@@ -137,11 +137,14 @@ class FilterBox:
         return hits
 
     def add(self, obj: Any):
-        """Add the object, evaluating any attributes and storing the results."""
+        """Add the object, evaluating any attributes and storing the results.
+        If the object is already present, it will not be updated."""
         ptr = id(obj)
+        if ptr in self.obj_map:
+            return
         self.obj_map[ptr] = obj
-        for attr in self.indices:
-            self.indices[attr].add(ptr, obj)
+        for attr in self._indices:
+            self._indices[attr].add(ptr, obj)
 
     def remove(self, obj: Any):
         """Remove the object. Raises KeyError if not present."""
@@ -149,9 +152,14 @@ class FilterBox:
         if ptr not in self.obj_map:
             raise KeyError
 
-        for attr in self.indices:
-            self.indices[attr].remove(ptr, obj)
+        for attr in self._indices:
+            self._indices[attr].remove(ptr, obj)
         del self.obj_map[ptr]
+
+    def update(self, obj: Any):
+        """Remove and re-add the object, updating all stored attributes. Raises KeyError if object not present."""
+        self.remove(obj)
+        self.add(obj)
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
         """Get the unique values we have for the given attribute. Useful for deciding what to ``find()`` on.
@@ -162,7 +170,7 @@ class FilterBox:
         Returns:
             Set of all unique values for this attribute.
         """
-        return self.indices[attr].get_values()
+        return self._indices[attr].get_values()
 
     def _match_any_of(self, attr: Union[str, Callable], value: Any):
         """Get matches for a single attr during a ``find()``. If multiple values specified, handle union logic."""
@@ -170,7 +178,7 @@ class FilterBox:
             # take the union of all matches
             matches = Int64Set()
             for v in value:
-                v_matches = self.indices[attr].get_obj_ids(v)
+                v_matches = self._indices[attr].get_obj_ids(v)
                 # union with the larger set on the left is faster in cykhash
                 if len(matches) > len(v_matches):
                     matches = matches.union(v_matches)
@@ -179,9 +187,9 @@ class FilterBox:
             return matches
         else:
             if value is ANY:
-                return self.indices[attr].get_all_ids()
+                return self._indices[attr].get_all_ids()
             else:
-                return self.indices[attr].get_obj_ids(value)
+                return self._indices[attr].get_obj_ids(value)
 
     def __contains__(self, obj: Any):
         return id(obj) in self.obj_map

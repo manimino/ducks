@@ -1,26 +1,30 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /home/theo/repos/hashbox
+rootdir: /home/theo/repos
 plugins: anyio-2.2.0, cov-3.0.0
-collected 155 items
+collected 227 items
 
-test/test_basic_operations.py ..........................                 [ 16%]
-test/test_container_ops.py ..............                                [ 25%]
-test/test_edge_cases.py ......................                           [ 40%]
-test/test_examples.py ....                                               [ 42%]
-test/test_exceptions.py ........                                         [ 47%]
-test/test_fancy_gets.py ........                                         [ 52%]
-test/test_hash_collisions.py ........                                    [ 58%]
-test/test_missing_attribute.py .............................             [ 76%]
-test/test_mixed_cardinality.py ............                              [ 84%]
-test/test_mutations.py ..........                                        [ 90%]
-test/test_soak.py .                                                      [ 91%]
-test/test_stale_objects.py .............                                 [100%]
+test/test_basic_operations.py .......................................    [ 17%]
+test/test_container_ops.py .....................                         [ 26%]
+test/test_edge_cases.py ..............................                   [ 39%]
+test/test_examples.py ......                                             [ 42%]
+test/test_exceptions.py .........                                        [ 46%]
+test/test_fancy_gets.py ............                                     [ 51%]
+test/test_hash_collisions.py ...........                                 [ 56%]
+test/test_missing_attribute.py ......................................... [ 74%]
+.                                                                        [ 74%]
+test/test_mixed_cardinality.py ..................                        [ 82%]
+test/concurrent/test_multi_writer.py ......                              [ 85%]
+test/concurrent/test_read_update.py ...                                  [ 86%]
+test/mutable/test_mutations.py ...............                           [ 93%]
+test/mutable/test_soak.py .                                              [ 93%]
+test/mutable/test_stale_objects.py ..............                        [100%]
 
 ----------- coverage: platform linux, python 3.9.7-final-0 -----------
 Name                                Stmts   Miss  Cover
 -------------------------------------------------------
-filterbox/__init__.py                   3      0   100%
+filterbox/__init__.py                   4      0   100%
+filterbox/concurrent/main.py           50      3    94%
 filterbox/constants.py                 10      0   100%
 filterbox/exceptions.py                 3      0   100%
 filterbox/frozen/__init__.py            0      0   100%
@@ -29,12 +33,12 @@ filterbox/frozen/main.py               67      1    99%
 filterbox/frozen/utils.py               8      0   100%
 filterbox/init_helpers.py              75      0   100%
 filterbox/mutable/__init__.py           0      0   100%
-filterbox/mutable/main.py              82      0   100%
-filterbox/mutable/mutable_attr.py      65      0   100%
+filterbox/mutable/main.py              87      0   100%
+filterbox/mutable/mutable_attr.py      78      0   100%
 filterbox/perf.py                       0      0   100%
 filterbox/utils.py                     37      0   100%
 -------------------------------------------------------
-TOTAL                                 431      1    99%
+TOTAL                                 500      4    99%
 
 
-============================= 155 passed in 5.36s ==============================
+============================= 227 passed in 4.28s ==============================

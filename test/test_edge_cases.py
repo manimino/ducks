@@ -2,6 +2,7 @@ from filterbox import FilterBox
 from filterbox.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 import pytest
 
+from .conftest import BadHash
 
 class EdgeHash:
     HASHES = [HASH_MIN, 0, HASH_MAX]
@@ -152,3 +153,20 @@ def test_not_in(box_class):
     f = box_class([{"a": 1}], on=["a"])
     assert {"a": 0} not in f
     assert {"a": 2} not in f
+
+
+def test_external_object_modification(box_class):
+    """
+    What happens if the values are mutable, and someone mutates them externally?
+    Answer: It screws everything up.
+    But it *also* screws up Python's own set and frozenset containers, so... I think we don't need
+    to go all the way into doing deepcopy() on every object we store. "Consenting adults", etc.
+    At some point it's up to the user not to do weird stuff.
+    Mutable + Hashable objects are big trouble -- there's a reason Python primitives are only ever one of the two.
+    """
+    objs = [{'a': BadHash(1)}]
+    fb = box_class(objs, 'a')
+    assert len(fb.find({'a': BadHash(1)})) == 1
+    objs[0]['a'].n = 5000
+    # external modification changed our results
+    assert len(fb.find({'a': BadHash(1)})) == 0

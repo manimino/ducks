@@ -23,3 +23,4 @@ when it's literally this object. set() is a simple object that satisfies this pr
 "ANY is ANY" evaluates to True, but "set() is ANY" evaluates to False.
 """
 ANY = MatchAnything()
+
