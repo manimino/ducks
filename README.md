@@ -2,14 +2,15 @@
 
 Container for finding Python objects by matching attributes. 
 
+Stores objects in hashtables by attribute value, so finds are very fast. 
+
+[Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+
 [![tests Actions Status](https://github.com/manimino/filterbox/workflows/tests/badge.svg)](https://github.com/manimino/filterbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
 [![license - MIT](https://img.shields.io/static/v1?label=license&message=MIT&color=2ea44f)](/LICENSE)
 ![python - 3.7+](https://img.shields.io/static/v1?label=python&message=3.7%2B&color=2ea44f)
 
-FilterBox stores objects by the values you specify. 
-
-Finds are very fast. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
 ### Install
 
