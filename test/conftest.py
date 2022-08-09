@@ -1,8 +1,8 @@
 import pytest
-from filterbox import FilterBox, FrozenFilterBox
+from filterbox import FilterBox, FrozenFilterBox, ConcurrentFilterBox
 
 
-@pytest.fixture(params=[FilterBox, FrozenFilterBox])
+@pytest.fixture(params=[FilterBox, FrozenFilterBox, ConcurrentFilterBox])
 def box_class(request):
     return request.param
 

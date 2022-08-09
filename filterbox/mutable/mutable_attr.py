@@ -1,4 +1,4 @@
-from typing import Callable, Union, Dict, Any, Iterable, Optional
+from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable
 
 from cykhash import Int64Set
 
@@ -52,23 +52,46 @@ class MutableAttrIndex:
         else:
             self.d[val] = ptr
 
-    def remove(self, ptr: int, obj: Any):
-        """Remove a single object from the index. ptr is already known to be in the index."""
-        val, success = get_attribute(obj, self.attr)
-        if not success:
-            return
+    def _try_remove(self, ptr: int, val: Hashable) -> bool:
+        """Try to remove the object from self.d[val]. Return True on success, False otherwise."""
+        # first, check that the ptr is in here
+        if val not in self.d:
+            return False
+        if type(self.d[val]) in [tuple, Int64Set]:
+            if ptr not in self.d[val]:
+                return False
+        else:
+            if self.d[val] != ptr:
+                return False
+
+        # OK, it's in here; do removal
         obj_ids = self.d[val]
-        if isinstance(obj_ids, tuple) or isinstance(obj_ids, Int64Set):
-            if isinstance(obj_ids, tuple):
+        if type(self.d[val]) in [tuple, Int64Set]:
+            if type(obj_ids) == tuple:
                 self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
                 if len(self.d[val]) == 1:
+                    # downgrade tuple -> int
                     self.d[val] = self.d[val][0]
             else:
                 self.d[val].remove(ptr)
                 if len(self.d[val]) < SET_SIZE_MIN:
+                    # downgrade set -> tuple
                     self.d[val] = tuple(self.d[val])
         else:
             del self.d[val]
+        return True
+
+    def remove(self, ptr: int, obj: Any):
+        """Remove a single object from the index. ptr is already known to be in the FilterBox.
+        Runs in O(1) if obj has this attr and the value of the attr hasn't changed. O(n_keys) otherwise."""
+        removed = False
+        val, success = get_attribute(obj, self.attr)
+        if success:
+            removed = self._try_remove(ptr, val)
+        if not removed:
+            # do O(n) search
+            for val in list(self.d.keys()):
+                self._try_remove(ptr, val)
 
     def get_all_ids(self):
         """Get the ID of every object that has this attribute.

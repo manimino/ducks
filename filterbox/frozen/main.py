@@ -12,22 +12,22 @@ from filterbox.utils import make_empty_array, validate_query
 
 
 class FrozenFilterBox:
+    """Create a FrozenFilterBox containing the ``objs``, queryable by the ``on`` attributes.
+
+    Args:
+        objs: The objects that FrozenFilterBox will contain.
+            Objects do not need to be hashable, any object works.
+
+        on: The attributes that will be used for finding objects.
+            Must contain at least one.
+
+    It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
+    stored, and can found with ``find()``.
+
+    For the objects that do contain the attributes on ``on``, those attribute values must be hashable.
+    """
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
-        """Create a FrozenFilterBox containing the objs, queryable by the 'on' attributes.
-
-        Args:
-            objs: The objects that FrozenFilterBox will contain.
-                Objects do not need to be hashable, any object works.
-
-            on: The attributes that will be used for finding objects.
-                Must contain at least one.
-
-        It's OK if the objects in `objs` are missing some or all of the attributes in `on`. They will still be
-        stored, and can found with find().
-
-        For the objects that do contain the attributes on "on", those attribute values must be hashable.
-        """
         if not objs:
             raise ValueError(
                 "Cannot build an empty FrozenFilterBox; at least 1 object is required."
@@ -36,7 +36,7 @@ class FrozenFilterBox:
             raise ValueError("Need at least one attribute.")
         if isinstance(on, str):
             on = [on]
-        self.indices = {}
+        self._indices = {}
 
         self.obj_arr = np.empty(len(objs), dtype="O")
         self.dtype = "uint32" if len(objs) < 2 ** 32 else "uint64"
@@ -44,7 +44,7 @@ class FrozenFilterBox:
             self.obj_arr[i] = obj
 
         for attr in on:
-            self.indices[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
+            self._indices[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
 
         self.sorted_obj_ids = np.sort(
             [id(obj) for obj in self.obj_arr]
@@ -86,7 +86,7 @@ class FrozenFilterBox:
             Numpy array of objects matching the constraints.
         """
 
-        validate_query(self.indices, match, exclude)
+        validate_query(self._indices, match, exclude)
 
         # perform 'match' query
         if match:
@@ -130,7 +130,7 @@ class FrozenFilterBox:
         Returns:
             Set of all unique values for this attribute.
         """
-        return self.indices[attr].get_values()
+        return self._indices[attr].get_values()
 
     def _match_any_of(
         self, attr: Union[str, Callable], value: Union[Hashable, List[Hashable]]
@@ -145,12 +145,12 @@ class FrozenFilterBox:
             Sorted array of object IDs.
         """
         if isinstance(value, list):
-            matches = [self.indices[attr].get(v) for v in set(value)]
+            matches = [self._indices[attr].get(v) for v in set(value)]
             return np.sort(np.concatenate(matches))
         else:
             if value is ANY:
-                return self.indices[attr].get_all()
-            return self.indices[attr].get(value)
+                return self._indices[attr].get_all()
+            return self._indices[attr].get(value)
 
     def __contains__(self, obj):
         obj_id = id(obj)

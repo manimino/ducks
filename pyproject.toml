@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "filterbox"
-version = "0.6.3"
+version = "0.7.0"
 description = "Container for finding Python objects by matching attributes. Stores objects by attribute value for fast lookup."
 authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
@@ -12,6 +12,7 @@ readme = "README.md"
 python = "^3.7"
 cykhash = "^2.0.0"
 numpy = "^1.14"
+readerwriterlock = "^1.0.9"
 sortednp = "^0.4.0"
 
 [tool.poetry.dev-dependencies]

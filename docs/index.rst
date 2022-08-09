@@ -2,7 +2,7 @@
    sphinx-quickstart on Fri Aug  5 07:18:13 2022.
 
 FilterBox API Reference
-=====================
+=======================
 
 * :ref:`modindex`
 * :ref:`search`

@@ -1,6 +1,6 @@
 import pytest
 
-from filterbox import FilterBox, FrozenFilterBox
+from filterbox import FilterBox, FrozenFilterBox, ConcurrentFilterBox
 from filterbox.exceptions import AttributeNotFoundError
 from filterbox.constants import SIZE_THRESH
 
@@ -18,9 +18,14 @@ def test_empty_frozen():
         FrozenFilterBox([], on=["stuff"])
 
 
-def test_no_index_mutable():
+def test_no_index():
     with AssertRaises(ValueError):
         FilterBox(["a"])
+
+
+def test_empty_index():
+    with AssertRaises(ValueError):
+        FrozenFilterBox(["a"], [])
 
 
 def test_bad_query(box_class):
@@ -44,3 +49,8 @@ def test_remove_missing_value(n_items):
     assert len(f.find({"n": -1})) == 0
     with AssertRaises(KeyError):
         f.remove(BadHash(-1))
+
+
+def test_bad_priority():
+    with AssertRaises(ValueError):
+        _ = ConcurrentFilterBox(None, on=['x'], priority='lol')

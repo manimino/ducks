@@ -2,19 +2,22 @@
 
 Container for finding Python objects by matching attributes. 
 
-Finds are very fast. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
-
-```
-pip install filterbox
-```
-
 [![tests Actions Status](https://github.com/manimino/filterbox/workflows/tests/badge.svg)](https://github.com/manimino/filterbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
 [![license - MIT](https://img.shields.io/static/v1?label=license&message=MIT&color=2ea44f)](/LICENSE)
 ![python - 3.7+](https://img.shields.io/static/v1?label=python&message=3.7%2B&color=2ea44f)
 
+FilterBox stores objects by the values you specify. 
 
-### Usage:
+Finds are very fast. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+
+### Install
+
+```
+pip install filterbox
+```
+
+### Usage
 
 Find which day will be good for flying a kite. It needs to be windy and sunny.
 
@@ -42,9 +45,10 @@ fb.find({is_windy: True, 'sky': 'sunny'})
 # result: [{'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'}]
 ```
 
-There are two classes available.
- - FilterBox: can `add()` and `remove()` objects after creation.
- - FrozenFilterBox: faster finds, lower memory usage, and immutable.
+There are three classes available.
+ - FilterBox: can add, remove, and update objects after creation.
+ - ConcurrentFilterBox: Thread-safe version of FilterBox.
+ - FrozenFilterBox: Cannot be changed after creation. Faster finds, lower memory usage, and thread-safe.
 
 ## More Examples
 
@@ -100,6 +104,8 @@ fb.find({get_nested: 4})
 <summary>Greater than, less than</summary>
 <br />
 
+FilterBox does <code>==</code> very well, but <code><</code> and <code><</code> take some extra effort.
+
 Suppose you need to find objects where x >= some number. If the number is constant, a function that returns 
 <code>obj.x >= constant</code> will work. 
 
@@ -130,7 +136,7 @@ Objects don't need to have every attribute.
  - Objects that are missing an attribute will not be stored under that attribute. This saves lots of memory.
  - To find all objects that have an attribute, match the special value <code>ANY</code>. 
  - To find objects missing the attribute, exclude <code>ANY</code>.
- - In functions, raise MissingAttribute to tell FilterBox the object is missing.
+ - In functions, raise <code>MissingAttribute</code> to tell FilterBox the object is missing.
 
 Example:
 ```
@@ -159,17 +165,13 @@ fb.find(exclude={'a': ANY})  # result: [{}]
  - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
-### API documentation:
- - [FilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox)
- - [FrozenFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox)
-
 ____
 
 ## How it works
 
 For every attribute in FilterBox, it holds a dict that maps each unique value to the set of objects with that value. 
 
-This is the rough idea of the FilterBox data structure: 
+This is the rough idea of the data structure: 
 ```
 FilterBox = {
     'attribute1': {val1: set(some_objs), val2: set(other_objs)},
@@ -180,8 +182,15 @@ FilterBox = {
 During `find()`, the object sets matching each query value are retrieved. Then set operations like `union`, 
 `intersect`, and `difference` are applied to get the final result.
 
-That's a simplified version; for way more detail, See the "how it 
-works" pages for [FilterBox](filterbox/mutable/how_it_works.md) and [FrozenFilterBox](filterbox/frozen/how_it_works.md).
+That's a simplified version; for way more detail, See the "how it works" pages for:
+ - [FilterBox](filterbox/mutable/how_it_works.md)
+ - [ConcurrentFilterBox](filterbox/concurrent/how_it_works.md)
+ - [FrozenFilterBox](filterbox/frozen/how_it_works.md)
+
+### API documentation:
+ - [FilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox)
+ - [ConcurrentFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.concurrent.html#filterbox.concurrent.main.ConcurrentFilterBox)
+ - [FrozenFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox)
 
 ### Related projects
 
