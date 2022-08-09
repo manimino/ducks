@@ -105,15 +105,13 @@ fb.find({get_nested: 4})
 <summary>Greater than, less than</summary>
 <br />
 
-FilterBox does <code>==</code> very well, but <code><</code> and <code><</code> take some extra effort.
+FilterBox does <code>==</code> very well, but <code><</code> and <code>></code> take some extra effort.
 
 Suppose you need to find objects where x >= some number. If the number is constant, a function that returns 
 <code>obj.x >= constant</code> will work. 
 
 Otherwise, FilterBox and FrozenFilterBox have a method <code>get_values(attr)</code> which gets the set of 
-unique values for an attribute. 
-
-Here's how to use it to find objects having <code>x >= 3</code>.
+unique values for an attribute. Here's how to use it to find objects having <code>x >= 3</code>.
 ```
 from filterbox import FilterBox
 
@@ -174,24 +172,30 @@ For every attribute in FilterBox, it holds a dict that maps each unique value to
 
 This is the rough idea of the data structure: 
 ```
-FilterBox = {
-    'attribute1': {val1: set(some_objs), val2: set(other_objs)},
-    'attribute2': {val3: set(some_objs), val4: set(other_objs)}
+class FilterBox:
+    indices = {
+        'attribute1': {val1: set(some_obj_ids), val2: set(other_obj_ids)},
+        'attribute2': {val3: set(some_obj_ids), val4: set(other_obj_ids)},
+    }
+    'obj_map': {obj_ids: objects}
 }
 ```
 
-During `find()`, the object sets matching each query value are retrieved. Then set operations like `union`, 
-`intersect`, and `difference` are applied to get the final result.
+During `find()`, the object ID sets matching each query value are retrieved. Then set operations like `union`, 
+`intersect`, and `difference` are applied to get the matching object IDs. Finally, the object IDs are converted
+to objects and returned.
 
-That's a simplified version; for way more detail, See the "how it works" pages for:
+In practice, FilterBox and FrozenFilterBox have more complexity, as they are optimized to have much better
+memory usage and speed than a naive implementation. See the "how it works" pages for more detail:
  - [FilterBox](filterbox/mutable/how_it_works.md)
  - [ConcurrentFilterBox](filterbox/concurrent/how_it_works.md)
  - [FrozenFilterBox](filterbox/frozen/how_it_works.md)
 
-### API documentation:
- - [FilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox)
- - [ConcurrentFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.concurrent.html#filterbox.concurrent.main.ConcurrentFilterBox)
- - [FrozenFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox)
+### API Reference:
+
+ - [FilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox)
+ - [ConcurrentFilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.concurrent.html#filterbox.concurrent.main.ConcurrentFilterBox)
+ - [FrozenFilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox)
 
 ### Related projects
 
