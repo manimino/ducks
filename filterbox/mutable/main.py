@@ -9,26 +9,26 @@ from filterbox.mutable.mutable_attr import MutableAttrIndex
 
 
 class FilterBox:
+    """
+    Create a FilterBox containing the ``objs``, queryable by the ``on`` attributes.
+
+    Args:
+        objs: The objects that FilterBox will contain initially.
+            Objects do not need to be hashable, any object works.
+
+        on: The attributes that will be used for finding objects.
+            Must contain at least one.
+
+    It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
+    stored, and can found with ``find()``.
+
+    For the objects that do contain the ``on`` attributes, those attribute values must be hashable.
+    """
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
         on: Iterable[Union[str, Callable]] = None,
     ):
-        """
-        Create a FilterBox containing the ``objs``, queryable by the ``on`` attributes.
-
-        Args:
-            objs: The objects that FilterBox will contain initially.
-                Objects do not need to be hashable, any object works.
-
-            on: The attributes that will be used for finding objects.
-                Must contain at least one.
-
-        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
-        stored, and can found with ``find()``.
-
-        For the objects that do contain the ``on`` attributes, those attribute values must be hashable.
-        """
         if not on:
             raise ValueError("Need at least one attribute.")
         if isinstance(on, str):
