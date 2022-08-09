@@ -171,7 +171,7 @@ ____
 
 For every attribute in FilterBox, it holds a dict that maps each unique value to the set of objects with that value. 
 
-This is the rough idea of the FilterBox data structure: 
+This is the rough idea of the data structure: 
 ```
 FilterBox = {
     'attribute1': {val1: set(some_objs), val2: set(other_objs)},
@@ -182,8 +182,10 @@ FilterBox = {
 During `find()`, the object sets matching each query value are retrieved. Then set operations like `union`, 
 `intersect`, and `difference` are applied to get the final result.
 
-That's a simplified version; for way more detail, See the "how it 
-works" pages for [FilterBox](filterbox/mutable/how_it_works.md) and [FrozenFilterBox](filterbox/frozen/how_it_works.md).
+That's a simplified version; for way more detail, See the "how it works" pages for:
+ - [FilterBox](filterbox/mutable/how_it_works.md)
+ - [ConcurrentFilterBox](filterbox/concurrent/how_it_works.md)
+ - [FrozenFilterBox](filterbox/frozen/how_it_works.md)
 
 ### API documentation:
  - [FilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox)
