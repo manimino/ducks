@@ -21,7 +21,8 @@ class ConcurrentFilterBox:
         priority: 'readers', 'writers', or 'fair'. Default 'readers'. Change this according to your usage pattern.
     """
 
-    def __init__(self, objs, on=None, priority: str = 'readers'):
+    def __init__(self, objs, on=None, priority: str = READERS):
+        self.priority = priority
         self.box = FilterBox(objs, on)
         if priority == READERS:
             self.lock = RWLockRead()
@@ -31,7 +32,7 @@ class ConcurrentFilterBox:
             self.lock = RWLockFair()
         else:
             raise ValueError(f"priority must be {READERS}, {WRITERS}, or {FAIR}.")
-        self._indices = self.box._indices  # pass-through, used during testing
+        self._indices = self.box._indices  # only used during testing
 
     @contextmanager
     def read_lock(self):
@@ -41,7 +42,15 @@ class ConcurrentFilterBox:
 
     @contextmanager
     def write_lock(self):
-        """Lock the ConcurrentFilterBox for writing."""
+        """Lock the ConcurrentFilterBox for writing.
+
+        When doing many write operations at once, it is more efficient to do:
+            with cfb.read_lock():
+                for item in items:
+                    cfb.box.add(item)  # calls add() on the underlying FilterBox.
+        This performs locking only once, versus calling cfb.add() which locks for each item.
+        The same pattern works for update() and remove().
+        """
         with self.lock.gen_wlock():
             yield
 

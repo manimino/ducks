@@ -1,4 +1,5 @@
 from filterbox.constants import ANY
-from filterbox.mutable.main import FilterBox
+from filterbox.concurrent.main import ConcurrentFilterBox, FAIR, READERS, WRITERS
+from filterbox.exceptions import MissingAttribute
 from filterbox.frozen.main import FrozenFilterBox
-from filterbox.concurrent.main import ConcurrentFilterBox
+from filterbox.mutable.main import FilterBox
