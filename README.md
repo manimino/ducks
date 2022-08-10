@@ -44,9 +44,9 @@ fb.find({'sky': 'sunny', 'wind_speed': {'>=': 5, '<=': 10}})
 ```
 
 You can also find objects by functions evaluated on the object. 
-Functions are evaluated only once, when the object is added to the FilterBox, so finds will be fast.
+Functions are evaluated only once, when the object is added to the FilterBox.
 
-Find palindromes of length 5 or 7 in a list of strings:
+Find palindromes of length 5 or 7:
 ```
 from filterbox import FilterBox
 strings = ['bob', 'fives', 'kayak', 'stats', 'pullup', 'racecar']
