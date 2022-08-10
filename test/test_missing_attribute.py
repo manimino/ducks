@@ -39,8 +39,8 @@ def test_add_with_missing_attributes():
     assert len(fb) == 4
     assert len(fb._indices["a"]) == 2
     assert len(fb._indices["b"]) == 2
-    assert len(fb.find(exclude={"b": [2, 4]})) == 2
-    assert len(fb.find(exclude={"a": [1, 3]})) == 2
+    assert len(fb.find(exclude={"b": {'in': [2, 4]}})) == 2
+    assert len(fb.find(exclude={"a": {'in': [1, 3]}})) == 2
 
 
 def test_remove_with_missing_attributes():

@@ -1,7 +1,7 @@
 
 import numpy as np
 
-from typing import List, Union, Callable, Optional, Any, Dict, Tuple
+from typing import List, Union, Callable, Optional, Any, Dict, Tuple, Set
 
 from cykhash import Int64Set
 
@@ -68,3 +68,19 @@ def cyk_union(s1: Int64Set, s2: Int64Set) -> Int64Set:
     """Cykhash unions are faster on big.union(small); handle that appropriately.
     https://github.com/realead/cykhash/issues/7"""
     return s1.union(s2) if len(s1) > len(s2) else s2.union(s1)
+
+
+def filter_vals(attr_vals: Set[Any], expr: Dict[str, Any]) -> Set[Any]:
+    """Apply the <, <=, >, >= filters to the attr_vals. Return set of matches."""
+    for op, value in expr.items():
+        if op not in ['<', '>', '<=', '>=']:
+            raise ValueError(f"Invalid operator: {op}. Operator must be one of: ['in', '<', '<=', '>', '>='].")
+        if op == '<':
+            attr_vals = {v for v in attr_vals if v < value}
+        elif op == '<=':
+            attr_vals = {v for v in attr_vals if v <= value}
+        elif op == '>':
+            attr_vals = {v for v in attr_vals if v > value}
+        elif op == '>=':
+            attr_vals = {v for v in attr_vals if v >= value}
+    return attr_vals

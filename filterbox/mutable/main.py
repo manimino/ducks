@@ -4,7 +4,7 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 from cykhash import Int64Set
 
 from filterbox import ANY
-from filterbox.utils import cyk_intersect, cyk_union, validate_query
+from filterbox.utils import cyk_intersect, cyk_union, validate_query, filter_vals
 from filterbox.mutable.mutable_attr import MutableAttrIndex
 
 
@@ -177,7 +177,8 @@ class FilterBox:
                 del expr['in']
             if expr:
                 # handle <, >, etc
-                valid_values = self._handle_less_greater(attr, expr)
+                attr_vals = self._indices[attr].get_values()
+                valid_values = filter_vals(attr_vals, expr)
                 expr_matches = self._match_any_value_in(attr, valid_values)
                 if matches is None:
                     matches = expr_matches
@@ -192,22 +193,11 @@ class FilterBox:
 
     def _handle_less_greater(self, attr: Union[str, Callable], expr: Dict[str, Any]) -> Set[Any]:
         """Look through all the unique values of the attribute. Return the ones that match the criteria in expr."""
-        valid_vals = self._indices[attr].get_values()
-        for op, value in expr.items():
-            if op not in ['<', '>', '<=', '>=']:
-                raise ValueError(f"Invalid operator: {op}. Operator must be one of: ['in', '<', '<=', '>', '>='].")
-            if op == '<':
-                valid_vals = {v for v in valid_vals if v < value}
-            elif op == '<=':
-                valid_vals = {v for v in valid_vals if v <= value}
-            elif op == '>':
-                valid_vals = {v for v in valid_vals if v > value}
-            elif op == '>=':
-                valid_vals = {v for v in valid_vals if v >= value}
-        return valid_vals
+        attr_vals = self._indices[attr].get_values()
+        return filter_vals(attr_vals, expr)
 
     def _match_any_value_in(self, attr: Union[str, Callable], values: Iterable[Any]) -> Int64Set:
-        """Get the union of object ID matches for all values."""
+        """Get the union of object ID matches for the values."""
         # Note: this could also be done with list operations, but union() is slightly faster in most cases.
         matches = Int64Set()
         for v in values:
