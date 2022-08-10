@@ -53,7 +53,7 @@ class ConcurrentFilterBox:
             with cfb.read_lock():
                 for item in items:
                     cfb.box.add(item)  # calls add() on the underlying FilterBox.
-        
+
         This performs locking only once, versus calling cfb.add() which locks for each item.
         The same pattern works for update() and remove().
         """

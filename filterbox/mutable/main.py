@@ -63,7 +63,7 @@ class FilterBox:
                  - A dict specifying operators and values, such as ``{'>' 3}`` or ``{'in': [1, 2, 3]}``.
                  - ``filterbox.ANY``, which matches all objects having the attribute.
 
-                 Valid operators are 'in', '<', '<=', '>', '>=', 'lt', 'le', 'gt', and 'ge'.
+                 Valid operators are 'in', '<', '<=', '>', '>=', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte'.
 
             exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
