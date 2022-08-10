@@ -20,7 +20,7 @@ pip install filterbox
 
 ### Usage
 
-Find which day will be good for flying a kite. It needs to be sunny and have a wind speed between 5 and 10.
+Find a good day for flying a kite. It needs to be sunny skies and have a wind speed between 5 and 10.
 
 ```
 from filterbox import FilterBox
@@ -36,15 +36,15 @@ days = [
 # make a FilterBox
 fb = FilterBox(               # make a FilterBox
     days,                     # add objects of any Python type
-    on=['wind_speed', 'sky']       # functions + attributes to find by
+    on=['sky', 'wind_speed']  # attributes to find by
 )
 
 fb.find({'sky': 'sunny', 'wind_speed': {'>=': 5, '<=': 10}})  
 # result: [{'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7}]
 ```
 
-You can also find objects by functions evaluated on the object. Functions are evaluated when the object is added to the
-FilterBox, so finds will be fast.
+You can also find objects by functions evaluated on the object. 
+Functions are evaluated only once, when the object is added to the FilterBox, so finds will be fast.
 
 Find palindromes of length 5 or 7 in a list of strings:
 ```
@@ -62,8 +62,8 @@ fb.find({is_palindrome: True, len: {'in': [5, 7]}})
 ### Classes
 
  - `FilterBox` - can add, remove, and update objects after creation.
- - `ConcurrentFilterBox` - Thread-safe version of FilterBox.
- - `FrozenFilterBox` - Cannot be changed after creation. Faster finds, lower memory usage, and thread-safe.
+ - `ConcurrentFilterBox` - Thread-safe version of FilterBox. 
+ - `FrozenFilterBox` - Cannot be changed after creation. Fastest finds, lower memory usage, and thread-safe.
 
 ## More Examples
 
@@ -99,7 +99,7 @@ fb.find(
 </details>
 
 <details>
-<summary>Accessing nested data using functions</summary>
+<summary>Access nested data using functions</summary>
 <br />
 Use functions to get values from nested data structures.
 
@@ -121,7 +121,7 @@ fb.find({get_nested: 4})
 </details>
 
 <details>
-<summary>Handling missing attributes</summary>
+<summary>Handle missing attributes</summary>
 <br />
 
 Objects don't need to have every attribute.
@@ -162,7 +162,7 @@ ____
 
 ## How it works
 
-For every attribute in FilterBox, it holds a dict that maps each unique value to the set of objects with that value. 
+For each attribute in the FilterBox, it holds a dict that maps every unique value to the set of objects with that value. 
 
 This is the rough idea of the data structure: 
 ```
