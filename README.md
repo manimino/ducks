@@ -20,7 +20,7 @@ pip install filterbox
 
 ### Usage
 
-Find a good day for flying a kite. It needs to be sunny skies and have a wind speed between 5 and 10.
+Find a good day for flying a kite. It needs to have sunny skies and a wind speed between 5 and 10.
 
 ```
 from filterbox import FilterBox
@@ -44,7 +44,6 @@ fb.find({'sky': 'sunny', 'wind_speed': {'>=': 5, '<=': 10}})
 ```
 
 You can also find objects by functions evaluated on the object. 
-Functions are evaluated only once, when the object is added to the FilterBox.
 
 Find palindromes of length 5 or 7:
 ```
@@ -58,6 +57,8 @@ fb = FilterBox(strings, [is_palindrome, len])
 fb.find({is_palindrome: True, len: {'in': [5, 7]}})  
 # result: ['kayak', 'racecar', 'stats']
 ```
+
+Functions are evaluated only once, when the object is added to the FilterBox. 
 
 ### Classes
 
@@ -73,10 +74,9 @@ Expand for sample code.
 <summary>Exclude values</summary>
 <br>
 
-`find()` takes two arguments, `match` and `exclude`. They have the same syntax.
+`find()` takes two arguments, `match` and `exclude`. The examples up to this point have used `match` only, but
+`exclude` works the same way.
 
-If `match` is unspecified, all objects will match, which allows filtering solely by `exclude`. Try removing 
-the `match` line in the example below.
 
 ```
 from filterbox import FilterBox
@@ -96,6 +96,10 @@ fb.find(
 )  
 # result: [{'item': 1, 'size': 10, 'flavor': 'melon'}]
 ```
+
+If `match` is unspecified, all objects will match, which allows filtering solely by `exclude`. Try removing 
+the `match` line in the example above.
+
 </details>
 
 <details>
