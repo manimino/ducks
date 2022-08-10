@@ -140,13 +140,14 @@ Example:
 from filterbox import FilterBox, ANY
 from filterbox.exceptions import MissingAttribute
 
+objs = [{'a': 1}, {'a': 2}, {}]
+
 def get_a(obj):
     try:
         return obj['a']
     except KeyError:
         raise MissingAttribute  # tell FilterBox this attribute is missing
 
-objs = [{'a': 1}, {'a': 2}, {}]
 fb = FilterBox(objs, ['a', get_a])
 
 fb.find({'a': ANY})          # result: [{'a': 1}, {'a': 2}]
