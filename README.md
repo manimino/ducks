@@ -185,7 +185,9 @@ During `find()`, the object ID sets matching each query value are retrieved. The
 to objects and returned.
 
 In practice, FilterBox and FrozenFilterBox have more complexity, as they are optimized to have much better
-memory usage and speed than a naive implementation. See the "how it works" pages for more detail:
+memory usage and speed than a naive implementation. 
+
+See the "how it works" pages for more detail:
  - [FilterBox](filterbox/mutable/how_it_works.md)
  - [ConcurrentFilterBox](filterbox/concurrent/how_it_works.md)
  - [FrozenFilterBox](filterbox/frozen/how_it_works.md)
