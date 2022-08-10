@@ -1,6 +1,6 @@
 # FilterBox
 
-Container for finding Python objects by matching attributes. 
+Container for finding Python objects.
 
 Stores objects in hashtables by attribute value, so finds are very fast. 
 
@@ -20,44 +20,63 @@ pip install filterbox
 
 ### Usage
 
-Find which day will be good for flying a kite. It needs to be windy and sunny.
+Find a good day for flying a kite. It needs to have sunny skies and a wind speed between 5 and 10.
 
 ```
 from filterbox import FilterBox
 
 days = [
-    {'day': 'Saturday', 'wind_speed': 1, 'sky': 'sunny',},
-    {'day': 'Sunday', 'wind_speed': 3, 'sky': 'rainy'},
-    {'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'},
-    {'day': 'Tuesday', 'wind_speed': 9, 'sky': 'rainy'}
+    {'day': 'Saturday', 'sky': 'sunny', 'wind_speed': 1},
+    {'day': 'Sunday', 'sky': 'rainy', 'wind_speed': 3},
+    {'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7},
+    {'day': 'Tuesday', 'sky': 'rainy', 'wind_speed': 9},
+    {'day': 'Wednesday', 'sky': 'sunny', 'wind_speed': 25}
 ]
-
-def is_windy(obj):
-    return obj['wind_speed'] > 5
 
 # make a FilterBox
 fb = FilterBox(               # make a FilterBox
     days,                     # add objects of any Python type
-    on=[is_windy, 'sky']      # functions + attributes to find by
+    on=['sky', 'wind_speed']  # attributes to find by
 )
 
-# find objects by function and / or attribute values
-fb.find({is_windy: True, 'sky': 'sunny'})  
-# result: [{'day': 'Monday', 'wind_speed': 7, 'sky': 'sunny'}]
+fb.find({'sky': 'sunny', 'wind_speed': {'>=': 5, '<=': 10}})  
+# result: [{'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7}]
 ```
 
-There are three classes available.
- - FilterBox: can add, remove, and update objects after creation.
- - ConcurrentFilterBox: Thread-safe version of FilterBox.
- - FrozenFilterBox: Cannot be changed after creation. Faster finds, lower memory usage, and thread-safe.
+You can also find objects by functions evaluated on the object. 
+
+Find palindromes of length 5 or 7:
+```
+from filterbox import FilterBox
+strings = ['bob', 'fives', 'kayak', 'stats', 'pullup', 'racecar']
+
+def is_palindrome(s):
+    return s == s[::-1]
+
+fb = FilterBox(strings, [is_palindrome, len])
+fb.find({is_palindrome: True, len: {'in': [5, 7]}})  
+# result: ['kayak', 'racecar', 'stats']
+```
+
+Functions are evaluated only once, when the object is added to the FilterBox. 
+
+### Classes
+
+ - `FilterBox` - can add, remove, and update objects after creation.
+ - `ConcurrentFilterBox` - Thread-safe version of FilterBox. 
+ - `FrozenFilterBox` - Cannot be changed after creation. Fastest finds, lower memory usage, and thread-safe.
 
 ## More Examples
 
 Expand for sample code.
 
 <details>
-<summary>Match and exclude multiple values</summary>
+<summary>Exclude values</summary>
 <br>
+
+`find()` takes two arguments, `match` and `exclude`. The examples up to this point have used `match` only, but
+`exclude` works the same way.
+
 
 ```
 from filterbox import FilterBox
@@ -72,15 +91,19 @@ objects = [
 fb = FilterBox(objects, on=['size', 'flavor'])
 
 fb.find(
-    match={'size': [10, 20]},                # match anything with size in [10, 20] 
-    exclude={'flavor': ['lychee', 'peach']}  # where flavor is not in ['lychee', 'peach']
+    match={'size': {'<': 30}},                       # match anything with size < 30
+    exclude={'flavor': {'in': ['lychee', 'peach']}}  # where flavor is not in ['lychee', 'peach']
 )  
 # result: [{'item': 1, 'size': 10, 'flavor': 'melon'}]
 ```
+
+If `match` is unspecified, all objects will match, which allows filtering solely by `exclude`. Try removing 
+the `match` line in the example above.
+
 </details>
 
 <details>
-<summary>Accessing nested data using functions</summary>
+<summary>Access nested data using functions</summary>
 <br />
 Use functions to get values from nested data structures.
 
@@ -102,32 +125,7 @@ fb.find({get_nested: 4})
 </details>
 
 <details>
-<summary>Greater than, less than</summary>
-<br />
-
-FilterBox does <code>==</code> very well, but <code><</code> and <code>></code> take some extra effort.
-
-Suppose you need to find objects where x >= some number. If the number is constant, a function that returns 
-<code>obj.x >= constant</code> will work. 
-
-Otherwise, FilterBox and FrozenFilterBox have a method <code>get_values(attr)</code> which gets the set of 
-unique values for an attribute. Here's how to use it to find objects having <code>x >= 3</code>.
-```
-from filterbox import FilterBox
-
-data = [{'x': i} for i in [1, 1, 2, 3, 5]]
-fb = FilterBox(data, ['x'])
-vals = fb.get_values('x')                # get the set of unique values: {1, 2, 3, 5}
-big_vals = [x for x in vals if x >= 3]   # big_vals is [3, 5]
-fb.find({'x': big_vals})                 # result: [{'x': 3}, {'x': 5}
-```
-
-If x is a float or has many unique values, consider making a function on x that rounds it or puts it
-into a bin of similar values. Discretizing x in ths way will make lookups faster.
-</details>
-
-<details>
-<summary>Handling missing attributes</summary>
+<summary>Handle missing attributes</summary>
 <br />
 
 Objects don't need to have every attribute.
@@ -142,13 +140,14 @@ Example:
 from filterbox import FilterBox, ANY
 from filterbox.exceptions import MissingAttribute
 
+objs = [{'a': 1}, {'a': 2}, {}]
+
 def get_a(obj):
     try:
         return obj['a']
     except KeyError:
         raise MissingAttribute  # tell FilterBox this attribute is missing
 
-objs = [{'a': 1}, {'a': 2}, {}]
 fb = FilterBox(objs, ['a', get_a])
 
 fb.find({'a': ANY})          # result: [{'a': 1}, {'a': 2}]
@@ -159,7 +158,7 @@ fb.find(exclude={'a': ANY})  # result: [{}]
 
 ### Recipes
  
- - [Auto-updating](https://github.com/manimino/filterbox/blob/main/examples/update.py) - Keep FilterBox updated when attribute values change
+ - [Auto-updating](https://github.com/manimino/filterbox/blob/main/examples/update.py) - Keep FilterBox updated when objects change
  - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Solve string matching problems faster than regex
  - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
@@ -168,7 +167,7 @@ ____
 
 ## How it works
 
-For every attribute in FilterBox, it holds a dict that maps each unique value to the set of objects with that value. 
+For each attribute in the FilterBox, it holds a dict that maps every unique value to the set of objects with that value. 
 
 This is the rough idea of the data structure: 
 ```
@@ -186,10 +185,12 @@ During `find()`, the object ID sets matching each query value are retrieved. The
 to objects and returned.
 
 In practice, FilterBox and FrozenFilterBox have more complexity, as they are optimized to have much better
-memory usage and speed than a naive implementation. See the "how it works" pages for more detail:
- - [FilterBox](filterbox/mutable/how_it_works.md)
- - [ConcurrentFilterBox](filterbox/concurrent/how_it_works.md)
- - [FrozenFilterBox](filterbox/frozen/how_it_works.md)
+memory usage and speed than a naive implementation. 
+
+See the "how it works" pages for more detail:
+ - [How FilterBox works](filterbox/mutable/how_it_works.md)
+ - [How ConcurrentFilterBox works](filterbox/concurrent/how_it_works.md)
+ - [How FrozenFilterBox works](filterbox/frozen/how_it_works.md)
 
 ### API Reference:
 

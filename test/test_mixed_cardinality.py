@@ -17,7 +17,9 @@ def test_thresh(box_class, thresh):
 
 
 def test_bad_hash_mixed(box_class):
-    objs = [{"n": BadHash(i)} for i in range(100)] + [{"n": BadHash(0)} for _ in range(SIZE_THRESH+1)]
-    fb = box_class(objs, ['n'])
-    assert len(fb.find({'n': objs[1]['n']})) == 1
-    assert len(fb.find({'n': objs[0]['n']})) == SIZE_THRESH+2
+    objs = [{"n": BadHash(i)} for i in range(100)] + [
+        {"n": BadHash(0)} for _ in range(SIZE_THRESH + 1)
+    ]
+    fb = box_class(objs, ["n"])
+    assert len(fb.find({"n": objs[1]["n"]})) == 1
+    assert len(fb.find({"n": objs[0]["n"]})) == SIZE_THRESH + 2

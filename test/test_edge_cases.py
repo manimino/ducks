@@ -4,6 +4,7 @@ import pytest
 
 from .conftest import BadHash
 
+
 class EdgeHash:
     HASHES = [HASH_MIN, 0, HASH_MAX]
 
@@ -164,9 +165,20 @@ def test_external_object_modification(box_class):
     At some point it's up to the user not to do weird stuff.
     Mutable + Hashable objects are big trouble -- there's a reason Python primitives are only ever one of the two.
     """
-    objs = [{'a': BadHash(1)}]
-    fb = box_class(objs, 'a')
-    assert len(fb.find({'a': BadHash(1)})) == 1
-    objs[0]['a'].n = 5000
+    objs = [{"a": BadHash(1)}]
+    fb = box_class(objs, "a")
+    assert len(fb.find({"a": BadHash(1)})) == 1
+    objs[0]["a"].n = 5000
     # external modification changed our results
-    assert len(fb.find({'a': BadHash(1)})) == 0
+    assert len(fb.find({"a": BadHash(1)})) == 0
+
+
+def test_in_with_greater(box_class):
+    """
+    Technically someone could query a '<' along with an 'in'. Does that work properly?
+    """
+    f = box_class([{"a": 1}], on="a")
+    assert len(f.find({"a": {"<=": 1, "in": [1]}})) == 1
+    assert len(f.find({"a": {">": 1, "in": [1]}})) == 0
+    assert len(f.find({"a": {"<=": 1, "in": [0]}})) == 0
+    assert len(f.find({"a": {"<": 1, "in": [0]}})) == 0

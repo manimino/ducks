@@ -4,7 +4,7 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 from cykhash import Int64Set
 
 from filterbox import ANY
-from filterbox.utils import validate_query
+from filterbox.utils import cyk_intersect, cyk_union, validate_query, filter_vals
 from filterbox.mutable.mutable_attr import MutableAttrIndex
 
 
@@ -24,6 +24,7 @@ class FilterBox:
 
     For the objects that do contain the ``on`` attributes, those attribute values must be hashable.
     """
+
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
@@ -59,8 +60,10 @@ class FilterBox:
 
                 Value can be any of the following:
                  - A single hashable value, which will match all objects with that value for the attribute.
-                 - A list of hashable values, which matches each object having any of the values for the attribute.
+                 - A dict specifying operators and values, such as ``{'>' 3}`` or ``{'in': [1, 2, 3]}``.
                  - ``filterbox.ANY``, which matches all objects having the attribute.
+
+                 Valid operators are 'in', '<', '<=', '>', '>=', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte'.
 
             exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
@@ -69,7 +72,7 @@ class FilterBox:
 
                 Value can be any of the following:
                  - A single hashable value, which will exclude all objects with that value for the attribute.
-                 - A list of hashable values, which excludes each object having any of the values for the attribute.
+                 - A dict specifying operators and values to exclude, such as ``{'>' 3}`` or ``{'in': [1, 2, 3]}``
                  - ``filterbox.ANY``, which excludes all objects having the attribute.
 
         Returns:
@@ -101,9 +104,8 @@ class FilterBox:
         if match:
             # find intersection of each attr
             hit_sets = []
-            for attr, value in match.items():
-                # if multiple values for a attr, find each value and union those first
-                hit_set = self._match_any_of(attr, value)
+            for attr, expr in match.items():
+                hit_set = self._match_attr_expr(attr, expr)
                 if len(hit_set) == 0:
                     # this attr had no matches, therefore the intersection will be empty. We can stop here.
                     return Int64Set()
@@ -114,11 +116,7 @@ class FilterBox:
                 if i == 0:
                     hits = hit_set
                 else:
-                    # intersecting with the smaller set on the left is faster in cykhash sets
-                    if len(hits) < len(hit_set):
-                        hits = hits.intersection(hit_set)
-                    else:
-                        hits = hit_set.intersection(hits)
+                    hits = cyk_intersect(hits, hit_set)
         else:
             # 'match' is unspecified, so match all objects
             hits = Int64Set(self.obj_map.keys())
@@ -126,8 +124,8 @@ class FilterBox:
         # perform 'exclude' query
         if exclude:
             exc_sets = []
-            for attr, value in exclude.items():
-                exc_sets.append(self._match_any_of(attr, value))
+            for attr, expr in exclude.items():
+                exc_sets.append(self._match_attr_expr(attr, expr))
 
             for exc_set in sorted(exc_sets, key=len, reverse=True):
                 hits = Int64Set.difference(hits, exc_set)
@@ -172,24 +170,44 @@ class FilterBox:
         """
         return self._indices[attr].get_values()
 
-    def _match_any_of(self, attr: Union[str, Callable], value: Any):
-        """Get matches for a single attr during a ``find()``. If multiple values specified, handle union logic."""
-        if isinstance(value, list):
-            # take the union of all matches
-            matches = Int64Set()
-            for v in value:
-                v_matches = self._indices[attr].get_obj_ids(v)
-                # union with the larger set on the left is faster in cykhash
-                if len(matches) > len(v_matches):
-                    matches = matches.union(v_matches)
+    def _match_attr_expr(self, attr, expr) -> Int64Set:
+        """Look at an attr, handle its expr appropriately"""
+        if isinstance(expr, dict):
+            matches = None
+            if "in" in expr:
+                # always do 'in' first -- it doesn't require get_values() which can be slow.
+                matches = self._match_any_value_in(attr, expr["in"])
+                del expr["in"]
+            if expr:
+                # handle <, >, etc
+                attr_vals = self._indices[attr].get_values()
+                valid_values = filter_vals(attr_vals, expr)
+                expr_matches = self._match_any_value_in(attr, valid_values)
+                if matches is None:
+                    matches = expr_matches
                 else:
-                    matches = v_matches.union(matches)
+                    matches = matches.intersection(expr_matches)
             return matches
+        elif expr is ANY:
+            return self._indices[attr].get_all_ids()
+        elif isinstance(expr, set):
+            raise ValueError(
+                f"Expression {expr} is a set. Did you mean to make a dict?"
+            )
         else:
-            if value is ANY:
-                return self._indices[attr].get_all_ids()
-            else:
-                return self._indices[attr].get_obj_ids(value)
+            # match this specific value
+            return self._indices[attr].get_obj_ids(expr)
+
+    def _match_any_value_in(
+        self, attr: Union[str, Callable], values: Iterable[Any]
+    ) -> Int64Set:
+        """Get the union of object ID matches for the values."""
+        # Note: this could also be done with list operations, but union() is slightly faster in most cases.
+        matches = Int64Set()
+        for v in values:
+            v_matches = self._indices[attr].get_obj_ids(v)
+            matches = cyk_union(matches, v_matches)
+        return Int64Set(matches)
 
     def __contains__(self, obj: Any):
         return id(obj) in self.obj_map

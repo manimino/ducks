@@ -8,7 +8,7 @@ import sortednp as snp
 from filterbox import ANY
 from filterbox.frozen.frozen_attr import FrozenAttrIndex
 from filterbox.frozen.utils import snp_difference
-from filterbox.utils import make_empty_array, validate_query
+from filterbox.utils import make_empty_array, validate_query, filter_vals
 
 
 class FrozenFilterBox:
@@ -69,8 +69,10 @@ class FrozenFilterBox:
 
                 Value can be any of the following:
                  - A single hashable value, which will match all objects with that value for the attribute.
-                 - A list of hashable values, which matches each object having any of the values for the attribute.
+                 - A dict of ``{operator: value}``, such as ``{'>': 5}`` or ``{'in': [1, 2, 3]}``.
                  - ``filterbox.ANY``, which matches all objects having the attribute.
+
+                 Valid operators are 'in', '<', '<=', '>', '>=', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte'.
 
             exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
@@ -79,7 +81,7 @@ class FrozenFilterBox:
 
                 Value can be any of the following:
                  - A single hashable value, which will exclude all objects with that value for the attribute.
-                 - A list of hashable values, which excludes each object having any of the values for the attribute.
+                 - A dict of ``{operator: value}``, such as ``{'>': 5}`` or ``{'in': [1, 2, 3]}``.
                  - ``filterbox.ANY``, which excludes all objects having the attribute.
 
         Returns:
@@ -91,8 +93,8 @@ class FrozenFilterBox:
         # perform 'match' query
         if match:
             hit_arrays = []
-            for attr, value in match.items():
-                hit_array = self._match_any_of(attr, value)
+            for attr, expr in match.items():
+                hit_array = self._match_attr_expr(attr, expr)
                 if len(hit_array) == 0:
                     # this attr had no matches, therefore the intersection will be empty. We can stop here.
                     return make_empty_array("O")
@@ -110,8 +112,8 @@ class FrozenFilterBox:
         # perform 'exclude' query
         if exclude:
             exc_arrays = []
-            for attr, value in exclude.items():
-                exc_arrays.append(self._match_any_of(attr, value))
+            for attr, expr in exclude.items():
+                exc_arrays.append(self._match_attr_expr(attr, expr))
 
             # subtract each of the exc_arrays, starting with the largest
             for exc_array in sorted(exc_arrays, key=len, reverse=True):
@@ -120,6 +122,44 @@ class FrozenFilterBox:
                     break
 
         return self.obj_arr[hits]
+
+    def _match_attr_expr(self, attr: Union[str, Callable], expr: dict) -> np.ndarray:
+        """Look at an attr, handle its expr appropriately"""
+        if isinstance(expr, dict):
+            matches = None
+            if "in" in expr:
+                # always do 'in' first -- it doesn't require get_values() which can be slow.
+                matches = self._match_any_value_in(attr, expr["in"])
+                del expr["in"]
+            if expr:
+                # handle <, >, etc
+                attr_vals = self._indices[attr].get_values()
+                valid_values = filter_vals(attr_vals, expr)
+                expr_matches = self._match_any_value_in(attr, valid_values)
+                if matches is None:
+                    matches = expr_matches
+                else:
+                    matches = snp.intersect(matches, expr_matches)
+            return matches
+        elif expr is ANY:
+            return self._indices[attr].get_all()
+        elif isinstance(expr, set):
+            raise ValueError(
+                f"Expression {expr} is a set. Did you mean to make a dict?."
+            )
+        else:
+            # match this specific value
+            return self._indices[attr].get(expr)
+
+    def _match_any_value_in(
+        self, attr: Union[str, Callable], values: Iterable[Any]
+    ) -> np.ndarray:
+        """"Get the union of object ID matches for the values."""
+        matches = [self._indices[attr].get(v) for v in values]
+        if matches:
+            return np.sort(np.concatenate(matches))
+        else:
+            return make_empty_array(self.dtype)
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
         """Get the unique values we have for the given attribute. Useful for deciding what to find() on.
@@ -131,26 +171,6 @@ class FrozenFilterBox:
             Set of all unique values for this attribute.
         """
         return self._indices[attr].get_values()
-
-    def _match_any_of(
-        self, attr: Union[str, Callable], value: Union[Hashable, List[Hashable]]
-    ) -> np.ndarray:
-        """Get matches for a single attr during a find(). If multiple values specified, handle union logic.
-
-        Args:
-            attr: The attribute being queried.
-            value: The value of the attr to match, or if list, multiple values to match.
-
-        Returns:
-            Sorted array of object IDs.
-        """
-        if isinstance(value, list):
-            matches = [self._indices[attr].get(v) for v in set(value)]
-            return np.sort(np.concatenate(matches))
-        else:
-            if value is ANY:
-                return self._indices[attr].get_all()
-            return self._indices[attr].get(value)
 
     def __contains__(self, obj):
         obj_id = id(obj)

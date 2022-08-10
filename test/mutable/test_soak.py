@@ -144,7 +144,7 @@ class SoakTest:
         ]
         f_ls = self.f.find({"planet": "saturn"})
         assert len(ls) == len(f_ls)
-        assert len(self.objs) == len(self.f._indices['planet'])
+        assert len(self.objs) == len(self.f._indices["planet"])
         # check a functional key
         ls = [o for o in self.objs.values() if get_attribute(o, planet_len)[0] == 6]
         f_ls = self.f.find({planet_len: 6})

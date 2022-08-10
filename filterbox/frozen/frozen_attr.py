@@ -23,7 +23,7 @@ class ObjsByHash:
     hash_run_lengths: np.ndarray
     dtype: str
 
-    def get(self, val):
+    def get(self, val) -> np.ndarray:
         val_hash = hash(val)
         i = bisect_left(self.unique_hashes, val_hash)
         if i < 0 or i >= len(self.unique_hashes) or self.unique_hashes[i] != val_hash:
@@ -117,7 +117,7 @@ class FrozenAttrIndex:
         else:
             return make_empty_array(self.dtype)
 
-    def get_all(self):
+    def get_all(self) -> np.ndarray:
         """Get indices of every object with this attribute. Used when matching ANY."""
         if self.objs_by_hash is None:
             arrs = []
