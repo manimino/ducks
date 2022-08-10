@@ -1,8 +1,10 @@
+
 import numpy as np
 
 from typing import List, Union, Callable, Optional, Any, Dict, Tuple
 
-from filterbox import ANY
+from cykhash import Int64Set
+
 from filterbox.exceptions import AttributeNotFoundError, MissingAttribute
 
 
@@ -54,3 +56,15 @@ def validate_query(
 def make_empty_array(dtype: str):
     """Shorthand for making a length-0 numpy array."""
     return np.empty(0, dtype=dtype)
+
+
+def cyk_intersect(s1: Int64Set, s2: Int64Set) -> Int64Set:
+    """Cykhash intersections are faster on small.intersect(big); handle that appropriately.
+    https://github.com/realead/cykhash/issues/7"""
+    return s1.intersection(s2) if len(s1) < len(s2) else s2.intersection(s1)
+
+
+def cyk_union(s1: Int64Set, s2: Int64Set) -> Int64Set:
+    """Cykhash unions are faster on big.union(small); handle that appropriately.
+    https://github.com/realead/cykhash/issues/7"""
+    return s1.union(s2) if len(s1) > len(s2) else s2.union(s1)

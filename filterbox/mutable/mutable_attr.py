@@ -1,4 +1,4 @@
-from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable
+from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable, Set
 
 from cykhash import Int64Set
 
@@ -93,7 +93,7 @@ class MutableAttrIndex:
             for val in list(self.d.keys()):
                 self._try_remove(ptr, val)
 
-    def get_all_ids(self):
+    def get_all_ids(self) -> Int64Set:
         """Get the ID of every object that has this attribute.
         Called when matching or excluding ``{attr: hashindex.ANY}``."""
         obj_ids = Int64Set()
@@ -106,7 +106,7 @@ class MutableAttrIndex:
                 obj_ids.add(val)
         return obj_ids
 
-    def get_values(self):
+    def get_values(self) -> Set:
         """Get unique values we have objects for."""
         return set(self.d.keys())
 

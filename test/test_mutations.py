@@ -16,20 +16,20 @@ def test_many_gets(box_class, n_items):
     f = box_class(data, ["n", f5])
     for _ in range(4):
         # just a lot of queries in every conceivable flavor
-        assert len(f.find(match={"n": [1, 2, 3, 4, 5], f5: [3, 4]})) == 2
-        assert len(f.find(match={"n": [1, 2], f5: [1, 2]})) == 2
-        assert len(f.find(match={"n": [1, 2, 3, 4, 5]})) == 5
-        assert len(f.find(match={"n": [1, 2, 3, 4, 5]}, exclude={f5: [1, 2]})) == 3
-        assert len(f.find(match={"n": [6, 7, 8]}, exclude={"n": 3, f5: [1, 2]})) == 1
+        assert len(f.find(match={"n": {'in': [1, 2, 3, 4, 5]}, f5: {'in': [3, 4]}})) == 2
+        assert len(f.find(match={"n": {'in': [1, 2]}, f5: {'in': [1, 2]}})) == 2
+        assert len(f.find(match={"n": {'in': [1, 2, 3, 4, 5]}})) == 5
+        assert len(f.find(match={"n": {'in': [1, 2, 3, 4, 5]}}, exclude={f5: {'in': [1, 2]}})) == 3
+        assert len(f.find(match={"n": {'in': [6, 7, 8]}}, exclude={"n": 3, f5: {'in': [1, 2]}})) == 1
         assert (
-            len(f.find(match={"n": [6, 7, 8]}, exclude={"n": -1000, f5: [3, 4]})) == 2
+            len(f.find(match={"n": {'in': [6, 7, 8]}}, exclude={"n": -1000, f5: {'in': [3, 4]}})) == 2
         )
         assert (
-            len(f.find(match={f5: 1, "n": -1000}, exclude={"n": -1000, f5: [3, 4]}))
+            len(f.find(match={f5: 1, "n": -1000}, exclude={"n": -1000, f5: {'in': [3, 4]}}))
             == 0
         )
         assert (
-            len(f.find(match={"n": [-1000, 3, 4, 5]}, exclude={"n": -1000, f5: [3, 4]}))
+            len(f.find(match={"n": {'in': [-1000, 3, 4, 5]}}, exclude={"n": -1000, f5: {'in': [3, 4]}}))
             == 1
         )
         assert len(f.find()) == n_items
