@@ -1,4 +1,4 @@
-from typing import Any, List, Union, Iterable, Callable, Iterator
+from typing import Any, List, Union, Iterable, Callable, Iterator, Optional
 
 from readerwriterlock.rwlock import RWLockRead, RWLockWrite, RWLockFair
 
@@ -7,9 +7,9 @@ from contextlib import contextmanager
 
 
 """Lock priority options"""
-READERS = 'readers'
-WRITERS = 'writers'
-FAIR = 'fair'
+READERS = "readers"
+WRITERS = "writers"
+FAIR = "fair"
 
 
 class ConcurrentFilterBox:
@@ -21,7 +21,12 @@ class ConcurrentFilterBox:
         priority: 'readers', 'writers', or 'fair'. Default 'readers'. Change this according to your usage pattern.
     """
 
-    def __init__(self, objs, on=None, priority: str = READERS):
+    def __init__(
+        self,
+        objs: Optional[Iterable[Any]] = None,
+        on: Iterable[Union[str, Callable]] = None,
+        priority: str = READERS,
+    ):
         self.priority = priority
         self.box = FilterBox(objs, on)
         if priority == READERS:
@@ -44,10 +49,11 @@ class ConcurrentFilterBox:
     def write_lock(self):
         """Lock the ConcurrentFilterBox for writing.
 
-        When doing many write operations at once, it is more efficient to do:
+        When doing many write operations at once, it is more efficient to do::
             with cfb.read_lock():
                 for item in items:
                     cfb.box.add(item)  # calls add() on the underlying FilterBox.
+        
         This performs locking only once, versus calling cfb.add() which locks for each item.
         The same pattern works for update() and remove().
         """
@@ -84,10 +90,10 @@ class ConcurrentFilterBox:
         with self.read_lock():
             return len(self.box)
 
-    def __contains__(self, item) -> bool:
+    def __contains__(self, obj: Any) -> bool:
         """Get a read lock and check if the item is in the FilterBox."""
         with self.read_lock():
-            return item in self.box
+            return obj in self.box
 
     def __iter__(self) -> Iterator:
         """Get a read lock, make a list of the objects in the FilterBox, and return an iter to the list."""

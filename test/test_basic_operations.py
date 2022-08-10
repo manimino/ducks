@@ -41,32 +41,37 @@ def test_find_one(box_class):
 
 def test_find_union(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": {'in': ["Pikachu", "Eevee"]}})
+    result = f.find({"name": {"in": ["Pikachu", "Eevee"]}})
     assert len(result) == 3
 
 
 def test_find_union_with_mismatch(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": {'in': ["Pikachu", "Shykadu"]}})
+    result = f.find({"name": {"in": ["Pikachu", "Shykadu"]}})
     assert len(result) == 2
 
 
 def test_find_in_iterable_of_one(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": {'in': {"Pikachu"}}})
+    result = f.find({"name": {"in": {"Pikachu"}}})
     assert len(result) == 2
 
 
-@pytest.mark.parametrize("expr, expected_len", [
-    ({'>': "Yapdos"}, 1),
-    ({'>=': "Yapdos"}, 1),
-    ({'>': "AAA", '<': 'zzz'}, 4),
-    ({'>=': "Eevee", '<': 'Pikachu'}, 1),
-    ({'>=': "Eevee", '<=': 'Pikachu'}, 3),
-    ({'>': "Eevee", '<': 'Zapdos'}, 2),
-    ({'<': "Eevee"}, 0),
-    ({'<': "Eevee", '>': 'Zapdos'}, 0),
-])
+@pytest.mark.parametrize(
+    "expr, expected_len",
+    [
+        ({">": "Yapdos"}, 1),
+        ({">=": "Yapdos"}, 1),
+        ({">": "AAA", "<": "zzz"}, 4),
+        ({">=": "Eevee", "<": "Pikachu"}, 1),
+        ({">=": "Eevee", "<=": "Pikachu"}, 3),
+        ({"ge": "Eevee", "le": "Pikachu"}, 3),
+        ({">": "Eevee", "<": "Zapdos"}, 2),
+        ({"gt": "Eevee", "lt": "Zapdos"}, 2),
+        ({"<": "Eevee"}, 0),
+        ({"<": "Eevee", ">": "Zapdos"}, 0),
+    ],
+)
 def test_find_greater_less(box_class, expr, expected_len):
     f = make_test_filterbox(box_class)
     result = f.find({"name": expr})
@@ -98,7 +103,7 @@ def test_find_exclude_only(box_class):
 def test_two_attrs(box_class):
     f = make_test_filterbox(box_class)
     result = f.find(
-        match={"name": {'in': ["Pikachu", "Zapdos"]}, "type1": "Electric"},
+        match={"name": {"in": ["Pikachu", "Zapdos"]}, "type1": "Electric"},
         exclude={"type2": "Flying"},
     )
     assert len(result) == 2
@@ -109,7 +114,11 @@ def test_two_attrs(box_class):
 def test_three_attrs(box_class):
     f = make_test_filterbox(box_class)
     result = f.find(
-        match={"name": {'in': ["Pikachu", "Zapdos"]}, "type1": "Electric", "type2": "Flying"}
+        match={
+            "name": {"in": ["Pikachu", "Zapdos"]},
+            "type1": "Electric",
+            "type2": "Flying",
+        }
     )
     assert len(result) == 1
     assert result[0].name == "Zapdos"
@@ -117,7 +126,7 @@ def test_three_attrs(box_class):
 
 def test_exclude_all(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find(exclude={"type1": {'in': ["Electric", "Normal"]}})
+    result = f.find(exclude={"type1": {"in": ["Electric", "Normal"]}})
     assert len(result) == 0
 
 
@@ -148,13 +157,13 @@ def test_add(box_class):
 
 def test_multi_exclude(box_class):
     fb = make_test_filterbox(box_class)
-    res = fb.find(exclude={"name": "Pikachu", "type1": {'in': ["Normal"]}})
+    res = fb.find(exclude={"name": "Pikachu", "type1": {"in": ["Normal"]}})
     zapdos_ls = [p for p in fb if p.name == "Zapdos"]
     assert res == zapdos_ls
 
 
 def test_get_values(box_class):
     fb = make_test_filterbox(box_class)
-    assert fb.get_values('name') == {'Zapdos', 'Pikachu', 'Eevee'}
-    assert fb.get_values('type1') == {'Electric', 'Normal'}
-    assert fb.get_values('type2') == {'Flying', None}
+    assert fb.get_values("name") == {"Zapdos", "Pikachu", "Eevee"}
+    assert fb.get_values("type1") == {"Electric", "Normal"}
+    assert fb.get_values("type2") == {"Flying", None}

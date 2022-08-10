@@ -20,7 +20,10 @@ def make_dict_data():
 def test_dicts(box_class):
     dicts = make_dict_data()
     f = box_class(dicts, ["t0", "t1", "s"])
-    result = f.find(match={"t0": {'in': [0.1, 0.3]}, "s": {'in': ["ABC", "DEF"]}}, exclude={"t1": 0.4})
+    result = f.find(
+        match={"t0": {"in": [0.1, 0.3]}, "s": {"in": ["ABC", "DEF"]}},
+        exclude={"t1": 0.4},
+    )
     assert result == [dicts[0]]
 
 

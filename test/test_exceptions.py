@@ -53,4 +53,16 @@ def test_remove_missing_value(n_items):
 
 def test_bad_priority():
     with AssertRaises(ValueError):
-        _ = ConcurrentFilterBox(None, on=['x'], priority='lol')
+        _ = ConcurrentFilterBox(None, on=["x"], priority="lol")
+
+
+def test_bad_expr(box_class):
+    f = box_class(["ok"], on="x")
+    with AssertRaises(ValueError):
+        f.find({"x": {">", 2}})
+
+
+def test_bad_operator(box_class):
+    f = box_class(["ok"], on="x")
+    with AssertRaises(ValueError):
+        f.find({"x": {"qq": 2}})

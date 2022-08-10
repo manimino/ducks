@@ -24,3 +24,10 @@ when it's literally this object. set() is a simple object that satisfies this pr
 """
 ANY = MatchAnything()
 
+VALID_OPERATORS = ["in", "<", "<=", ">", ">=", "lt", "le", "gt", "ge"]
+OPERATOR_MAP = {
+    "lt": "<",
+    "le": "<=",
+    "gt": ">",
+    "ge": ">=",
+}

@@ -24,6 +24,7 @@ class FilterBox:
 
     For the objects that do contain the ``on`` attributes, those attribute values must be hashable.
     """
+
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
@@ -59,8 +60,10 @@ class FilterBox:
 
                 Value can be any of the following:
                  - A single hashable value, which will match all objects with that value for the attribute.
-                 - A dict specifying operators and values, such as ``{'>' 3}`` or ``{'in': [1, 2, 3]}``
+                 - A dict specifying operators and values, such as ``{'>' 3}`` or ``{'in': [1, 2, 3]}``.
                  - ``filterbox.ANY``, which matches all objects having the attribute.
+
+                 Valid operators are 'in', '<', '<=', '>', '>=', 'lt', 'le', 'gt', and 'ge'.
 
             exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
@@ -171,10 +174,10 @@ class FilterBox:
         """Look at an attr, handle its expr appropriately"""
         if isinstance(expr, dict):
             matches = None
-            if 'in' in expr:
+            if "in" in expr:
                 # always do 'in' first -- it doesn't require get_values() which can be slow.
-                matches = self._match_any_value_in(attr, expr['in'])
-                del expr['in']
+                matches = self._match_any_value_in(attr, expr["in"])
+                del expr["in"]
             if expr:
                 # handle <, >, etc
                 attr_vals = self._indices[attr].get_values()
@@ -187,16 +190,17 @@ class FilterBox:
             return matches
         elif expr is ANY:
             return self._indices[attr].get_all_ids()
+        elif isinstance(expr, set):
+            raise ValueError(
+                f"Expression {expr} is a set. Did you mean to make a dict?"
+            )
         else:
             # match this specific value
             return self._indices[attr].get_obj_ids(expr)
 
-    def _handle_less_greater(self, attr: Union[str, Callable], expr: Dict[str, Any]) -> Set[Any]:
-        """Look through all the unique values of the attribute. Return the ones that match the criteria in expr."""
-        attr_vals = self._indices[attr].get_values()
-        return filter_vals(attr_vals, expr)
-
-    def _match_any_value_in(self, attr: Union[str, Callable], values: Iterable[Any]) -> Int64Set:
+    def _match_any_value_in(
+        self, attr: Union[str, Callable], values: Iterable[Any]
+    ) -> Int64Set:
         """Get the union of object ID matches for the values."""
         # Note: this could also be done with list operations, but union() is slightly faster in most cases.
         matches = Int64Set()

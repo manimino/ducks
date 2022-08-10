@@ -69,8 +69,10 @@ class FrozenFilterBox:
 
                 Value can be any of the following:
                  - A single hashable value, which will match all objects with that value for the attribute.
-                 - A list of hashable values, which matches each object having any of the values for the attribute.
+                 - A dict of ``{operator: value}``, such as ``{'>': 5}`` or ``{'in': [1, 2, 3]}``.
                  - ``filterbox.ANY``, which matches all objects having the attribute.
+
+                 Valid operators are 'in', '<', '<=', '>', '>=', 'lt', 'le', 'gt', and 'ge'.
 
             exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
@@ -79,7 +81,7 @@ class FrozenFilterBox:
 
                 Value can be any of the following:
                  - A single hashable value, which will exclude all objects with that value for the attribute.
-                 - A list of hashable values, which excludes each object having any of the values for the attribute.
+                 - A dict of ``{operator: value}``, such as ``{'>': 5}`` or ``{'in': [1, 2, 3]}``.
                  - ``filterbox.ANY``, which excludes all objects having the attribute.
 
         Returns:
@@ -125,10 +127,10 @@ class FrozenFilterBox:
         """Look at an attr, handle its expr appropriately"""
         if isinstance(expr, dict):
             matches = None
-            if 'in' in expr:
+            if "in" in expr:
                 # always do 'in' first -- it doesn't require get_values() which can be slow.
-                matches = self._match_any_value_in(attr, expr['in'])
-                del expr['in']
+                matches = self._match_any_value_in(attr, expr["in"])
+                del expr["in"]
             if expr:
                 # handle <, >, etc
                 attr_vals = self._indices[attr].get_values()
@@ -141,17 +143,23 @@ class FrozenFilterBox:
             return matches
         elif expr is ANY:
             return self._indices[attr].get_all()
+        elif isinstance(expr, set):
+            raise ValueError(
+                f"Expression {expr} is a set. Did you mean to make a dict?."
+            )
         else:
             # match this specific value
             return self._indices[attr].get(expr)
 
-    def _match_any_value_in(self, attr: Union[str, Callable], values: Iterable[Any]) -> np.ndarray:
+    def _match_any_value_in(
+        self, attr: Union[str, Callable], values: Iterable[Any]
+    ) -> np.ndarray:
         """"Get the union of object ID matches for the values."""
         matches = [self._indices[attr].get(v) for v in values]
         if matches:
             return np.sort(np.concatenate(matches))
         else:
-            return make_empty_array('int64')
+            return make_empty_array(self.dtype)
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
         """Get the unique values we have for the given attribute. Useful for deciding what to find() on.
