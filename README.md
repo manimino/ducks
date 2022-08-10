@@ -188,9 +188,9 @@ In practice, FilterBox and FrozenFilterBox have more complexity, as they are opt
 memory usage and speed than a naive implementation. 
 
 See the "how it works" pages for more detail:
- - [FilterBox](filterbox/mutable/how_it_works.md)
- - [ConcurrentFilterBox](filterbox/concurrent/how_it_works.md)
- - [FrozenFilterBox](filterbox/frozen/how_it_works.md)
+ - [How FilterBox Works](filterbox/mutable/how_it_works.md)
+ - [How ConcurrentFilterBox Works](filterbox/concurrent/how_it_works.md)
+ - [How FrozenFilterBox Works](filterbox/frozen/how_it_works.md)
 
 ### API Reference:
 
