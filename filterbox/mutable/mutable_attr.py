@@ -103,7 +103,7 @@ class MutableAttrIndex:
         for key, val in self.d.items():
             if type(val) is array:
                 obj_ids = obj_ids.union(Int64Set(val))
-            elif isinstance(val, Int64Set):
+            elif type(val) is Int64Set:
                 obj_ids = obj_ids.union(val)
             else:
                 obj_ids.add(val)

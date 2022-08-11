@@ -1,3 +1,8 @@
+"""
+This script was used to measure RAM usage of different collection sizes.
+This was used during design; it's not relevant to users of FilterBox.
+"""
+
 import os
 import subprocess
 import sys
@@ -11,17 +16,22 @@ from cykhash import Int64Set
 TOT_ITEMS = 10 ** 6
 
 print_names = {
-    'pytup': 'tuple',
-    'pyset': 'set',
-    'pyarr': 'array (int64)',
-    'cyk': 'cykhash Int64Set',
-    'nparr': 'numpy array (int64)',
-    'btree': 'BTrees.LLBTree'
+    "pytup": "tuple",
+    "pyset": "set",
+    "pyarr": "array (int64)",
+    "cyk": "cykhash Int64Set",
+    "nparr": "numpy array (int64)",
+    "btree": "BTrees.LLBTree",
 }
 
 
 def get_ram():
-    return int(os.popen(f'ps -o pid,rss -p {os.getpid()}').read().split('\n')[1].split()[1]) * 1024
+    return (
+        int(
+            os.popen(f"ps -o pid,rss -p {os.getpid()}").read().split("\n")[1].split()[1]
+        )
+        * 1024
+    )
 
 
 def cyk(items_per=10):
@@ -30,7 +40,7 @@ def cyk(items_per=10):
     baseline = get_ram()
     for i in range(n_sets):
         offset = i * items_per
-        iset = Int64Set(range(offset, offset+items_per))
+        iset = Int64Set(range(offset, offset + items_per))
         ls[i] = iset
     used = get_ram() - baseline
     ram = round(used / TOT_ITEMS, 1)
@@ -43,7 +53,7 @@ def nparr(items_per=10):
     baseline = get_ram()
     for i in range(n_sets):
         offset = i * items_per
-        ls[i] = np.array(range(offset, offset+items_per))
+        ls[i] = np.array(range(offset, offset + items_per))
     used = get_ram() - baseline
     ram = round(used / TOT_ITEMS, 1)
     print("Numpy_array", items_per, ram)
@@ -68,7 +78,7 @@ def pytup(items_per=10):
     ls = [None for _ in range(n_tups)]
     for i in range(n_tups):
         offset = i * items_per
-        ls[i] = tuple(range(offset, offset+items_per))
+        ls[i] = tuple(range(offset, offset + items_per))
     used = get_ram() - baseline
     ram = round(used / TOT_ITEMS, 1)
     print("python_tuple", items_per, ram)
@@ -79,9 +89,9 @@ def pyarr(items_per=10):
     baseline = get_ram()
     ls = [None for _ in range(n_arrs)]
     for i in range(n_arrs):
-        arr = array('q')
+        arr = array("q")
         offset = i * items_per
-        arr.extend(range(offset, offset+items_per))
+        arr.extend(range(offset, offset + items_per))
         ls[i] = arr
     used = get_ram() - baseline
     ram = round(used / TOT_ITEMS, 1)
@@ -101,7 +111,7 @@ def main(method, items_per):
     elif method == "pyarr":
         f = pyarr
     else:
-        print('what?!', method)
+        print("what?!", method)
         raise ValueError()
     f(iper)
 
@@ -143,4 +153,3 @@ if __name__ == "__main__":
             results[method] = m_result
         print(results)
         row_dict_to_table(results)
-

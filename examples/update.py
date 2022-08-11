@@ -37,7 +37,7 @@ def main():
     # see that changes are propagated to FilterBox
     assert len(f.find({"n": 1})) == 9
     assert len(f.find({"n": 2})) == 1
-    print('Completed. See code for details.')
+    print("Completed. See code for details.")
 
 
 if __name__ == "__main__":

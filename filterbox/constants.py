@@ -6,7 +6,7 @@ HASH_MAX = 2 ** n_bits_signed - 1
 
 SIZE_THRESH = 100
 
-ARR_TYPE = 'q'  # python array type meaning "int64": https://docs.python.org/3/library/array.html
+ARR_TYPE = "q"  # python array type meaning "int64": https://docs.python.org/3/library/array.html
 SET_SIZE_MIN = 10
 ARRAY_SIZE_MAX = 20
 
@@ -28,9 +28,9 @@ ANY = MatchAnything()
 VALID_OPERATORS = ["in", "<", "<=", ">", ">=", "lt", "lte", "le", "gt", "gte", "ge"]
 OPERATOR_MAP = {
     "lt": "<",
-    "le": "<=",   # Python style <=
+    "le": "<=",  # Python style <=
     "lte": "<=",  # ElasticSearch style <=
     "gt": ">",
-    "ge": ">=",   # Python style >=
+    "ge": ">=",  # Python style >=
     "gte": ">=",  # ElasticSearch style >=
 }

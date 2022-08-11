@@ -27,20 +27,20 @@ Name                                Stmts   Miss  Cover
 filterbox/__init__.py                   5      0   100%
 filterbox/concurrent/__init__.py        0      0   100%
 filterbox/concurrent/main.py           51      0   100%
-filterbox/constants.py                 12      0   100%
+filterbox/constants.py                 13      0   100%
 filterbox/exceptions.py                 3      0   100%
 filterbox/frozen/__init__.py            0      0   100%
 filterbox/frozen/frozen_attr.py        81      0   100%
 filterbox/frozen/main.py               84      0   100%
 filterbox/frozen/utils.py               8      0   100%
-filterbox/init_helpers.py              75      0   100%
+filterbox/init_helpers.py              76      0   100%
 filterbox/mutable/__init__.py           0      0   100%
 filterbox/mutable/main.py              98      0   100%
 filterbox/mutable/mutable_attr.py      78      0   100%
 filterbox/perf.py                       0      0   100%
 filterbox/utils.py                     57      0   100%
 -------------------------------------------------------
-TOTAL                                 552      0   100%
+TOTAL                                 554      0   100%
 
 
-============================= 271 passed in 6.36s ==============================
+============================= 271 passed in 6.04s ==============================
