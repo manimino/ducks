@@ -1,8 +1,9 @@
+from array import array
 from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable, Set
 
 from cykhash import Int64Set
 
-from filterbox.constants import TUPLE_SIZE_MAX, SET_SIZE_MIN
+from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
 from filterbox.init_helpers import compute_mutable_dict
 from filterbox.utils import get_attribute
 
@@ -26,9 +27,9 @@ class MutableAttrIndex:
     def get_obj_ids(self, val: Any) -> Int64Set:
         """Get the object IDs associated with this value as an Int64Set."""
         ids = self.d.get(val, Int64Set())
-        if isinstance(ids, tuple):
+        if type(ids) is array:
             return Int64Set(ids)
-        elif isinstance(ids, Int64Set):
+        elif type(ids) is Int64Set:
             return ids
         else:
             return Int64Set([ids])
@@ -39,16 +40,18 @@ class MutableAttrIndex:
         if not success:
             return
         if val in self.d:
-            if isinstance(self.d[val], tuple):
-                if len(self.d[val]) == TUPLE_SIZE_MAX:
+            if type(self.d[val]) is Int64Set:
+                self.d[val].add(ptr)
+            elif type(self.d[val]) is array:
+                if len(self.d[val]) == ARRAY_SIZE_MAX:
+                    # upgrade array -> set
                     self.d[val] = Int64Set(self.d[val])
                     self.d[val].add(ptr)
                 else:
-                    self.d[val] = tuple(list(self.d[val]) + [ptr])
-            elif isinstance(self.d[val], Int64Set):
-                self.d[val].add(ptr)
+                    self.d[val].append(ptr)
             else:
-                self.d[val] = (self.d[val], ptr)
+                # upgrade int -> array
+                self.d[val] = array(ARR_TYPE, [self.d[val], ptr])
         else:
             self.d[val] = ptr
 
@@ -57,7 +60,7 @@ class MutableAttrIndex:
         # first, check that the ptr is in here
         if val not in self.d:
             return False
-        if type(self.d[val]) in [tuple, Int64Set]:
+        if type(self.d[val]) in [array, Int64Set]:
             if ptr not in self.d[val]:
                 return False
         else:
@@ -66,18 +69,18 @@ class MutableAttrIndex:
 
         # OK, it's in here; do removal
         obj_ids = self.d[val]
-        if type(self.d[val]) in [tuple, Int64Set]:
-            if type(obj_ids) == tuple:
-                self.d[val] = tuple(obj_id for obj_id in obj_ids if obj_id != ptr)
+        if type(self.d[val]) in [array, Int64Set]:
+            self.d[val].remove(ptr)
+            if type(obj_ids) is array:
                 if len(self.d[val]) == 1:
-                    # downgrade tuple -> int
+                    # downgrade array -> int
                     self.d[val] = self.d[val][0]
             else:
-                self.d[val].remove(ptr)
                 if len(self.d[val]) < SET_SIZE_MIN:
-                    # downgrade set -> tuple
-                    self.d[val] = tuple(self.d[val])
+                    # downgrade set -> array
+                    self.d[val] = array(ARR_TYPE, list(self.d[val]))
         else:
+            # downgrade int -> nothing
             del self.d[val]
         return True
 
@@ -98,9 +101,9 @@ class MutableAttrIndex:
         Called when matching or excluding ``{attr: hashindex.ANY}``."""
         obj_ids = Int64Set()
         for key, val in self.d.items():
-            if isinstance(val, tuple):
+            if type(val) is array:
                 obj_ids = obj_ids.union(Int64Set(val))
-            elif isinstance(val, Int64Set):
+            elif type(val) is Int64Set:
                 obj_ids = obj_ids.union(val)
             else:
                 obj_ids.add(val)
@@ -113,7 +116,7 @@ class MutableAttrIndex:
     def __len__(self):
         tot = 0
         for key, val in self.d.items():
-            if isinstance(val, tuple) or isinstance(val, Int64Set):
+            if type(val) in [array, Int64Set]:
                 tot += len(val)
             else:
                 tot += 1

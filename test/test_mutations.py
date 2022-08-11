@@ -1,10 +1,10 @@
 import pytest
 
-from filterbox.constants import SIZE_THRESH, TUPLE_SIZE_MAX, SET_SIZE_MIN
+from filterbox.constants import SIZE_THRESH, ARRAY_SIZE_MAX, SET_SIZE_MIN
 
 
 @pytest.mark.parametrize(
-    "n_items", [SIZE_THRESH, TUPLE_SIZE_MAX + 1, SET_SIZE_MIN - 1, SET_SIZE_MIN + 1]
+    "n_items", [SIZE_THRESH, ARRAY_SIZE_MAX + 1, SET_SIZE_MIN - 1, SET_SIZE_MIN + 1]
 )
 def test_many_gets(box_class, n_items):
     """At one point there was a bug involving several sequential gets, let's make sure that can't come back."""
