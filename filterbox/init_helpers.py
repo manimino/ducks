@@ -18,9 +18,10 @@ Running the workflow takes between 600ms (low-cardinality case) and 1.5s (high-c
 """
 
 import numpy as np
+from array import array
 from typing import Tuple, Union, Callable, Any, Iterable
 from filterbox.utils import get_attribute, make_empty_array
-from filterbox.constants import SIZE_THRESH
+from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX
 from cykhash import Int64Set
 
 
@@ -131,10 +132,10 @@ def compute_mutable_dict(objs: Iterable[Any], attr: Union[str, Callable]):
     for i, v in enumerate(unique_vals):
         start = starts[i]
         count = counts[i]
-        if counts[i] > SIZE_THRESH:
+        if counts[i] > ARRAY_SIZE_MAX:
             d[v] = Int64Set(sorted_obj_ids[start : start + count])
         elif counts[i] == 1:
             d[v] = sorted_obj_ids[start]
         else:
-            d[v] = tuple(sorted_obj_ids[start : start + count])
+            d[v] = array(ARR_TYPE, sorted_obj_ids[start : start + count])
     return d

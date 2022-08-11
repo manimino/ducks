@@ -6,8 +6,9 @@ HASH_MAX = 2 ** n_bits_signed - 1
 
 SIZE_THRESH = 100
 
+ARR_TYPE = 'q'  # python array type meaning "int64": https://docs.python.org/3/library/array.html
 SET_SIZE_MIN = 10
-TUPLE_SIZE_MAX = 100
+ARRAY_SIZE_MAX = 20
 
 
 class MatchAnything(set):
