@@ -202,8 +202,9 @@ See the "how it works" pages for more detail:
 
 FilterBox is a type of inverted index. It is optimized for its goal of finding in-memory Python objects.
 
-Other Python inverted index implementations are aimed at things like [vector search](https://pypi.org/project/rii/) and
-[finding documents by words](https://pypi.org/project/nltk/). Outside of Python, ElasticSearch is a popular inverted
+Other Python in-memory inverted index implementations are aimed at things like 
+[vector search (rii)](https://pypi.org/project/rii/) and 
+[finding documents by words (lunr)](https://pypi.org/project/lunr/). Outside of Python, ElasticSearch is a popular inverted
 index search tool. Each of these has goals outside of FilterBox's niche; there are no plans to expand FilterBox towards
 these functions.
 
