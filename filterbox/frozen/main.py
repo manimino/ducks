@@ -1,6 +1,5 @@
 from bisect import bisect_left
-from collections.abc import Hashable
-from typing import Optional, Any, Dict, Union, Callable, Iterable, List, Set
+from typing import Optional, Any, Dict, Union, Callable, Iterable, Set
 
 import numpy as np
 import sortednp as snp
@@ -53,10 +52,10 @@ class FrozenFilterBox:
     def find(
         self,
         match: Optional[
-            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
+            Dict[Union[str, Callable], Any]
         ] = None,
         exclude: Optional[
-            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
+            Dict[Union[str, Callable], Any]
         ] = None,
     ) -> np.ndarray:
         """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
