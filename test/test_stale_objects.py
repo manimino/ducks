@@ -4,7 +4,7 @@ import pytest
 from test.conftest import BadHash, TwoHash, AssertRaises
 
 
-@pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH + 1])
+@pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])
 def test_get_stale_objects(box_class, n_items):
     objs = [{"z": BadHash(1)} for _ in range(n_items)]
     f = box_class(objs, ["z"])

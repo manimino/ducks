@@ -6,6 +6,7 @@ from cykhash import Int64Set
 from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
 from filterbox.init_helpers import compute_mutable_dict
 from filterbox.utils import get_attribute
+from BTrees.OOBTree import OOBTree
 
 
 class MutableAttrIndex:
@@ -19,14 +20,20 @@ class MutableAttrIndex:
     ):
         self.attr = attr
         self.obj_map = obj_map
+        self.d = OOBTree()
         if objs:
-            self.d = compute_mutable_dict(objs, attr)
-        else:
-            self.d = dict()
+            for obj in objs:
+                self.add(id(obj), obj)
 
     def get_obj_ids(self, val: Any) -> Int64Set:
         """Get the object IDs associated with this value as an Int64Set."""
-        ids = self.d.get(val, Int64Set())
+        try:
+            ids = self.d.get(val, Int64Set())
+        except TypeError:
+            # make it a dict because we got a weird value and can't compare it
+            self.d = compute_mutable_dict(self.obj_map.values(), self.attr)
+            # now try
+            ids = self.d.get(val, Int64Set())
         if type(ids) is array:
             return Int64Set(ids)
         elif type(ids) is Int64Set:
@@ -39,21 +46,25 @@ class MutableAttrIndex:
         val, success = get_attribute(obj, self.attr)
         if not success:
             return
-        if val in self.d:
-            if type(self.d[val]) is Int64Set:
-                self.d[val].add(ptr)
-            elif type(self.d[val]) is array:
-                if len(self.d[val]) == ARRAY_SIZE_MAX:
-                    # upgrade array -> set
-                    self.d[val] = Int64Set(self.d[val])
+        try:
+            if val in self.d:
+                if type(self.d[val]) is Int64Set:
                     self.d[val].add(ptr)
+                elif type(self.d[val]) is array:
+                    if len(self.d[val]) == ARRAY_SIZE_MAX:
+                        # upgrade array -> set
+                        self.d[val] = Int64Set(self.d[val])
+                        self.d[val].add(ptr)
+                    else:
+                        self.d[val].append(ptr)
                 else:
-                    self.d[val].append(ptr)
+                    # upgrade int -> array
+                    self.d[val] = array(ARR_TYPE, [self.d[val], ptr])
             else:
-                # upgrade int -> array
-                self.d[val] = array(ARR_TYPE, [self.d[val], ptr])
-        else:
-            self.d[val] = ptr
+                self.d[val] = ptr
+        except TypeError:
+            # someone threw in a type we can't compare. Downgrade to dict.
+            self.d = compute_mutable_dict(self.obj_map.values(), self.attr)
 
     def _try_remove(self, ptr: int, val: Hashable) -> bool:
         """Try to remove the object from self.d[val]. Return True on success, False otherwise."""
@@ -90,7 +101,10 @@ class MutableAttrIndex:
         removed = False
         val, success = get_attribute(obj, self.attr)
         if success:
-            removed = self._try_remove(ptr, val)
+            try:
+                removed = self._try_remove(ptr, val)
+            except TypeError:
+                self.d = compute_mutable_dict(self.obj_map.values(), self.attr)
         if not removed:
             # do O(n) search
             for val in list(self.d.keys()):
