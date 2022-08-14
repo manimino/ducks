@@ -30,12 +30,8 @@ class MutableAttrIndex:
         try:
             ids = self.d.get(val, Int64Set())
         except TypeError:
-            # This will happen if there's only 1 object in self.d and it is not
-            # a comparable type (e.g. a class that doesn't implement __lt__).
-            # Probably the user's intent was to use this as a hash index, so
-            # let's make it that and retry the request.
-            self.d = compute_mutable_dict(self.obj_map.values(), self.attr)
-            ids = self.d.get(val, Int64Set())
+            # val is the wrong type, can't be in here
+            return Int64Set()
         if type(ids) is array:
             return Int64Set(ids)
         elif type(ids) is Int64Set:
@@ -81,6 +77,9 @@ class MutableAttrIndex:
         if not success:
             return
         try:
+            # if this is the first val, check if it's a comparable type.
+            if len(self.d) == 0:
+                _ = val > val  # triggers a TypeError if not comparable
             if val in self.d:
                 if type(self.d[val]) is Int64Set:
                     self.d[val].add(ptr)
@@ -135,10 +134,7 @@ class MutableAttrIndex:
         removed = False
         val, success = get_attribute(obj, self.attr)
         if success:
-            try:
-                removed = self._try_remove(ptr, val)
-            except TypeError:
-                self.d = compute_mutable_dict(self.obj_map.values(), self.attr)
+            removed = self._try_remove(ptr, val)
         if not removed:
             # do O(n) search
             for val in list(self.d.keys()):
