@@ -7,7 +7,7 @@ import sortednp as snp
 from filterbox import ANY
 from filterbox.frozen.frozen_attr import FrozenAttrIndex
 from filterbox.frozen.utils import snp_difference
-from filterbox.utils import make_empty_array, validate_query, filter_vals
+from filterbox.utils import make_empty_array, validate_query, filter_vals, fix_operators
 
 
 class FrozenFilterBox:
@@ -125,6 +125,7 @@ class FrozenFilterBox:
     def _match_attr_expr(self, attr: Union[str, Callable], expr: dict) -> np.ndarray:
         """Look at an attr, handle its expr appropriately"""
         if isinstance(expr, dict):
+            fix_operators(expr)
             matches = None
             if "in" in expr:
                 # always do 'in' first -- it doesn't require get_values() which can be slow.

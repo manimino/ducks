@@ -70,11 +70,17 @@ def cyk_union(s1: Int64Set, s2: Int64Set) -> Int64Set:
     return s1.union(s2) if len(s1) > len(s2) else s2.union(s1)
 
 
+def fix_operators(expr: Dict):
+    # sanitizes input, mutates expr
+    for op in list(expr.keys()):
+        if op in OPERATOR_MAP:
+            val = expr.pop(op)
+            expr[OPERATOR_MAP[op]] = val
+
+
 def filter_vals(attr_vals: Set[Any], expr: Dict[str, Any]) -> Set[Any]:
     """Apply the <, <=, >, >= filters to the attr_vals. Return set of matches."""
     for op, value in expr.items():
-        if op in OPERATOR_MAP:
-            op = OPERATOR_MAP[op]  # convert 'lt' to '<', etc.
         if op not in ["<", ">", "<=", ">="]:
             raise ValueError(
                 f"Invalid operator: {op}. Operator must be one of: {VALID_OPERATORS}."

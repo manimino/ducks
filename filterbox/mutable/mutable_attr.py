@@ -30,9 +30,11 @@ class MutableAttrIndex:
         try:
             ids = self.d.get(val, Int64Set())
         except TypeError:
-            # make it a dict because we got a weird value and can't compare it
+            # This will happen if there's only 1 object in self.d and it is not
+            # a comparable type (e.g. a class that doesn't implement __lt__).
+            # Probably the user's intent was to use this as a hash index, so
+            # let's make it that and retry the request.
             self.d = compute_mutable_dict(self.obj_map.values(), self.attr)
-            # now try
             ids = self.d.get(val, Int64Set())
         if type(ids) is array:
             return Int64Set(ids)
@@ -40,6 +42,38 @@ class MutableAttrIndex:
             return ids
         else:
             return Int64Set([ids])
+
+    @staticmethod
+    def _add_val_to_set(val: Any, obj_ids: Int64Set):
+        """We need to do this a lot"""
+        if type(val) in [array, Int64Set]:
+            for v in val:
+                obj_ids.add(v)
+        else:
+            obj_ids.add(val)
+
+    def get_ids_by_range(self, lo, hi, include_lo=False, include_hi=False) -> Int64Set():
+        """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
+        if type(self.d) is OOBTree:
+            obj_ids = Int64Set()
+            if lo is None:
+                lo = min(self.d)
+                include_lo = True
+            if hi is None:
+                hi = max(self.d)
+                include_hi = True
+            # get values >= lo and <= hi
+            for val in self.d.values(lo, hi):
+                self._add_val_to_set(val, obj_ids)
+            # if < or >, we need to remove the end points manually
+            but_not_these = Int64Set()
+            if not include_lo and lo in self.d:
+                self._add_val_to_set(self.d[lo], but_not_these)
+            if not include_hi and hi in self.d:
+                self._add_val_to_set(self.d[hi], but_not_these)
+            return obj_ids.difference(but_not_these)
+        else:
+            raise ValueError('Not a BTree - you have to get one at a time')
 
     def add(self, ptr: int, obj: Any):
         """Add an object if it has this attribute."""
@@ -115,12 +149,7 @@ class MutableAttrIndex:
         Called when matching or excluding ``{attr: hashindex.ANY}``."""
         obj_ids = Int64Set()
         for key, val in self.d.items():
-            if type(val) is array:
-                obj_ids = obj_ids.union(Int64Set(val))
-            elif type(val) is Int64Set:
-                obj_ids = obj_ids.union(val)
-            else:
-                obj_ids.add(val)
+            self._add_val_to_set(val, obj_ids)
         return obj_ids
 
     def get_values(self) -> Set:
