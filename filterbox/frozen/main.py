@@ -55,12 +55,8 @@ class FrozenFilterBox:
 
     def find(
         self,
-        match: Optional[
-            Dict[Union[str, Callable], Any]
-        ] = None,
-        exclude: Optional[
-            Dict[Union[str, Callable], Any]
-        ] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> np.ndarray:
         """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
 
@@ -141,18 +137,19 @@ class FrozenFilterBox:
                     include_lo = False
                     hi = None
                     include_hi = False
-                    if '>' in expr:
-                        lo = expr['>']
-                    if '>=' in expr:
-                        lo = expr['>=']
+                    if ">" in expr:
+                        lo = expr[">"]
+                    if ">=" in expr:
+                        lo = expr[">="]
                         include_lo = True
-                    if '<' in expr:
-                        hi = expr['<']
-                    if '<=' in expr:
-                        hi = expr['<=']
+                    if "<" in expr:
+                        hi = expr["<"]
+                    if "<=" in expr:
+                        hi = expr["<="]
                         include_hi = True
-                    expr_matches = self._indices[attr].get_ids_by_range(lo, hi,
-                                                                        include_lo=include_lo, include_hi=include_hi)
+                    expr_matches = self._indices[attr].get_ids_by_range(
+                        lo, hi, include_lo=include_lo, include_hi=include_hi
+                    )
                 else:
                     # handle <, >, etc
                     attr_vals = self._indices[attr].get_values()

@@ -27,9 +27,9 @@ class MutableAttrIndex:
 
     def get_index_type(self):
         if type(self.d) is dict:
-            return 'hash'
+            return "hash"
         else:
-            return 'tree'
+            return "tree"
 
     def add(self, ptr: int, obj: Any):
         """Add an object if it has this attribute."""
@@ -69,11 +69,7 @@ class MutableAttrIndex:
 
     def get_obj_ids(self, val: Any) -> Int64Set:
         """Get the object IDs associated with this value as an Int64Set."""
-        try:
-            ids = self.d.get(val, Int64Set())
-        except TypeError:
-            # val is the wrong type, can't be in here
-            return Int64Set()
+        ids = self.d.get(val, Int64Set())
         if type(ids) is array:
             return Int64Set(ids)
         elif type(ids) is Int64Set:
@@ -111,7 +107,7 @@ class MutableAttrIndex:
                 self._add_val_to_set(self.d[hi], but_not_these)
             return obj_ids.difference(but_not_these)
         else:
-            raise ValueError('Not a BTree - you have to get one at a time')
+            raise ValueError("Not a BTree - you have to get one at a time")
 
     def _try_remove(self, ptr: int, val: Hashable) -> bool:
         """Try to remove the object from self.d[val]. Return True on success, False otherwise."""

@@ -76,15 +76,16 @@ def fix_operators(expr: Dict):
         if op in OPERATOR_MAP:
             val = expr.pop(op)
             expr[OPERATOR_MAP[op]] = val
+    for op in expr:
+        if op not in VALID_OPERATORS:
+            raise ValueError(
+                f"Invalid operator: {op}. Operator must be one of: {VALID_OPERATORS}."
+            )
 
 
 def filter_vals(attr_vals: Set[Any], expr: Dict[str, Any]) -> Set[Any]:
     """Apply the <, <=, >, >= filters to the attr_vals. Return set of matches."""
     for op, expr_value in expr.items():
-        if op not in ["<", ">", "<=", ">="]:
-            raise ValueError(
-                f"Invalid operator: {op}. Operator must be one of: {VALID_OPERATORS}."
-            )
         s = set()
         for v in attr_vals:
             try:

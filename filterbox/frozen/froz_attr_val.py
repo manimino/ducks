@@ -6,10 +6,8 @@ Performs object lookup for a single attribute in a FrozenFilterBox.
 import numpy as np
 
 from bisect import bisect_left, bisect_right
-from dataclasses import dataclass
 from typing import Union, Callable, Set
 
-from filterbox.constants import SIZE_THRESH
 from filterbox.utils import make_empty_array
 from filterbox.init_helpers import get_vals
 
@@ -35,7 +33,9 @@ class FrozenAttrValIndex:
         if left == len(self.val_arr) or self.val_arr[left] != val:
             return make_empty_array(self.dtype)
         right = bisect_right(self.val_arr, val)
-        return np.sort(self.obj_id_arr[left:right])  # TODO: consider storing large arrays in sorted order
+        return np.sort(
+            self.obj_id_arr[left:right]
+        )  # TODO: consider storing large arrays in sorted order
 
     def get_all(self) -> np.ndarray:
         """Get indices of every object with this attribute. Used when matching ANY."""
@@ -45,8 +45,12 @@ class FrozenAttrValIndex:
         """Get each value we have objects for."""
         return set(self.val_arr)
 
-    def get_ids_by_range(self, lo, hi, include_lo=False, include_hi=False) -> np.ndarray:
+    def get_ids_by_range(
+        self, lo, hi, include_lo=False, include_hi=False
+    ) -> np.ndarray:
         """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
+        if len(self) == 0:
+            return make_empty_array(self.dtype)
         if lo is None:
             left = 0
             lo = self.val_arr[0]
@@ -58,11 +62,11 @@ class FrozenAttrValIndex:
 
         if hi is None:
             right = len(self.val_arr)
-            hi = self.val_arr[right-1]
+            hi = self.val_arr[right - 1]
             include_hi = True
         else:
             right = bisect_right(self.val_arr, hi)
-            while right > left and self.val_arr[right-1] > hi:
+            while right > left and self.val_arr[right - 1] > hi:
                 right -= 1
 
         # move left pointer up to fit > constraint
@@ -80,7 +84,7 @@ class FrozenAttrValIndex:
 
     @staticmethod
     def get_index_type():
-        return 'tree'
+        return "tree"
 
     def __len__(self):
         return len(self.val_arr)
