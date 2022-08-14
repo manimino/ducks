@@ -176,7 +176,6 @@ class FilterBox:
         if isinstance(expr, dict):
             fix_operators(expr)
             matches = None
-            print('expr is', expr)
             if "in" in expr:
                 # always do 'in' first -- it doesn't require get_values() which can be slow.
                 matches = self._match_any_value_in(attr, expr["in"])

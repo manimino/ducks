@@ -7,18 +7,18 @@ import pytest
 from BTrees.OOBTree import OOBTree
 
 from filterbox import FilterBox
-
+from .conftest import AssertRaises
 
 @pytest.mark.parametrize(
-    'expr, expected',
+    'expr, expected, raises',
     [
-        ['lol', 0],
-        [['lol'], 0],
-        [[1, 'lol'], 1],
-        [{'<': 3}, 3],
-        [{'<': 'lol'}, 0],
+        ('lol', 0, False),
+        (['lol'], 0, False),
+        ([1, 'lol'], 1, False),
+        ({'<': 3}, 3, False),
+        # ({'<': 'lol'}, 0, True),  # todo implement frozen value based thing, then this will work
     ])
-def test_find_wrong_type(box_class, expr, expected):
+def test_find_wrong_type(box_class, expr, expected, raises):
     if type(expr) is list:
         # you can't write {'in': ['lol']} in a parametrize
         # other keys work, but not 'in'. It looks like parametrize must
@@ -26,7 +26,12 @@ def test_find_wrong_type(box_class, expr, expected):
         expr = {'in': expr}
     objs = [{'x': i} for i in range(10)]
     fb = box_class(objs, 'x')
-    assert len(fb.find({'x': expr})) == expected
+    print('raises', raises)
+    if raises:
+        with AssertRaises(TypeError):
+            fb.find({'x': expr})
+    else:
+        assert len(fb.find({'x': expr})) == expected
 
 
 def test_add_wrong_type():
