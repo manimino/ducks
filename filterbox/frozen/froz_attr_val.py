@@ -78,5 +78,9 @@ class FrozenAttrValIndex:
         # sort matching ids and return
         return np.sort(self.obj_id_arr[left:right])
 
+    @staticmethod
+    def get_index_type():
+        return 'tree'
+
     def __len__(self):
         return len(self.val_arr)

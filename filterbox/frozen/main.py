@@ -151,10 +151,8 @@ class FrozenFilterBox:
                     if '<=' in expr:
                         hi = expr['<=']
                         include_hi = True
-                    print(expr)
                     expr_matches = self._indices[attr].get_ids_by_range(lo, hi,
                                                                         include_lo=include_lo, include_hi=include_hi)
-                    print(self.obj_arr[expr_matches])
                 else:
                     # handle <, >, etc
                     attr_vals = self._indices[attr].get_values()

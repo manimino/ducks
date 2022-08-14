@@ -20,9 +20,52 @@ class MutableAttrIndex:
         self.attr = attr
         self.obj_map = obj_map
         self.d = OOBTree()
+        self.n_objs = 0  # len() is terribly slow on BTree, so we maintain it ourselves.
         if objs:
             for obj in objs:
                 self.add(id(obj), obj)
+
+    def get_index_type(self):
+        if type(self.d) is dict:
+            return 'hash'
+        else:
+            return 'tree'
+
+    def add(self, ptr: int, obj: Any):
+        """Add an object if it has this attribute."""
+        val, success = get_attribute(obj, self.attr)
+        if not success:
+            return
+        try:
+            # if this is the first val, check if it's a comparable type.
+            if self.n_objs == 0:
+                _ = val > val  # triggers a TypeError if not comparable
+            self._add_val(ptr, val)
+        except TypeError:
+            # someone threw in a type we can't compare. Downgrade to dict and retry the add.
+            self.d = dict(self.d)
+            self._add_val(ptr, val)
+        self.n_objs += 1
+
+    def _add_val(self, ptr, val):
+        if val in self.d:
+            obj_ids = self.d[val]
+            if type(obj_ids) is Int64Set:
+                self.d[val].add(ptr)
+            elif type(obj_ids) is array:
+                if len(obj_ids) == ARRAY_SIZE_MAX:
+                    # upgrade array -> set
+                    obj_ids = Int64Set(obj_ids)
+                    obj_ids.add(ptr)
+                    self.d[val] = obj_ids
+                else:
+                    obj_ids.append(ptr)
+            else:
+                # obj_ids was an int, now we have two. upgrade int -> array
+                self.d[val] = array(ARR_TYPE, [obj_ids, ptr])
+        else:
+            # new val, add the int
+            self.d[val] = ptr
 
     def get_obj_ids(self, val: Any) -> Int64Set:
         """Get the object IDs associated with this value as an Int64Set."""
@@ -70,38 +113,6 @@ class MutableAttrIndex:
         else:
             raise ValueError('Not a BTree - you have to get one at a time')
 
-    def add(self, ptr: int, obj: Any):
-        """Add an object if it has this attribute."""
-        def _add_val(ptr, val):
-            if val in self.d:
-                if type(self.d[val]) is Int64Set:
-                    self.d[val].add(ptr)
-                elif type(self.d[val]) is array:
-                    if len(self.d[val]) == ARRAY_SIZE_MAX:
-                        # upgrade array -> set
-                        self.d[val] = Int64Set(self.d[val])
-                        self.d[val].add(ptr)
-                    else:
-                        self.d[val].append(ptr)
-                else:
-                    # upgrade int -> array
-                    self.d[val] = array(ARR_TYPE, [self.d[val], ptr])
-            else:
-                self.d[val] = ptr
-
-        val, success = get_attribute(obj, self.attr)
-        if not success:
-            return
-        try:
-            # if this is the first val, check if it's a comparable type.
-            if len(self.d) == 0:
-                _ = val > val  # triggers a TypeError if not comparable
-            _add_val(ptr, val)
-        except TypeError:
-            # someone threw in a type we can't compare. Downgrade to dict and retry the add.
-            self.d = dict(self.d)
-            _add_val(ptr, val)
-
     def _try_remove(self, ptr: int, val: Hashable) -> bool:
         """Try to remove the object from self.d[val]. Return True on success, False otherwise."""
         # first, check that the ptr is in here
@@ -141,7 +152,11 @@ class MutableAttrIndex:
         if not removed:
             # do O(n) search
             for val in list(self.d.keys()):
-                self._try_remove(ptr, val)
+                removed = self._try_remove(ptr, val)
+                if removed:
+                    break
+        if removed:
+            self.n_objs -= 1
 
     def get_all_ids(self) -> Int64Set:
         """Get the ID of every object that has this attribute.
@@ -156,10 +171,4 @@ class MutableAttrIndex:
         return set(self.d.keys())
 
     def __len__(self):
-        tot = 0
-        for key, val in self.d.items():
-            if type(val) in [array, Int64Set]:
-                tot += len(val)
-            else:
-                tot += 1
-        return tot
+        return self.n_objs
