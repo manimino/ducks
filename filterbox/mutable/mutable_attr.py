@@ -4,7 +4,6 @@ from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable, Set
 from cykhash import Int64Set
 
 from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
-from filterbox.init_helpers import compute_mutable_dict
 from filterbox.utils import get_attribute
 from BTrees.OOBTree import OOBTree
 
@@ -48,7 +47,7 @@ class MutableAttrIndex:
         else:
             obj_ids.add(val)
 
-    def get_ids_by_range(self, lo, hi, include_lo=False, include_hi=False) -> Int64Set():
+    def get_ids_by_range(self, lo, hi, include_lo=False, include_hi=False) -> Int64Set:
         """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
         if type(self.d) is OOBTree:
             obj_ids = Int64Set()
@@ -73,13 +72,7 @@ class MutableAttrIndex:
 
     def add(self, ptr: int, obj: Any):
         """Add an object if it has this attribute."""
-        val, success = get_attribute(obj, self.attr)
-        if not success:
-            return
-        try:
-            # if this is the first val, check if it's a comparable type.
-            if len(self.d) == 0:
-                _ = val > val  # triggers a TypeError if not comparable
+        def _add_val(ptr, val):
             if val in self.d:
                 if type(self.d[val]) is Int64Set:
                     self.d[val].add(ptr)
@@ -95,9 +88,19 @@ class MutableAttrIndex:
                     self.d[val] = array(ARR_TYPE, [self.d[val], ptr])
             else:
                 self.d[val] = ptr
+
+        val, success = get_attribute(obj, self.attr)
+        if not success:
+            return
+        try:
+            # if this is the first val, check if it's a comparable type.
+            if len(self.d) == 0:
+                _ = val > val  # triggers a TypeError if not comparable
+            _add_val(ptr, val)
         except TypeError:
-            # someone threw in a type we can't compare. Downgrade to dict.
-            self.d = compute_mutable_dict(self.obj_map.values(), self.attr)
+            # someone threw in a type we can't compare. Downgrade to dict and retry the add.
+            self.d = dict(self.d)
+            _add_val(ptr, val)
 
     def _try_remove(self, ptr: int, val: Hashable) -> bool:
         """Try to remove the object from self.d[val]. Return True on success, False otherwise."""
