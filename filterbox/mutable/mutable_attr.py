@@ -22,7 +22,9 @@ class MutableAttrIndex:
         self.obj_map = obj_map
         self.d = BTree()
         self.n_objs = 0  # len() is terribly slow on BTree, so we maintain it ourselves.
-        self.none_ids = Int64Set()  # Special storage for object IDs with the attribute value None
+        self.none_ids = (
+            Int64Set()
+        )  # Special storage for object IDs with the attribute value None
         if objs:
             self.d = BTree()  # compute_mutable_dict_or_btree(objs, self.attr)
             for obj in objs:

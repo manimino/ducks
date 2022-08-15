@@ -35,9 +35,11 @@ class FrozenAttrValIndex:
         obj_id_arr, val_arr = get_vals(objs, obj_id_arr, self.attr)
 
         # extract Nones. These will make the array unsortable if left in.
-        none_idx = np.array([i for i in range(len(val_arr)) if val_arr[i] is None], dtype=self.dtype)
+        none_idx = np.array(
+            [i for i in range(len(val_arr)) if val_arr[i] is None], dtype=self.dtype
+        )
         if len(none_idx):
-            none_flag = np.zeros_like(val_arr, dtype='bool')
+            none_flag = np.zeros_like(val_arr, dtype="bool")
             none_flag[none_idx] = True
             self.none_ids = np.sort(obj_id_arr[none_flag])
             obj_id_arr = obj_id_arr[~none_flag]
@@ -73,9 +75,7 @@ class FrozenAttrValIndex:
         if left == len(self.val_arr) or self.val_arr[left] != val:
             return make_empty_array(self.dtype)
         right = bisect_right(self.val_arr, val)
-        return np.sort(
-            self.obj_id_arr[left:right]
-        )
+        return np.sort(self.obj_id_arr[left:right])
 
     def get_all(self) -> np.ndarray:
         """Get indices of every object with this attribute. Used when matching ANY."""

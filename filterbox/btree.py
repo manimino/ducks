@@ -13,10 +13,13 @@ class BTree:
      sides to exclude the endpoints, so that's implemented here.
      - Provides a nice interface for using >, >=, <, <= to get value ranges.
     """
+
     def __init__(self, d: Dict[Any, Any] = None):
         if d:
             if None in d:
-                raise TypeError('None is not allowed in BTree because it breaks comparisons.')
+                raise TypeError(
+                    "None is not allowed in BTree because it breaks comparisons."
+                )
             self.tree = OOBTree(d)
             self.length = len(d)
         else:
@@ -29,29 +32,35 @@ class BTree:
         e.g., translates {'<': 3} into get_values(3, None, True, False).
         Will ignore keys in expr other than '<', '<=', '>', '>='.
         """
-        if '<' in expr and '<=' in expr:
+        if "<" in expr and "<=" in expr:
             raise ValueError('Expression should only have one of "<", "<=" operators.')
-        if '>' in expr and '>=' in expr:
+        if ">" in expr and ">=" in expr:
             raise ValueError('Expression should only have one of ">", ">=" operators.')
         min_key = None
         max_key = None
         include_min = True
         include_max = True
-        if '>' in expr:
-            min_key = expr['>']
+        if ">" in expr:
+            min_key = expr[">"]
             include_min = False
-        if '>=' in expr:
-            min_key = expr['>=']
+        if ">=" in expr:
+            min_key = expr[">="]
             include_min = True
-        if '<' in expr:
-            max_key = expr['<']
+        if "<" in expr:
+            max_key = expr["<"]
             include_max = False
-        if '<=' in expr:
-            max_key = expr['<=']
+        if "<=" in expr:
+            max_key = expr["<="]
             include_max = True
         return self.get_range(min_key, max_key, include_min, include_max)
 
-    def get_range(self, min_key=None, max_key=None, include_min: bool = True, include_max: bool = True) -> List:
+    def get_range(
+        self,
+        min_key=None,
+        max_key=None,
+        include_min: bool = True,
+        include_max: bool = True,
+    ) -> List:
         """
         Get values in the range of [min_key, max_key]. include_min and include_max
         determine whether values for the start and end keys will be included.
@@ -71,7 +80,7 @@ class BTree:
         if len(keys) == 0:
             return []
         left = 0
-        right = len(keys)-1
+        right = len(keys) - 1
 
         # move left pointer up if it's on min_key and we're not doing include_min
         if not include_min and keys[left] == min_key:
@@ -103,7 +112,9 @@ class BTree:
 
     def __setitem__(self, key, value):
         if key is None:
-            raise TypeError('None is not allowed in BTree because it breaks comparisons.')
+            raise TypeError(
+                "None is not allowed in BTree because it breaks comparisons."
+            )
         if key not in self.tree:
             self.length += 1
         self.tree[key] = value
