@@ -189,24 +189,7 @@ class FilterBox:
             if expr:
                 # handle <, >, etc
                 try:
-                    lo = None
-                    include_lo = False
-                    hi = None
-                    include_hi = False
-                    if ">" in expr:
-                        lo = expr[">"]
-                    if ">=" in expr:
-                        lo = expr[">="]
-                        include_lo = True
-                    if "<" in expr:
-                        hi = expr["<"]
-                    if "<=" in expr:
-                        hi = expr["<="]
-                        include_hi = True
-
-                    expr_matches = self._indices[attr].get_ids_by_range(
-                        lo, hi, include_lo=include_lo, include_hi=include_hi
-                    )
+                    expr_matches = self._indices[attr].get_ids_by_range(expr)
                 except ValueError:
                     # get it the dict way
                     attr_vals = self._indices[attr].get_values()

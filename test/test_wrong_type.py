@@ -4,7 +4,7 @@ Try doing various bad things with types.
 """
 import pytest
 
-from BTrees.OOBTree import OOBTree
+from filterbox.btree import BTree
 
 from filterbox import FilterBox
 from .conftest import AssertRaises
@@ -44,7 +44,7 @@ def test_add_wrong_type():
     # degrades to dict when there's a type conflict. idk if this is a good idea but w/e
     objs = [{"x": i} for i in range(10)]
     fb = FilterBox(objs, "x")
-    assert type(fb._indices["x"].d) is OOBTree
+    assert type(fb._indices["x"].d) is BTree
     assert len(fb._indices["x"].d) == 10
     fb.add({"x": "lol"})
     assert type(fb._indices["x"].d) is dict

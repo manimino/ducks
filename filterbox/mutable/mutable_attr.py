@@ -4,8 +4,9 @@ from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable, Set
 from cykhash import Int64Set
 
 from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
+from filterbox.init_helpers import compute_mutable_dict
 from filterbox.utils import get_attribute
-from BTrees.OOBTree import OOBTree
+from filterbox.btree import BTree
 
 
 class MutableAttrIndex:
@@ -19,9 +20,10 @@ class MutableAttrIndex:
     ):
         self.attr = attr
         self.obj_map = obj_map
-        self.d = OOBTree()
+        self.d = BTree()
         self.n_objs = 0  # len() is terribly slow on BTree, so we maintain it ourselves.
         if objs:
+            self.d = BTree()  # compute_mutable_dict_or_btree(objs, self.attr)
             for obj in objs:
                 self.add(id(obj), obj)
 
@@ -86,29 +88,6 @@ class MutableAttrIndex:
         else:
             obj_ids.add(val)
 
-    def get_ids_by_range(self, lo, hi, include_lo=False, include_hi=False) -> Int64Set:
-        """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
-        if type(self.d) is OOBTree:
-            obj_ids = Int64Set()
-            if lo is None:
-                lo = min(self.d)
-                include_lo = True
-            if hi is None:
-                hi = max(self.d)
-                include_hi = True
-            # get values >= lo and <= hi
-            for val in self.d.values(lo, hi):
-                self._add_val_to_set(val, obj_ids)
-            # if < or >, we need to remove the end points manually
-            but_not_these = Int64Set()
-            if not include_lo and lo in self.d:
-                self._add_val_to_set(self.d[lo], but_not_these)
-            if not include_hi and hi in self.d:
-                self._add_val_to_set(self.d[hi], but_not_these)
-            return obj_ids.difference(but_not_these)
-        else:
-            raise ValueError("Not a BTree - you have to get one at a time")
-
     def _try_remove(self, ptr: int, val: Hashable) -> bool:
         """Try to remove the object from self.d[val]. Return True on success, False otherwise."""
         # first, check that the ptr is in here
@@ -165,6 +144,14 @@ class MutableAttrIndex:
     def get_values(self) -> Set:
         """Get unique values we have objects for."""
         return set(self.d.keys())
+
+    def get_ids_by_range(self, expr: Dict[str, Any]):
+        if type(self.d) is BTree:
+            obj_ids = Int64Set()
+            vals = self.d.get_range_expr(expr)
+            for val in vals:
+                self._add_val_to_set(val, obj_ids)
+            return obj_ids
 
     def __len__(self):
         return self.n_objs
