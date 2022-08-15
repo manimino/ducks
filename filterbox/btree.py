@@ -93,7 +93,7 @@ class BTree:
 
     def items(self):
         return self.tree.items()
-    
+
     def __len__(self):
         return self.length
 

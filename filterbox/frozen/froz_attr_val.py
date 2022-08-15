@@ -8,7 +8,7 @@ import numpy as np
 from bisect import bisect_left, bisect_right
 from typing import Union, Callable, Set
 
-from BTrees import OOBTree
+from filterbox.btree import BTree
 from filterbox.constants import SIZE_THRESH
 from filterbox.utils import make_empty_array
 from filterbox.init_helpers import get_vals, run_length_encode
@@ -31,7 +31,7 @@ class FrozenAttrValIndex:
 
         # Pull repeated attributes out into a BTree and pre-sort their indices.
         # Saves memory, and makes object lookups *way* faster.
-        self.val_to_obj_ids = OOBTree()
+        self.val_to_obj_ids = BTree()
         val_starts, val_run_lengths, unique_vals = run_length_encode(val_arr)
         unused = np.ones_like(obj_id_arr, dtype="bool")
         n_unused = len(unused)
@@ -50,29 +50,34 @@ class FrozenAttrValIndex:
         """Get indices of objects whose attribute is val."""
         if val in self.val_to_obj_ids:
             return self.val_to_obj_ids[val]
+        # find by bisection
         left = bisect_left(self.val_arr, val)
         if left == len(self.val_arr) or self.val_arr[left] != val:
             return make_empty_array(self.dtype)
         right = bisect_right(self.val_arr, val)
         return np.sort(
             self.obj_id_arr[left:right]
-        )  # TODO: consider storing large arrays in sorted order. Yeah, not optional, it's a huge perf difference.
+        )
 
     def get_all(self) -> np.ndarray:
         """Get indices of every object with this attribute. Used when matching ANY."""
-        return np.sort(self.obj_id_arr)
+        arrs = [self.obj_id_arr]
+        for v in self.val_to_obj_ids.values():
+            arrs.append(v)
+        return np.sort(np.concatenate(arrs))
 
     def get_values(self) -> Set:
         """Get each value we have objects for."""
-        return set(self.val_arr)
-
+        vals = set(self.val_to_obj_ids.keys())
+        vals = vals.union(self.val_arr)
+        return vals
+    
     def get_ids_by_range(
         self, lo, hi, include_lo=False, include_hi=False
     ) -> np.ndarray:
         """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
         # Get matches from the val_to_obj_ids BTree
-
-        # val_to_obj_ids.values(lo, hi)
+        big_matches_list = self.val_to_obj_ids.get_range(lo, hi, include_lo, include_hi)
 
         # Get the matches from the main array
         if len(self) == 0:
@@ -105,8 +110,16 @@ class FrozenAttrValIndex:
             while right > left and self.val_arr[right - 1] == hi:
                 right -= 1
 
-        # sort matching ids and return
-        return np.sort(self.obj_id_arr[left:right])
+        small_matches = self.obj_id_arr[left:right]
+
+        # do return
+        if len(big_matches_list) == 1 and len(small_matches) == 0:
+            # each big_matches is stored pre-sorted, no need to sort
+            return big_matches_list[0]
+
+        # concat all arrays and sort
+        matches = np.sort(np.concatenate([small_matches] + big_matches_list))
+        return matches
 
     @staticmethod
     def get_index_type():
