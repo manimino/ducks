@@ -8,8 +8,10 @@ import numpy as np
 from bisect import bisect_left, bisect_right
 from typing import Union, Callable, Set
 
+from BTrees import OOBTree
+from filterbox.constants import SIZE_THRESH
 from filterbox.utils import make_empty_array
-from filterbox.init_helpers import get_vals
+from filterbox.init_helpers import get_vals, run_length_encode
 
 
 class FrozenAttrValIndex:
@@ -24,18 +26,37 @@ class FrozenAttrValIndex:
             obj_id_arr[i] = i
         obj_id_arr, val_arr = get_vals(objs, obj_id_arr, self.attr)
         sort_order = np.argsort(val_arr)  # throws TypeError if unsortable
-        self.val_arr = val_arr[sort_order]
-        self.obj_id_arr = obj_id_arr[sort_order]
+        val_arr = val_arr[sort_order]
+        obj_id_arr = obj_id_arr[sort_order]
+
+        # Pull repeated attributes out into a BTree and pre-sort their indices.
+        # Saves memory, and makes object lookups *way* faster.
+        self.val_to_obj_ids = OOBTree()
+        val_starts, val_run_lengths, unique_vals = run_length_encode(val_arr)
+        unused = np.ones_like(obj_id_arr, dtype="bool")
+        n_unused = len(unused)
+        for i, val in enumerate(unique_vals):
+            if val_run_lengths[i] > SIZE_THRESH:
+                # extract these
+                start = val_starts[i]
+                end = start + val_run_lengths[i]
+                unused[start:end] = False
+                n_unused -= val_run_lengths[i]
+                self.val_to_obj_ids[val] = np.sort(obj_id_arr[start:end])
+        self.val_arr = val_arr[unused]
+        self.obj_id_arr = obj_id_arr[unused]
 
     def get(self, val) -> np.ndarray:
         """Get indices of objects whose attribute is val."""
+        if val in self.val_to_obj_ids:
+            return self.val_to_obj_ids[val]
         left = bisect_left(self.val_arr, val)
         if left == len(self.val_arr) or self.val_arr[left] != val:
             return make_empty_array(self.dtype)
         right = bisect_right(self.val_arr, val)
         return np.sort(
             self.obj_id_arr[left:right]
-        )  # TODO: consider storing large arrays in sorted order
+        )  # TODO: consider storing large arrays in sorted order. Yeah, not optional, it's a huge perf difference.
 
     def get_all(self) -> np.ndarray:
         """Get indices of every object with this attribute. Used when matching ANY."""
@@ -49,6 +70,11 @@ class FrozenAttrValIndex:
         self, lo, hi, include_lo=False, include_hi=False
     ) -> np.ndarray:
         """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
+        # Get matches from the val_to_obj_ids BTree
+
+        # val_to_obj_ids.values(lo, hi)
+
+        # Get the matches from the main array
         if len(self) == 0:
             return make_empty_array(self.dtype)
         if lo is None:
