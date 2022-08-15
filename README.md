@@ -2,7 +2,7 @@
 
 Container for finding Python objects.
 
-Stores objects in hashtables by attribute value, so finds are very fast. 
+Stores objects by attribute value, so finds are very fast. 
 
 [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 
@@ -167,14 +167,15 @@ ____
 
 ## How it works
 
-For each attribute in the FilterBox, it holds a dict that maps every unique value to the set of objects with that value. 
+For each attribute in the FilterBox, it holds a dict or tree that maps every unique value to the set of objects with 
+that value. 
 
 This is the rough idea of the data structure: 
 ```
 class FilterBox:
     indices = {
         'attribute1': {val1: set(some_obj_ids), val2: set(other_obj_ids)},
-        'attribute2': {val3: set(some_obj_ids), val4: set(other_obj_ids)},
+        'attribute2': BTree({val3: set(some_obj_ids), val4: set(other_obj_ids)}),
     }
     'obj_map': {obj_ids: objects}
 }

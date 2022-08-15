@@ -22,6 +22,7 @@ class MutableAttrIndex:
         self.obj_map = obj_map
         self.d = BTree()
         self.n_objs = 0  # len() is terribly slow on BTree, so we maintain it ourselves.
+        self.none_ids = Int64Set()  # Special storage for object IDs with the attribute value None
         if objs:
             self.d = BTree()  # compute_mutable_dict_or_btree(objs, self.attr)
             for obj in objs:
@@ -37,6 +38,9 @@ class MutableAttrIndex:
         """Add an object if it has this attribute."""
         val, success = get_attribute(obj, self.attr)
         if not success:
+            return
+        if val is None:
+            self.none_ids.add(ptr)
             return
         try:
             # if this is the first val, check if it's a comparable type.
@@ -71,6 +75,8 @@ class MutableAttrIndex:
 
     def get_obj_ids(self, val: Any) -> Int64Set:
         """Get the object IDs associated with this value as an Int64Set."""
+        if val is None:
+            return self.none_ids
         ids = self.d.get(val, Int64Set())
         if type(ids) is array:
             return Int64Set(ids)
@@ -136,14 +142,17 @@ class MutableAttrIndex:
     def get_all_ids(self) -> Int64Set:
         """Get the ID of every object that has this attribute.
         Called when matching or excluding ``{attr: hashindex.ANY}``."""
-        obj_ids = Int64Set()
+        obj_ids = Int64Set(self.none_ids)
         for key, val in self.d.items():
             self._add_val_to_set(val, obj_ids)
         return obj_ids
 
     def get_values(self) -> Set:
         """Get unique values we have objects for."""
-        return set(self.d.keys())
+        vals = set(self.d.keys())
+        if len(self.none_ids):
+            vals.add(None)
+        return vals
 
     def get_ids_by_range(self, expr: Dict[str, Any]):
         if type(self.d) is BTree:

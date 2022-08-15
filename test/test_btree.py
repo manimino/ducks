@@ -3,6 +3,7 @@ import pytest
 from filterbox.btree import BTree
 from .conftest import AssertRaises
 
+
 @pytest.mark.parametrize('expr, result', [
     ({'>': 8}, [9]),
     ({'>': 6}, [7, 8, 9]),
@@ -33,6 +34,20 @@ from .conftest import AssertRaises
 def test_get_range_expr(expr, result):
     bt = BTree({i: i for i in range(10)})
     assert list(bt.get_range_expr(expr)) == result
+
+
+def test_init_with_none():
+    objs = {i: i for i in range(10)}
+    objs[None] = 13
+    with AssertRaises(TypeError):
+        _ = BTree(objs)
+
+
+def test_add_none():
+    objs = {i: i for i in range(10)}
+    bt = BTree(objs)
+    with AssertRaises(TypeError):
+        bt[None] = 13
 
 
 def test_get():
@@ -78,3 +93,13 @@ def test_keys_values():
     bt = BTree({'a': 1, 'b': 2})
     assert list(bt.keys()) == ['a', 'b']
     assert list(bt.values()) == [1, 2]
+
+
+def test_bad_expr():
+    bt = BTree({'a': 1, 'b': 2})
+    with AssertRaises(ValueError):
+        bt.get_range_expr({'>': 'a', '>=': 'a'})
+    with AssertRaises(ValueError):
+        bt.get_range_expr({'<': 'a', '<=': 'a'})
+    with AssertRaises(TypeError):
+        bt.get_range_expr({'<=': 99})

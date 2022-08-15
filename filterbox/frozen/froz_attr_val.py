@@ -21,17 +21,33 @@ class FrozenAttrValIndex:
         # sort the objects by attribute value, using their hashes and handling collisions
         self.dtype = dtype
         self.attr = attr
+
+        # Nones get stored in their own special spot so they don't break sortability
+        self.none_ids = make_empty_array(self.dtype)
+
+        # We will pull repeated attributes out into a BTree and pre-sort their indices.
+        # Saves memory, and makes object lookups *way* faster.
+        self.val_to_obj_ids = BTree()
+
         obj_id_arr = np.arange(len(objs), dtype=self.dtype)
         for i, obj in enumerate(objs):
             obj_id_arr[i] = i
         obj_id_arr, val_arr = get_vals(objs, obj_id_arr, self.attr)
-        sort_order = np.argsort(val_arr)  # throws TypeError if unsortable
+
+        # extract Nones. These will make the array unsortable if left in.
+        none_idx = np.array([i for i in range(len(val_arr)) if val_arr[i] is None], dtype=self.dtype)
+        if len(none_idx):
+            none_flag = np.zeros_like(val_arr, dtype='bool')
+            none_flag[none_idx] = True
+            self.none_ids = np.sort(obj_id_arr[none_flag])
+            obj_id_arr = obj_id_arr[~none_flag]
+            val_arr = val_arr[~none_flag]
+
+        # Attempt to sort the values.
+        sort_order = np.argsort(val_arr)  # Throws TypeError if unsortable.
         val_arr = val_arr[sort_order]
         obj_id_arr = obj_id_arr[sort_order]
 
-        # Pull repeated attributes out into a BTree and pre-sort their indices.
-        # Saves memory, and makes object lookups *way* faster.
-        self.val_to_obj_ids = BTree()
         val_starts, val_run_lengths, unique_vals = run_length_encode(val_arr)
         unused = np.ones_like(obj_id_arr, dtype="bool")
         n_unused = len(unused)
@@ -48,6 +64,8 @@ class FrozenAttrValIndex:
 
     def get(self, val) -> np.ndarray:
         """Get indices of objects whose attribute is val."""
+        if val is None:
+            return self.none_ids
         if val in self.val_to_obj_ids:
             return self.val_to_obj_ids[val]
         # find by bisection
@@ -70,8 +88,10 @@ class FrozenAttrValIndex:
         """Get each value we have objects for."""
         vals = set(self.val_to_obj_ids.keys())
         vals = vals.union(self.val_arr)
+        if len(self.none_ids):
+            vals.add(None)
         return vals
-    
+
     def get_ids_by_range(
         self, lo, hi, include_lo=False, include_hi=False
     ) -> np.ndarray:

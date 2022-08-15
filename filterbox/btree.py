@@ -7,12 +7,16 @@ class BTree:
     """
     Wraps an OOBTree instance. Not subclassing because we only need a few methods.
      - BTrees len() does a full tree traversal, which is very slow. So we maintain a count instead.
+     - BTrees stores None values as if they were just really really small. So "x < 1" will find the Nones.
+     Let's disallow None entirely, make it throw TypeError. Just like sorting [1, 2, None] would do.
      - BTrees values(min_key, max_key) does an inclusive range [min_key, max_key]. But often you need one or both
      sides to exclude the endpoints, so that's implemented here.
      - Provides a nice interface for using >, >=, <, <= to get value ranges.
     """
     def __init__(self, d: Dict[Any, Any] = None):
         if d:
+            if None in d:
+                raise TypeError('None is not allowed in BTree because it breaks comparisons.')
             self.tree = OOBTree(d)
             self.length = len(d)
         else:
@@ -98,6 +102,8 @@ class BTree:
         return self.length
 
     def __setitem__(self, key, value):
+        if key is None:
+            raise TypeError('None is not allowed in BTree because it breaks comparisons.')
         if key not in self.tree:
             self.length += 1
         self.tree[key] = value
