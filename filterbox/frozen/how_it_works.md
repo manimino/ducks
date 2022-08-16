@@ -35,6 +35,11 @@ class MutableAttrIndex:
     })
 ```
 
+Rather than having a dict lookup for object id -> object, we just store the objects in an array. Instead of
+object IDs, we can use indices into that array. Handily, the indices can be `int32` if there are less than a few
+billion objects, which is usually the case. `int32` operations are a little faster than `int64`, in addition to being 
+more RAM-efficient.
+
 
 ### Set operations on numpy arrays
 
@@ -48,13 +53,10 @@ If you have the arrays:
 What is their intersection? Do you need to convert them to `set` to figure it out? 
 
 Of course not -- sorted array intersection is easy. There's a great package called 
-[sortednp](https://pypi.org/project/sortednp/) that implements fast operations on sorted numpy arrays.
+[sortednp](https://pypi.org/project/sortednp/) that implements fast set operations on sorted numpy arrays.
 
-So once we have the object IDs for each part of a query, `sortednp.intersect` and friends will get us the final
-ID set.
-
-Since we're using parallel numpy arrays, the object IDs are not from Python `id()` here; they are actually just
-indices into a numpy array of objects stored in FrozenFilterBox. 
+So once we have the object indices for each part of a query, `sortednp.intersect` and friends will get us the final
+object indices.
 
 ### Wrap up
 
