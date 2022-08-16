@@ -169,14 +169,14 @@ ____
 
 ## How it works
 
-For each attribute in the FilterBox, it holds a dict or tree that maps every unique value to the set of objects with 
+For each attribute in the FilterBox, it holds a tree that maps every unique value to the set of objects with 
 that value. 
 
 This is the rough idea of the data structure: 
 ```
 class FilterBox:
     indices = {
-        'attribute1': {val1: set(some_obj_ids), val2: set(other_obj_ids)},
+        'attribute1': BTree({val1: set(some_obj_ids), val2: set(other_obj_ids)}),
         'attribute2': BTree({val3: set(some_obj_ids), val4: set(other_obj_ids)}),
     }
     'obj_map': {obj_ids: objects}
@@ -200,15 +200,5 @@ See the "how it works" pages for more detail:
  - [FilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox)
  - [ConcurrentFilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.concurrent.html#filterbox.concurrent.main.ConcurrentFilterBox)
  - [FrozenFilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox)
-
-### Related projects
-
-FilterBox is a type of inverted index. It is optimized for its goal of finding in-memory Python objects.
-
-Other Python in-memory inverted index implementations are aimed at things like 
-[vector search (rii)](https://pypi.org/project/rii/) and 
-[finding documents by words (lunr)](https://pypi.org/project/lunr/). Outside of Python, ElasticSearch is a popular inverted
-index search tool. Each of these has goals outside of FilterBox's niche; there are no plans to expand FilterBox towards
-these functions.
 
 ____

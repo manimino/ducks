@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "filterbox"
 version = "0.9.1"
-description = "Container for finding Python objects by matching attributes. Stores objects by attribute value for fast lookup."
+description = "Finds Python objects by attribute value"
 authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/manimino/filterbox/"

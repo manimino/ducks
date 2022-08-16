@@ -1,6 +1,6 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /home/theo/repos/filterbox
+rootdir: /home/theo/repos
 plugins: anyio-2.2.0, cov-3.0.0
 collected 464 items
 
@@ -30,7 +30,7 @@ test/mutable/test_soak.py .                                              [100%]
 Name                                Stmts   Miss  Cover
 -------------------------------------------------------
 filterbox/__init__.py                   5      0   100%
-filterbox/btree.py                     80      0   100%
+filterbox/btree.py                     77      0   100%
 filterbox/concurrent/__init__.py        0      0   100%
 filterbox/concurrent/main.py           51      0   100%
 filterbox/constants.py                 13      0   100%
@@ -42,11 +42,11 @@ filterbox/frozen/utils.py               8      0   100%
 filterbox/init_helpers.py              22      0   100%
 filterbox/mutable/__init__.py           0      0   100%
 filterbox/mutable/main.py              97      0   100%
-filterbox/mutable/mutable_attr.py     103      0   100%
+filterbox/mutable/mutable_attr.py     104      0   100%
 filterbox/perf.py                       0      0   100%
 filterbox/utils.py                     50      0   100%
 -------------------------------------------------------
-TOTAL                                 621      0   100%
+TOTAL                                 619      0   100%
 
 
-============================= 464 passed in 5.63s ==============================
+============================= 464 passed in 6.70s ==============================
