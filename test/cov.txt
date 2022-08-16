@@ -2,22 +2,22 @@
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
 rootdir: /home/theo/repos
 plugins: anyio-2.2.0, cov-3.0.0
-collected 464 items
+collected 468 items
 
-test/test_basic_operations.py .......................................... [  9%]
+test/test_basic_operations.py .......................................... [  8%]
 ...........................                                              [ 14%]
 test/test_btree.py ..................................                    [ 22%]
 test/test_container_ops.py .....................                         [ 26%]
 test/test_edge_cases.py ......................................           [ 34%]
-test/test_examples.py ......                                             [ 36%]
+test/test_examples.py ......                                             [ 35%]
 test/test_exceptions.py ................                                 [ 39%]
-test/test_fancy_gets.py ............                                     [ 42%]
-test/test_missing_attribute.py ......................................... [ 51%]
-.                                                                        [ 51%]
-test/test_mixed_cardinality.py ..................                        [ 55%]
-test/test_mutations.py ...............                                   [ 58%]
-test/test_nones.py ...                                                   [ 59%]
-test/test_range_queries.py ............................................. [ 68%]
+test/test_fancy_gets.py ............                                     [ 41%]
+test/test_missing_attribute.py ......................................... [ 50%]
+.                                                                        [ 50%]
+test/test_mixed_cardinality.py ..................                        [ 54%]
+test/test_mutations.py ...............                                   [ 57%]
+test/test_nones.py .......                                               [ 59%]
+test/test_range_queries.py ............................................. [ 69%]
 ........................................................................ [ 84%]
 .................................                                        [ 91%]
 test/test_stale_objects.py ...........                                   [ 93%]
@@ -49,4 +49,4 @@ filterbox/utils.py                     50      0   100%
 TOTAL                                 619      0   100%
 
 
-============================= 464 passed in 6.70s ==============================
+============================= 468 passed in 6.78s ==============================

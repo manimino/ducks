@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "filterbox"
-version = "0.9.1"
+version = "0.9.2"
 description = "Finds Python objects by attribute value"
 authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
