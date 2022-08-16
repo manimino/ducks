@@ -4,7 +4,13 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 from cykhash import Int64Set
 
 from filterbox import ANY
-from filterbox.utils import cyk_intersect, cyk_union, validate_query, filter_vals
+from filterbox.utils import (
+    cyk_intersect,
+    cyk_union,
+    validate_query,
+    filter_vals,
+    fix_operators,
+)
 from filterbox.mutable.mutable_attr import MutableAttrIndex
 
 
@@ -172,7 +178,9 @@ class FilterBox:
 
     def _match_attr_expr(self, attr, expr) -> Int64Set:
         """Look at an attr, handle its expr appropriately"""
+
         if isinstance(expr, dict):
+            fix_operators(expr)
             matches = None
             if "in" in expr:
                 # always do 'in' first -- it doesn't require get_values() which can be slow.
@@ -180,9 +188,13 @@ class FilterBox:
                 del expr["in"]
             if expr:
                 # handle <, >, etc
-                attr_vals = self._indices[attr].get_values()
-                valid_values = filter_vals(attr_vals, expr)
-                expr_matches = self._match_any_value_in(attr, valid_values)
+                try:
+                    expr_matches = self._indices[attr].get_ids_by_range(expr)
+                except ValueError:
+                    # get it the dict way
+                    attr_vals = self._indices[attr].get_values()
+                    valid_values = filter_vals(attr_vals, expr)
+                    expr_matches = self._match_any_value_in(attr, valid_values)
                 if matches is None:
                     matches = expr_matches
                 else:

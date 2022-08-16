@@ -169,9 +169,9 @@ class SoakTest:
             ls = [
                 o
                 for o in self.objs.values()
-                if get_attribute(o, "ts_sec")[0] == target_ts
+                if get_attribute(o, "ts_sec")[0] == target_ts[0]
             ]
-            f_ls = self.f.find({"ts_sec": target_ts})
+            f_ls = self.f.find({"ts_sec": target_ts[0]})
             assert len(ls) == len(f_ls)
 
 

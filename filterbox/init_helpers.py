@@ -25,20 +25,26 @@ from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX
 from cykhash import Int64Set
 
 
-def sort_by_hash(
-    objs: np.ndarray, obj_id_arr: np.ndarray, attr: Union[Callable, str]
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Fetch vals from each obj. Create obj_id, val, and hash arrays, sorted by hash."""
-    hash_arr = np.empty(len(objs), dtype="int64")
+def get_vals(objs: np.ndarray, obj_id_arr: np.ndarray, attr: Union[Callable, str]):
+    """Gets vals by attribute. Returned arrays will be shorter than input if objects are missing attributes."""
     val_arr = np.empty(len(objs), dtype="O")
     success = np.empty(len(objs), dtype=bool)
     for i, obj in enumerate(objs):
         val_arr[i], success[i] = get_attribute(obj, attr)
-        hash_arr[i] = hash(val_arr[i])
 
-    hash_arr = hash_arr[success]
     val_arr = val_arr[success]
     obj_id_arr = obj_id_arr[success]
+    return obj_id_arr, val_arr
+
+
+def sort_by_hash(
+    objs: np.ndarray, obj_id_arr: np.ndarray, attr: Union[Callable, str]
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Fetch vals from each obj. Create obj_id, val, and hash arrays, sorted by hash."""
+    obj_id_arr, val_arr = get_vals(objs, obj_id_arr, attr)
+    hash_arr = np.empty(len(objs), dtype="int64")
+    for i, obj in enumerate(objs):
+        hash_arr[i] = hash(val_arr[i])
 
     sort_order = np.argsort(hash_arr)
     val_arr = val_arr[sort_order]

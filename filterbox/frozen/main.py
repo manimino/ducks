@@ -1,14 +1,14 @@
 from bisect import bisect_left
-from collections.abc import Hashable
-from typing import Optional, Any, Dict, Union, Callable, Iterable, List, Set
+from typing import Optional, Any, Dict, Union, Callable, Iterable, Set
 
 import numpy as np
 import sortednp as snp
 
 from filterbox import ANY
 from filterbox.frozen.frozen_attr import FrozenAttrIndex
+from filterbox.frozen.froz_attr_val import FrozenAttrValIndex
 from filterbox.frozen.utils import snp_difference
-from filterbox.utils import make_empty_array, validate_query, filter_vals
+from filterbox.utils import make_empty_array, validate_query, filter_vals, fix_operators
 
 
 class FrozenFilterBox:
@@ -44,7 +44,10 @@ class FrozenFilterBox:
             self.obj_arr[i] = obj
 
         for attr in on:
-            self._indices[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
+            try:
+                self._indices[attr] = FrozenAttrValIndex(attr, self.obj_arr, self.dtype)
+            except TypeError:
+                self._indices[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
 
         self.sorted_obj_ids = np.sort(
             [id(obj) for obj in self.obj_arr]
@@ -52,12 +55,8 @@ class FrozenFilterBox:
 
     def find(
         self,
-        match: Optional[
-            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
-        ] = None,
-        exclude: Optional[
-            Dict[Union[str, Callable], Union[Hashable, List[Hashable]]]
-        ] = None,
+        match: Optional[Dict[Union[str, Callable], Any]] = None,
+        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> np.ndarray:
         """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
 
@@ -126,16 +125,36 @@ class FrozenFilterBox:
     def _match_attr_expr(self, attr: Union[str, Callable], expr: dict) -> np.ndarray:
         """Look at an attr, handle its expr appropriately"""
         if isinstance(expr, dict):
+            fix_operators(expr)
             matches = None
             if "in" in expr:
                 # always do 'in' first -- it doesn't require get_values() which can be slow.
                 matches = self._match_any_value_in(attr, expr["in"])
                 del expr["in"]
             if expr:
-                # handle <, >, etc
-                attr_vals = self._indices[attr].get_values()
-                valid_values = filter_vals(attr_vals, expr)
-                expr_matches = self._match_any_value_in(attr, valid_values)
+                if type(self._indices[attr]) is FrozenAttrValIndex:
+                    lo = None
+                    include_lo = False
+                    hi = None
+                    include_hi = False
+                    if ">" in expr:
+                        lo = expr[">"]
+                    if ">=" in expr:
+                        lo = expr[">="]
+                        include_lo = True
+                    if "<" in expr:
+                        hi = expr["<"]
+                    if "<=" in expr:
+                        hi = expr["<="]
+                        include_hi = True
+                    expr_matches = self._indices[attr].get_ids_by_range(
+                        lo, hi, include_lo=include_lo, include_hi=include_hi
+                    )
+                else:
+                    # handle <, >, etc
+                    attr_vals = self._indices[attr].get_values()
+                    valid_values = filter_vals(attr_vals, expr)
+                    expr_matches = self._match_any_value_in(attr, valid_values)
                 if matches is None:
                     matches = expr_matches
                 else:

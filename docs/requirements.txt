@@ -1,3 +1,4 @@
+BTrees>= 4.10.0
 cykhash>= 2.0.0
 numpy>=1.14
 readerwriterlock>=1.0.9

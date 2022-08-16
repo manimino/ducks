@@ -70,21 +70,35 @@ def cyk_union(s1: Int64Set, s2: Int64Set) -> Int64Set:
     return s1.union(s2) if len(s1) > len(s2) else s2.union(s1)
 
 
-def filter_vals(attr_vals: Set[Any], expr: Dict[str, Any]) -> Set[Any]:
-    """Apply the <, <=, >, >= filters to the attr_vals. Return set of matches."""
-    for op, value in expr.items():
+def fix_operators(expr: Dict):
+    # sanitizes input, mutates expr
+    for op in list(expr.keys()):
         if op in OPERATOR_MAP:
-            op = OPERATOR_MAP[op]  # convert 'lt' to '<', etc.
-        if op not in ["<", ">", "<=", ">="]:
+            val = expr.pop(op)
+            expr[OPERATOR_MAP[op]] = val
+    for op in expr:
+        if op not in VALID_OPERATORS:
             raise ValueError(
                 f"Invalid operator: {op}. Operator must be one of: {VALID_OPERATORS}."
             )
-        if op == "<":
-            attr_vals = {v for v in attr_vals if v < value}
-        elif op == "<=":
-            attr_vals = {v for v in attr_vals if v <= value}
-        elif op == ">":
-            attr_vals = {v for v in attr_vals if v > value}
-        elif op == ">=":
-            attr_vals = {v for v in attr_vals if v >= value}
-    return attr_vals
+
+
+def filter_vals(attr_vals: Set[Any], expr: Dict[str, Any]) -> Set[Any]:
+    """Apply the <, <=, >, >= filters to the attr_vals. Return set of matches."""
+    for op, expr_value in expr.items():
+        s = set()
+        for v in attr_vals:
+            try:
+                if op == "<" and v < expr_value:
+                    s.add(v)
+                elif op == "<=" and v <= expr_value:
+                    s.add(v)
+                elif op == ">" and v > expr_value:
+                    s.add(v)
+                elif op == ">=" and v >= expr_value:
+                    s.add(v)
+            except TypeError:
+                # If expr_value is a different type that can't be compared, it's not a match.
+                pass
+        attr_vals = s
+    return s

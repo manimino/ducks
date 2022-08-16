@@ -37,6 +37,9 @@ class BadHash:
     def __repr__(self):
         return str(self.n)
 
+    def __lt__(self, other):
+        return self.n < other.n
+
 
 class TwoHash:
     def __init__(self, n):

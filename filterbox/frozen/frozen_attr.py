@@ -134,6 +134,10 @@ class FrozenAttrIndex:
             vals = vals.union(self.objs_by_hash.sorted_vals)
         return vals
 
+    @staticmethod
+    def get_index_type():
+        return "hash"
+
     def __len__(self):
         tot = sum(len(v) for v in self.val_to_obj_ids.values())
         return tot + len(self.objs_by_hash.sorted_obj_ids)
