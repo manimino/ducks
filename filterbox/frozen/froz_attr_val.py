@@ -141,7 +141,9 @@ class FrozenAttrValIndex:
             return make_empty_array(self.dtype)
 
         # Get matches from the val_to_obj_ids BTree
-        big_matches_list = list(self.val_to_obj_ids.get_range(lo, hi, include_lo, include_hi))
+        big_matches_list = list(
+            self.val_to_obj_ids.get_range(lo, hi, include_lo, include_hi)
+        )
 
         small_matches = self._get_val_arr_matches(lo, hi, include_lo, include_hi)
 

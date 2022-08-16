@@ -122,7 +122,9 @@ class BTree:
             try:
                 key > key
             except TypeError:
-                raise TypeError(f'Cannot add object with attribute {key}: Type must be comparable. Implement __lt__().')
+                raise TypeError(
+                    f"Cannot add object with attribute {key}: Type must be comparable. Implement __lt__()."
+                )
         if key not in self.tree:
             self.length += 1
         self.tree[key] = value

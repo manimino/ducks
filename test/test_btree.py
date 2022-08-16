@@ -111,5 +111,5 @@ def test_bad_expr():
 def test_bad_first_insert():
     bt = BTree()
     with AssertRaises(TypeError):
-        bt[{'x': 1}] = 5
+        bt[{"x": 1}] = 5
     bt = BTree()

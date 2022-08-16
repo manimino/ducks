@@ -113,8 +113,8 @@ def test_get_in_no_results(box_class):
         return x[0]
 
     f = box_class(["a", "b", "c"], on=[_f])
-    assert len(f.find({_f: {'in': ["d"]}})) == 0
-    assert len(f.find({_f: {'in': []}})) == 0
+    assert len(f.find({_f: {"in": ["d"]}})) == 0
+    assert len(f.find({_f: {"in": []}})) == 0
 
 
 def test_double_add():
@@ -133,7 +133,7 @@ def test_empty_index(box_class):
     f = box_class([], on=["stuff"])
     result = f.find({"stuff": 3})
     assert len(result) == 0
-    result = f.find({"stuff": {'<': 3}})
+    result = f.find({"stuff": {"<": 3}})
     assert len(result) == 0
 
 

@@ -48,6 +48,6 @@ def test_box_not_contains(box_class):
     yes = {"i": 1}
     f = box_class([yes], "i")
     # test a ton of these because coverage can drop otherwise
-    for i in [None, -1000, 'apples', 1000, (1, 2, 3), 0.5] + list(range(100)):
+    for i in [None, -1000, "apples", 1000, (1, 2, 3), 0.5] + list(range(100)):
         no = {"i": i}
         assert no not in f
