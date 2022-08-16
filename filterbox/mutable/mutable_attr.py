@@ -4,7 +4,6 @@ from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable, Set
 from cykhash import Int64Set
 
 from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
-from filterbox.init_helpers import compute_mutable_dict
 from filterbox.utils import get_attribute
 from filterbox.btree import BTree
 
@@ -20,21 +19,15 @@ class MutableAttrIndex:
     ):
         self.attr = attr
         self.obj_map = obj_map
-        self.d = BTree()
+        self.tree = BTree()
         self.n_objs = 0  # len() is terribly slow on BTree, so we maintain it ourselves.
         self.none_ids = (
             Int64Set()
         )  # Special storage for object IDs with the attribute value None
         if objs:
-            self.d = BTree()  # compute_mutable_dict_or_btree(objs, self.attr)
+            self.tree = BTree()
             for obj in objs:
                 self.add(id(obj), obj)
-
-    def get_index_type(self):
-        if type(self.d) is dict:
-            return "hash"
-        else:
-            return "tree"
 
     def add(self, ptr: int, obj: Any):
         """Add an object if it has this attribute."""
@@ -44,42 +37,34 @@ class MutableAttrIndex:
         if val is None:
             self.none_ids.add(ptr)
             return
-        try:
-            # if this is the first val, check if it's a comparable type.
-            if self.n_objs == 0:
-                _ = val > val  # triggers a TypeError if not comparable
-            self._add_val(ptr, val)
-        except TypeError:
-            # someone threw in a type we can't compare. Downgrade to dict and retry the add.
-            self.d = dict(self.d)
-            self._add_val(ptr, val)
+        self._add_val(ptr, val)
         self.n_objs += 1
 
     def _add_val(self, ptr, val):
-        if val in self.d:
-            obj_ids = self.d[val]
+        if val in self.tree:
+            obj_ids = self.tree[val]
             if type(obj_ids) is Int64Set:
-                self.d[val].add(ptr)
+                self.tree[val].add(ptr)
             elif type(obj_ids) is array:
                 if len(obj_ids) == ARRAY_SIZE_MAX:
                     # upgrade array -> set
                     obj_ids = Int64Set(obj_ids)
                     obj_ids.add(ptr)
-                    self.d[val] = obj_ids
+                    self.tree[val] = obj_ids
                 else:
                     obj_ids.append(ptr)
             else:
                 # obj_ids was an int, now we have two. upgrade int -> array
-                self.d[val] = array(ARR_TYPE, [obj_ids, ptr])
+                self.tree[val] = array(ARR_TYPE, [obj_ids, ptr])
         else:
             # new val, add the int
-            self.d[val] = ptr
+            self.tree[val] = ptr
 
     def get_obj_ids(self, val: Any) -> Int64Set:
         """Get the object IDs associated with this value as an Int64Set."""
         if val is None:
             return self.none_ids
-        ids = self.d.get(val, Int64Set())
+        ids = self.tree.get(val, Int64Set())
         if type(ids) is array:
             return Int64Set(ids)
         elif type(ids) is Int64Set:
@@ -97,32 +82,32 @@ class MutableAttrIndex:
             obj_ids.add(val)
 
     def _try_remove(self, ptr: int, val: Hashable) -> bool:
-        """Try to remove the object from self.d[val]. Return True on success, False otherwise."""
+        """Try to remove the object from self.tree[val]. Return True on success, False otherwise."""
         # first, check that the ptr is in here
-        if val not in self.d:
+        if val not in self.tree:
             return False
-        if type(self.d[val]) in [array, Int64Set]:
-            if ptr not in self.d[val]:
+        if type(self.tree[val]) in [array, Int64Set]:
+            if ptr not in self.tree[val]:
                 return False
         else:
-            if self.d[val] != ptr:
+            if self.tree[val] != ptr:
                 return False
 
         # OK, it's in here; do removal
-        obj_ids = self.d[val]
-        if type(self.d[val]) in [array, Int64Set]:
-            self.d[val].remove(ptr)
+        obj_ids = self.tree[val]
+        if type(self.tree[val]) in [array, Int64Set]:
+            self.tree[val].remove(ptr)
             if type(obj_ids) is array:
-                if len(self.d[val]) == 1:
+                if len(self.tree[val]) == 1:
                     # downgrade array -> int
-                    self.d[val] = self.d[val][0]
+                    self.tree[val] = self.tree[val][0]
             else:
-                if len(self.d[val]) < SET_SIZE_MIN:
+                if len(self.tree[val]) < SET_SIZE_MIN:
                     # downgrade set -> array
-                    self.d[val] = array(ARR_TYPE, list(self.d[val]))
+                    self.tree[val] = array(ARR_TYPE, list(self.tree[val]))
         else:
             # downgrade int -> nothing
-            del self.d[val]
+            del self.tree[val]
         return True
 
     def remove(self, ptr: int, obj: Any):
@@ -134,7 +119,7 @@ class MutableAttrIndex:
             removed = self._try_remove(ptr, val)
         if not removed:
             # do O(n) search
-            for val in list(self.d.keys()):
+            for val in list(self.tree.keys()):
                 removed = self._try_remove(ptr, val)
                 if removed:
                     break
@@ -145,21 +130,21 @@ class MutableAttrIndex:
         """Get the ID of every object that has this attribute.
         Called when matching or excluding ``{attr: hashindex.ANY}``."""
         obj_ids = Int64Set(self.none_ids)
-        for key, val in self.d.items():
+        for key, val in self.tree.items():
             self._add_val_to_set(val, obj_ids)
         return obj_ids
 
     def get_values(self) -> Set:
         """Get unique values we have objects for."""
-        vals = set(self.d.keys())
+        vals = set(self.tree.keys())
         if len(self.none_ids):
             vals.add(None)
         return vals
 
     def get_ids_by_range(self, expr: Dict[str, Any]):
-        if type(self.d) is BTree:
+        if type(self.tree) is BTree:
             obj_ids = Int64Set()
-            vals = self.d.get_range_expr(expr)
+            vals = self.tree.get_range_expr(expr)
             for val in vals:
                 self._add_val_to_set(val, obj_ids)
             return obj_ids

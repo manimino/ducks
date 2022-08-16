@@ -8,7 +8,6 @@ from filterbox.utils import (
     cyk_intersect,
     cyk_union,
     validate_query,
-    filter_vals,
     fix_operators,
 )
 from filterbox.mutable.mutable_attr import MutableAttrIndex
@@ -188,13 +187,7 @@ class FilterBox:
                 del expr["in"]
             if expr:
                 # handle <, >, etc
-                try:
-                    expr_matches = self._indices[attr].get_ids_by_range(expr)
-                except ValueError:
-                    # get it the dict way
-                    attr_vals = self._indices[attr].get_values()
-                    valid_values = filter_vals(attr_vals, expr)
-                    expr_matches = self._match_any_value_in(attr, valid_values)
+                expr_matches = self._indices[attr].get_ids_by_range(expr)
                 if matches is None:
                     matches = expr_matches
                 else:

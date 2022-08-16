@@ -13,11 +13,6 @@ def test_remove_empty():
         f.remove("nope")
 
 
-def test_empty_frozen():
-    with AssertRaises(ValueError):
-        FrozenFilterBox([], on=["stuff"])
-
-
 def test_no_index():
     with AssertRaises(ValueError):
         FilterBox(["a"])

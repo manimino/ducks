@@ -10,4 +10,3 @@ def test_none(box_class):
     objs.append({"ok": None})
     fb = box_class(objs, "ok")
     assert len(fb.find({"ok": None})) == 1
-    assert fb._indices["ok"].get_index_type() == "tree"

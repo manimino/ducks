@@ -2,7 +2,7 @@ from filterbox import FilterBox
 from filterbox.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 import pytest
 
-from .conftest import BadHash
+from .conftest import AssertRaises, BadHash
 
 
 class EdgeHash:
@@ -16,6 +16,9 @@ class EdgeHash:
 
     def __eq__(self, other):
         return self.x == other.x
+
+    def __lt__(self, other):
+        return self.x < other.x
 
 
 @pytest.mark.parametrize("n_items", [SIZE_THRESH * 3 + 3, 15])
@@ -70,6 +73,9 @@ class GroupedHash:
     def __eq__(self, other):
         return self.x == other.x
 
+    def __lt__(self, other):
+        return self.x < other.x
+
 
 @pytest.mark.parametrize("delete_bucket", [0, 1, 2])
 def test_grouped_hash(delete_bucket):
@@ -102,6 +108,15 @@ def test_get_zero(box_class):
     assert len(f.find({_f: "d"})) == 0
 
 
+def test_get_in_no_results(box_class):
+    def _f(x):
+        return x[0]
+
+    f = box_class(["a", "b", "c"], on=[_f])
+    assert len(f.find({_f: {"in": ["d"]}})) == 0
+    assert len(f.find({_f: {"in": []}})) == 0
+
+
 def test_double_add():
     f = FilterBox(on="s")
     x = {"s": "hello"}
@@ -114,9 +129,11 @@ def test_double_add():
     assert f.find({"s": "hello"}) == []
 
 
-def test_empty_mutable_index():
-    f = FilterBox([], on=["stuff"])
+def test_empty_index(box_class):
+    f = box_class([], on=["stuff"])
     result = f.find({"stuff": 3})
+    assert len(result) == 0
+    result = f.find({"stuff": {"<": 3}})
     assert len(result) == 0
 
 
@@ -140,13 +157,8 @@ class NoSort:
 def test_unsortable_values(box_class):
     """We need to support values that are hashable, even if they cannot be sorted."""
     objs = [{"a": NoSort(0)}, {"a": NoSort(1)}]
-    f = box_class(objs, ["a"])
-    if isinstance(box_class, FilterBox):
-        objs.append(NoSort(2))
-        f.add(objs[2])
-    assert len(f) == len(objs)
-    for i, obj in enumerate(objs):
-        assert f.find({"a": NoSort(i)}) == [obj]
+    with AssertRaises(TypeError):
+        box_class(objs, ["a"])
 
 
 def test_not_in(box_class):

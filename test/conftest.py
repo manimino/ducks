@@ -47,3 +47,6 @@ class TwoHash:
 
     def __hash__(self):
         return self.n % 2
+
+    def __lt__(self, other):
+        return self.n < other.n

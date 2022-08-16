@@ -81,24 +81,3 @@ def fix_operators(expr: Dict):
             raise ValueError(
                 f"Invalid operator: {op}. Operator must be one of: {VALID_OPERATORS}."
             )
-
-
-def filter_vals(attr_vals: Set[Any], expr: Dict[str, Any]) -> Set[Any]:
-    """Apply the <, <=, >, >= filters to the attr_vals. Return set of matches."""
-    for op, expr_value in expr.items():
-        s = set()
-        for v in attr_vals:
-            try:
-                if op == "<" and v < expr_value:
-                    s.add(v)
-                elif op == "<=" and v <= expr_value:
-                    s.add(v)
-                elif op == ">" and v > expr_value:
-                    s.add(v)
-                elif op == ">=" and v >= expr_value:
-                    s.add(v)
-            except TypeError:
-                # If expr_value is a different type that can't be compared, it's not a match.
-                pass
-        attr_vals = s
-    return s

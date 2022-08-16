@@ -35,6 +35,9 @@ class Collider:
     def __eq__(self, other):
         return self.n == other.n
 
+    def __lt__(self, other):
+        return self.n < other.n
+
 
 class Thing:
     def __init__(self, id_num):
