@@ -119,12 +119,7 @@ class BTree:
             # OOBTree oddity: it allows a non-comparable object on the first insert, but
             # if it gets one, all future inserts will fail.
             # So let's raise a TypeError if the very first insert is a non-comparable type.
-            try:
-                key > key
-            except TypeError:
-                raise TypeError(
-                    f"Cannot add object with attribute {key}: Type must be comparable. Implement __lt__()."
-                )
+            key > key
         if key not in self.tree:
             self.length += 1
         self.tree[key] = value
