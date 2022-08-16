@@ -23,6 +23,9 @@ class Pokemon:
         t = (self.name, self.type1, self.type2)
         return hash(t)
 
+    def __lt__(self, other):
+        return self.name < other.name
+
 
 def make_test_filterbox(box_class) -> Union[FilterBox, FrozenFilterBox]:
     zapdos = Pokemon("Zapdos", "Electric", "Flying")

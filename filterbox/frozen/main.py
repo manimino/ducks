@@ -5,10 +5,9 @@ import numpy as np
 import sortednp as snp
 
 from filterbox import ANY
-from filterbox.frozen.frozen_attr import FrozenAttrIndex
 from filterbox.frozen.froz_attr_val import FrozenAttrValIndex
 from filterbox.frozen.utils import snp_difference
-from filterbox.utils import make_empty_array, validate_query, filter_vals, fix_operators
+from filterbox.utils import make_empty_array, validate_query, fix_operators
 
 
 class FrozenFilterBox:
@@ -28,10 +27,6 @@ class FrozenFilterBox:
     """
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
-        if not objs:
-            raise ValueError(
-                "Cannot build an empty FrozenFilterBox; at least 1 object is required."
-            )
         if not on:
             raise ValueError("Need at least one attribute.")
         if isinstance(on, str):
@@ -44,10 +39,7 @@ class FrozenFilterBox:
             self.obj_arr[i] = obj
 
         for attr in on:
-            try:
-                self._indices[attr] = FrozenAttrValIndex(attr, self.obj_arr, self.dtype)
-            except TypeError:
-                self._indices[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
+            self._indices[attr] = FrozenAttrValIndex(attr, self.obj_arr, self.dtype)
 
         self.sorted_obj_ids = np.sort(
             [id(obj) for obj in self.obj_arr]
@@ -132,29 +124,23 @@ class FrozenFilterBox:
                 matches = self._match_any_value_in(attr, expr["in"])
                 del expr["in"]
             if expr:
-                if type(self._indices[attr]) is FrozenAttrValIndex:
-                    lo = None
-                    include_lo = False
-                    hi = None
-                    include_hi = False
-                    if ">" in expr:
-                        lo = expr[">"]
-                    if ">=" in expr:
-                        lo = expr[">="]
-                        include_lo = True
-                    if "<" in expr:
-                        hi = expr["<"]
-                    if "<=" in expr:
-                        hi = expr["<="]
-                        include_hi = True
-                    expr_matches = self._indices[attr].get_ids_by_range(
-                        lo, hi, include_lo=include_lo, include_hi=include_hi
-                    )
-                else:
-                    # handle <, >, etc
-                    attr_vals = self._indices[attr].get_values()
-                    valid_values = filter_vals(attr_vals, expr)
-                    expr_matches = self._match_any_value_in(attr, valid_values)
+                lo = None
+                include_lo = False
+                hi = None
+                include_hi = False
+                if ">" in expr:
+                    lo = expr[">"]
+                if ">=" in expr:
+                    lo = expr[">="]
+                    include_lo = True
+                if "<" in expr:
+                    hi = expr["<"]
+                if "<=" in expr:
+                    hi = expr["<="]
+                    include_hi = True
+                expr_matches = self._indices[attr].get_ids_by_range(
+                    lo, hi, include_lo=include_lo, include_hi=include_hi
+                )
                 if matches is None:
                     matches = expr_matches
                 else:

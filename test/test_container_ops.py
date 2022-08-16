@@ -37,17 +37,17 @@ def test_make_from(box_class, idx_order):
     assert len(other_f) == len(f)
 
 
-def test_contains(box_class):
+def test_box_contains(box_class):
     ls = [{"i": i} for i in range(5)]
     f = box_class(ls, ["i"])
     for item in ls:
         assert item in f
 
 
-def test_not_contains(box_class):
+def test_box_not_contains(box_class):
     yes = {"i": 1}
     f = box_class([yes], "i")
-    no = {"i": -1000}
-    assert no not in f
-    no = {"i": 1000}
-    assert no not in f
+    # test a ton of these because coverage can drop otherwise
+    for i in [None, -1000, 'apples', 1000, (1, 2, 3), 0.5] + list(range(100)):
+        no = {"i": i}
+        assert no not in f

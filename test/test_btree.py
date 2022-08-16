@@ -106,3 +106,10 @@ def test_bad_expr():
         bt.get_range_expr({"<": "a", "<=": "a"})
     with AssertRaises(TypeError):
         bt.get_range_expr({"<=": 99})
+
+
+def test_bad_first_insert():
+    bt = BTree()
+    with AssertRaises(TypeError):
+        bt[{'x': 1}] = 5
+    bt = BTree()

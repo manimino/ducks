@@ -15,14 +15,21 @@ from filterbox.init_helpers import get_vals, run_length_encode
 
 
 class FrozenAttrValIndex:
-    """Stores data and handles requests that are relevant to a single attribute of a FrozenFilterBox."""
+    """
+    Stores data and handles requests that are relevant to a single attribute of a FrozenFilterBox.
+
+    There are three places where object indices are stored.
+     - none_ids stores all indices for with the attribute value None
+     - val_to_obj_ids stores object ids for attribute values that have many objects
+     - val_arr + obj_id_arr store all the rest.
+    """
 
     def __init__(self, attr: Union[str, Callable], objs: np.ndarray, dtype: str):
         # sort the objects by attribute value, using their hashes and handling collisions
         self.dtype = dtype
         self.attr = attr
 
-        # Nones get stored in their own special spot so they don't break sortability
+        # Nones get stored in their own special spot so they don't break sortability.
         self.none_ids = make_empty_array(self.dtype)
 
         # We will pull repeated attributes out into a BTree and pre-sort their indices.
@@ -82,6 +89,7 @@ class FrozenAttrValIndex:
         arrs = [self.obj_id_arr]
         for v in self.val_to_obj_ids.values():
             arrs.append(v)
+        arrs.append(self.none_ids)
         return np.sort(np.concatenate(arrs))
 
     def get_values(self) -> Set:
@@ -92,24 +100,16 @@ class FrozenAttrValIndex:
             vals.add(None)
         return vals
 
-    def get_ids_by_range(
-        self, lo, hi, include_lo=False, include_hi=False
-    ) -> np.ndarray:
-        """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
-        # Get matches from the val_to_obj_ids BTree
-        big_matches_list = self.val_to_obj_ids.get_range(lo, hi, include_lo, include_hi)
-
-        # Get the matches from the main array
-        if len(self) == 0:
+    def _get_val_arr_matches(self, lo, hi, include_lo=False, include_hi=False):
+        if len(self.val_arr) == 0:
             return make_empty_array(self.dtype)
+
         if lo is None:
             left = 0
             lo = self.val_arr[0]
             include_lo = True
         else:
             left = bisect_left(self.val_arr, lo)
-            while left < len(self.val_arr) and self.val_arr[left] < lo:
-                left += 1
 
         if hi is None:
             right = len(self.val_arr)
@@ -117,13 +117,13 @@ class FrozenAttrValIndex:
             include_hi = True
         else:
             right = bisect_right(self.val_arr, hi)
-            while right > left and self.val_arr[right - 1] > hi:
-                right -= 1
 
         # move left pointer up to fit > constraint
         if not include_lo:
             while left < len(self.val_arr) and self.val_arr[left] == lo:
                 left += 1
+        if left == len(self.val_arr):
+            return make_empty_array(self.dtype)
 
         # move right pointer down to fit < constraint
         if not include_hi:
@@ -131,6 +131,19 @@ class FrozenAttrValIndex:
                 right -= 1
 
         small_matches = self.obj_id_arr[left:right]
+        return small_matches
+
+    def get_ids_by_range(
+        self, lo, hi, include_lo=False, include_hi=False
+    ) -> np.ndarray:
+        """Get the object IDs associated with this value range as an Int64Set. Only usable when self.d is a tree."""
+        if len(self) == 0:
+            return make_empty_array(self.dtype)
+
+        # Get matches from the val_to_obj_ids BTree
+        big_matches_list = list(self.val_to_obj_ids.get_range(lo, hi, include_lo, include_hi))
+
+        small_matches = self._get_val_arr_matches(lo, hi, include_lo, include_hi)
 
         # do return
         if len(big_matches_list) == 1 and len(small_matches) == 0:
@@ -141,9 +154,5 @@ class FrozenAttrValIndex:
         matches = np.sort(np.concatenate([small_matches] + big_matches_list))
         return matches
 
-    @staticmethod
-    def get_index_type():
-        return "tree"
-
     def __len__(self):
-        return len(self.val_arr)
+        return len(self.val_arr) + len(self.val_to_obj_ids) + len(self.none_ids)
