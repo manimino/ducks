@@ -154,6 +154,8 @@ fb.find({'a': ANY})          # result: [{'a': 1}, {'a': 2}]
 fb.find({get_a: ANY})        # result: [{'a': 1}, {'a': 2}]
 fb.find(exclude={'a': ANY})  # result: [{}]
 ```
+
+Note that `None` is treated as a normal value and is stored.
 </details>
 
 ### Recipes
