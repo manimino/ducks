@@ -34,7 +34,8 @@ from filterbox.constants import SIZE_THRESH
     ],
 )
 def test_get_range_expr(box_class, expr, result):
-    fb = box_class([{"a": i} for i in range(10)], "a")
+    objs = [{"a": i} for i in range(10)] + [{"a": None}]
+    fb = box_class(objs, "a")
     assert list(sorted(o["a"] for o in fb.find({"a": expr}))) == result
 
 
@@ -70,9 +71,10 @@ def test_get_range_expr(box_class, expr, result):
 )
 def test_get_big(box_class, expr):
     objs = [{"a": i % 10} for i in range(SIZE_THRESH * 11)]
+    objs += [{"a": None} for _ in range(SIZE_THRESH + 1)]
     fb = box_class(objs, "a")
     found = fb.find({"a": expr})
-    result = objs
+    result = [o for o in objs if o["a"] is not None]
     for op, val in expr.items():
         if op == ">":
             result = [o for o in result if o["a"] > val]

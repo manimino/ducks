@@ -20,7 +20,7 @@ def test_missing_function(box_class, n_items):
     assert len(fb) == n_items
     assert len(fb.find(match={even: True})) == n_even
     assert len(fb.find(exclude={even: True})) == n_odd
-    for idx in fb._indices.values():
+    for idx in fb._indexes.values():
         assert len(idx) == n_even
 
 
@@ -37,8 +37,8 @@ def test_add_with_missing_attributes():
     for d in missing_attr_data:
         fb.add(d)
     assert len(fb) == 4
-    assert len(fb._indices["a"]) == 2
-    assert len(fb._indices["b"]) == 2
+    assert len(fb._indexes["a"]) == 2
+    assert len(fb._indexes["b"]) == 2
     assert len(fb.find(exclude={"b": {"in": [2, 4]}})) == 2
     assert len(fb.find(exclude={"a": {"in": [1, 3]}})) == 2
 
@@ -48,7 +48,7 @@ def test_remove_with_missing_attributes():
     for d in missing_attr_data:
         fb.remove(d)
     assert len(fb) == 0
-    for idx in fb._indices.values():
+    for idx in fb._indexes.values():
         assert len(idx) == 0
 
 
@@ -56,8 +56,8 @@ def test_missing_attributes(box_class):
     fb = box_class(missing_attr_data, ["a", "b"])
     for d in missing_attr_data:
         assert d in fb
-    assert len(fb._indices["a"]) == 2
-    assert len(fb._indices["b"]) == 2
+    assert len(fb._indexes["a"]) == 2
+    assert len(fb._indexes["b"]) == 2
 
 
 def test_add_none():

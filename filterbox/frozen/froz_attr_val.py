@@ -9,7 +9,7 @@ from bisect import bisect_left, bisect_right
 from typing import Union, Callable, Set
 
 from filterbox.btree import BTree
-from filterbox.constants import SIZE_THRESH
+from filterbox.constants import ANY, SIZE_THRESH
 from filterbox.utils import make_empty_array
 from filterbox.init_helpers import get_vals, run_length_encode
 
@@ -18,8 +18,8 @@ class FrozenAttrValIndex:
     """
     Stores data and handles requests that are relevant to a single attribute of a FrozenFilterBox.
 
-    There are three places where object indices are stored.
-     - none_ids stores all indices for with the attribute value None
+    There are three places where object indexes are stored.
+     - none_ids stores all indexes for with the attribute value None
      - val_to_obj_ids stores object ids for attribute values that have many objects
      - val_arr + obj_id_arr store all the rest.
     """
@@ -32,7 +32,7 @@ class FrozenAttrValIndex:
         # Nones get stored in their own special spot so they don't break sortability.
         self.none_ids = make_empty_array(self.dtype)
 
-        # We will pull repeated attributes out into a BTree and pre-sort their indices.
+        # We will pull repeated attributes out into a BTree and pre-sort their indexes.
         # Saves memory, and makes object lookups *way* faster.
         self.val_to_obj_ids = BTree()
 
@@ -72,7 +72,9 @@ class FrozenAttrValIndex:
         self.obj_id_arr = obj_id_arr[unused]
 
     def get(self, val) -> np.ndarray:
-        """Get indices of objects whose attribute is val."""
+        """Get indexes of objects whose attribute is val."""
+        if val is ANY:
+            return self.get_all()
         if val is None:
             return self.none_ids
         if val in self.val_to_obj_ids:
@@ -85,7 +87,7 @@ class FrozenAttrValIndex:
         return np.sort(self.obj_id_arr[left:right])
 
     def get_all(self) -> np.ndarray:
-        """Get indices of every object with this attribute. Used when matching ANY."""
+        """Get indexes of every object with this attribute. Used when matching ANY."""
         arrs = [self.obj_id_arr]
         for v in self.val_to_obj_ids.values():
             arrs.append(v)

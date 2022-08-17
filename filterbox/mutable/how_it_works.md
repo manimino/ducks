@@ -3,12 +3,9 @@
 Here's more detailed pseudocode of a FilterBox:
 
 ```
-# Object IDs are stored in Int64-typed sets, which are more memory-efficient than Python set()
-from cykhash import Int64Set
-
 class FilterBox:
     # holds each attribute index and the id-to-object map
-    indices = {
+    indexes = {
         'attr1': MutableAttrIndex(),
         'attr2': MutableAttrIndex()
     }
@@ -18,10 +15,10 @@ class FilterBox:
 
 class MutableAttrIndex: 
     # maps the values for one attribute to object IDs
-    vals_to_ids = {
-        val1: Int64Set(some_obj_ids), 
-        val2: Int64Set(other_obj_ids)
-    }
+    tree = BTree({
+        val1: set(some_obj_ids), 
+        val2: set(other_obj_ids)
+    })
 ```
 
 On `FilterBox.find()`:
@@ -57,7 +54,7 @@ Results:
 That table tells us a story:
  - Small collections of any type are extremely inefficient. Don't make collections of size 1.
  - Immutable collections are cheaper. Tuples, arrays, and numpy arrays cost less memory than the set types.
- - Typed collections are cheaper. Numpy arrays and cykhash Int64Sets are cheaper than tuples or Python sets.
+ - Typed collections are cheaper. Numpy arrays and [cykhash](https://github.com/realead/cykhash) Int64Sets are cheaper than tuples or Python sets.
 
 The best collection in terms of memory usage is a big array. But FilterBox is mutable; we need to add and remove
 objects in a few microseconds. Rewriting a big array on change is too slow. So we'll save the arrays for 

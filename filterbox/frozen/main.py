@@ -4,10 +4,15 @@ from typing import Optional, Any, Dict, Union, Callable, Iterable, Set
 import numpy as np
 import sortednp as snp
 
-from filterbox import ANY
+from filterbox.btree import range_expr_to_args
 from filterbox.frozen.froz_attr_val import FrozenAttrValIndex
 from filterbox.frozen.utils import snp_difference
-from filterbox.utils import make_empty_array, validate_query, fix_operators
+from filterbox.utils import (
+    make_empty_array,
+    standardize_expr,
+    validate_query,
+    validate_and_standardize_operators,
+)
 
 
 class FrozenFilterBox:
@@ -15,7 +20,6 @@ class FrozenFilterBox:
 
     Args:
         objs: The objects that FrozenFilterBox will contain.
-            Objects do not need to be hashable, any object works.
 
         on: The attributes that will be used for finding objects.
             Must contain at least one.
@@ -23,7 +27,9 @@ class FrozenFilterBox:
     It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
     stored, and can found with ``find()``.
 
-    For the objects that do contain the attributes on ``on``, those attribute values must be hashable.
+    For the objects that do contain the attributes on ``on``, those attribute values must be hashable and sortable.
+    Most Python objects are hashable. Implement the function ``__lt__(self, other)`` to make a class sortable.
+    An attribute value of ``None`` is acceptable as well, even though None is not sortable.
     """
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
@@ -31,19 +37,18 @@ class FrozenFilterBox:
             raise ValueError("Need at least one attribute.")
         if isinstance(on, str):
             on = [on]
-        self._indices = {}
 
         self.obj_arr = np.empty(len(objs), dtype="O")
         self.dtype = "uint32" if len(objs) < 2 ** 32 else "uint64"
         for i, obj in enumerate(objs):
             self.obj_arr[i] = obj
 
+        self._indexes = {}
         for attr in on:
-            self._indices[attr] = FrozenAttrValIndex(attr, self.obj_arr, self.dtype)
+            self._indexes[attr] = FrozenAttrValIndex(attr, self.obj_arr, self.dtype)
 
-        self.sorted_obj_ids = np.sort(
-            [id(obj) for obj in self.obj_arr]
-        )  # only used during contains() checks
+        # only used during contains() checks
+        self.sorted_obj_ids = np.sort([id(obj) for obj in self.obj_arr])
 
     def find(
         self,
@@ -53,33 +58,36 @@ class FrozenFilterBox:
         """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
 
         Args:
-            match: Dict of ``{attribute: value}`` defining the subset of objects that match.
+            match: Dict of ``{attribute: expression}`` defining the subset of objects that match.
                 If ``None``, all objects will match.
 
                 Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
-                Value can be any of the following:
-                 - A single hashable value, which will match all objects with that value for the attribute.
-                 - A dict of ``{operator: value}``, such as ``{'>': 5}`` or ``{'in': [1, 2, 3]}``.
+                The expression can be any of the following:
+                 - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
+                 - A single value, which is a shorthand for `{'==': value}`.
+                 - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
                  - ``filterbox.ANY``, which matches all objects having the attribute.
 
-                 Valid operators are 'in', '<', '<=', '>', '>=', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte'.
+                 Valid operators are '==' 'in', '<', '<=', '>', '>='.
+                 The aliases 'eq' 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
+                 To match a None value, use ``{'==': None}``. There is no separate operator for None values.
 
-            exclude: Dict of ``{attribute: value}`` defining the subset of objects that do not match.
+            exclude: Dict of ``{attribute: expression}`` defining the subset of objects that do not match.
                 If ``None``, no objects will be excluded.
 
                 Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
-
-                Value can be any of the following:
-                 - A single hashable value, which will exclude all objects with that value for the attribute.
-                 - A dict of ``{operator: value}``, such as ``{'>': 5}`` or ``{'in': [1, 2, 3]}``.
-                 - ``filterbox.ANY``, which excludes all objects having the attribute.
+                Valid expressions are the same as in ``match``.
 
         Returns:
-            Numpy array of objects matching the constraints.
+            Numpy array of objects matching the constraints. Array will be in the same order as the original objects.
         """
-
-        validate_query(self._indices, match, exclude)
+        # validate input and convert expressions to dict
+        validate_query(self._indexes, match, exclude)
+        for arg in [match, exclude]:
+            if arg:
+                for key in arg:
+                    arg[key] = standardize_expr(arg[key])
 
         # perform 'match' query
         if match:
@@ -116,58 +124,37 @@ class FrozenFilterBox:
 
     def _match_attr_expr(self, attr: Union[str, Callable], expr: dict) -> np.ndarray:
         """Look at an attr, handle its expr appropriately"""
-        if isinstance(expr, dict):
-            fix_operators(expr)
-            matches = None
-            if "in" in expr:
-                # always do 'in' first -- it doesn't require get_values() which can be slow.
-                matches = self._match_any_value_in(attr, expr["in"])
-                del expr["in"]
-            if expr:
-                lo = None
-                include_lo = False
-                hi = None
-                include_hi = False
-                if ">" in expr:
-                    lo = expr[">"]
-                if ">=" in expr:
-                    lo = expr[">="]
-                    include_lo = True
-                if "<" in expr:
-                    hi = expr["<"]
-                if "<=" in expr:
-                    hi = expr["<="]
-                    include_hi = True
-                expr_matches = self._indices[attr].get_ids_by_range(
-                    lo, hi, include_lo=include_lo, include_hi=include_hi
-                )
-                if matches is None:
-                    matches = expr_matches
-                else:
-                    matches = snp.intersect(matches, expr_matches)
-            return matches
-        elif expr is ANY:
-            return self._indices[attr].get_all()
-        elif isinstance(expr, set):
-            raise ValueError(
-                f"Expression {expr} is a set. Did you mean to make a dict?."
+        validate_and_standardize_operators(expr)
+        matches = None
+        # handle 'in' and '=='
+        eq_expr = {op: val for op, val in expr.items() if op in ["==", "in"]}
+        for op, val in eq_expr.items():
+            if op == "==":
+                op_matches = self._indexes[attr].get(val)
+            elif op == "in":
+                op_matches = self._match_any_value_in(attr, expr["in"])
+            matches = (
+                op_matches if matches is None else snp.intersect(op_matches, matches)
             )
-        else:
-            # match this specific value
-            return self._indices[attr].get(expr)
 
-    def _match_any_value_in(
-        self, attr: Union[str, Callable], values: Iterable[Any]
-    ) -> np.ndarray:
-        """"Get the union of object ID matches for the values."""
-        matches = [self._indices[attr].get(v) for v in values]
-        if matches:
-            return np.sort(np.concatenate(matches))
-        else:
-            return make_empty_array(self.dtype)
+        # handle range query
+        range_expr = {
+            op: val for op, val in expr.items() if op in ["<", ">", "<=", ">="]
+        }
+        if range_expr:
+            min_key, max_key, include_min, include_max = range_expr_to_args(range_expr)
+            range_matches = self._indexes[attr].get_ids_by_range(
+                min_key, max_key, include_min, include_max
+            )
+            matches = (
+                range_matches
+                if matches is None
+                else snp.intersect(range_matches, matches)
+            )
+        return matches
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
-        """Get the unique values we have for the given attribute. Useful for deciding what to find() on.
+        """Get the set of unique values we have for the given attribute.
 
         Args:
             attr: The attribute to get values for.
@@ -175,7 +162,17 @@ class FrozenFilterBox:
         Returns:
             Set of all unique values for this attribute.
         """
-        return self._indices[attr].get_values()
+        return self._indexes[attr].get_values()
+
+    def _match_any_value_in(
+        self, attr: Union[str, Callable], values: Iterable[Any]
+    ) -> np.ndarray:
+        """"Get the union of object ID matches for the values."""
+        matches = [self._indexes[attr].get(v) for v in values]
+        if matches:
+            return np.sort(np.concatenate(matches))
+        else:
+            return make_empty_array(self.dtype)
 
     def __contains__(self, obj):
         obj_id = id(obj)

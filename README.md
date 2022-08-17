@@ -2,9 +2,7 @@
 
 Container for finding Python objects.
 
-Stores objects by attribute value, so finds are very fast. 
-
-[Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+Stores objects by their attribute value. Uses B-tree indexes to make finding very fast.
 
 [![tests Actions Status](https://github.com/manimino/filterbox/workflows/tests/badge.svg)](https://github.com/manimino/filterbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
@@ -39,7 +37,10 @@ fb = FilterBox(               # make a FilterBox
     on=['sky', 'wind_speed']  # attributes to find by
 )
 
-fb.find({'sky': 'sunny', 'wind_speed': {'>=': 5, '<=': 10}})  
+fb.find({
+    'sky': 'sunny', 
+    'wind_speed': {'>=': 5, '<=': 10}
+})  
 # result: [{'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7}]
 ```
 
@@ -54,7 +55,10 @@ def is_palindrome(s):
     return s == s[::-1]
 
 fb = FilterBox(strings, [is_palindrome, len])
-fb.find({is_palindrome: True, len: {'in': [5, 7]}})  
+fb.find({
+    is_palindrome: True, 
+    len: {'in': [5, 7]}
+})
 # result: ['kayak', 'racecar', 'stats']
 ```
 
@@ -154,6 +158,8 @@ fb.find({'a': ANY})          # result: [{'a': 1}, {'a': 2}]
 fb.find({get_a: ANY})        # result: [{'a': 1}, {'a': 2}]
 fb.find(exclude={'a': ANY})  # result: [{}]
 ```
+
+Note that `None` is treated as a normal value and is stored.
 </details>
 
 ### Recipes
@@ -167,15 +173,15 @@ ____
 
 ## How it works
 
-For each attribute in the FilterBox, it holds a dict or tree that maps every unique value to the set of objects with 
+For each attribute in the FilterBox, it holds a tree that maps every unique value to the set of objects with 
 that value. 
 
-This is the rough idea of the data structure: 
+This is a rough idea of the data structure: 
 ```
 class FilterBox:
-    indices = {
-        'attribute1': {val1: set(some_obj_ids), val2: set(other_obj_ids)},
-        'attribute2': BTree({val3: set(some_obj_ids), val4: set(other_obj_ids)}),
+    indexes = {
+        'attribute1': BTree({10: set(some_obj_ids), 20: set(other_obj_ids)}),
+        'attribute2': BTree({'abc': set(some_obj_ids), 'def': set(other_obj_ids)}),
     }
     'obj_map': {obj_ids: objects}
 }
@@ -199,14 +205,21 @@ See the "how it works" pages for more detail:
  - [ConcurrentFilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.concurrent.html#filterbox.concurrent.main.ConcurrentFilterBox)
  - [FrozenFilterBox API](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox)
 
-### Related projects
 
-FilterBox is a type of inverted index. It is optimized for its goal of finding in-memory Python objects.
+### Why not SQLite?
 
-Other Python in-memory inverted index implementations are aimed at things like 
-[vector search (rii)](https://pypi.org/project/rii/) and 
-[finding documents by words (lunr)](https://pypi.org/project/lunr/). Outside of Python, ElasticSearch is a popular inverted
-index search tool. Each of these has goals outside of FilterBox's niche; there are no plans to expand FilterBox towards
-these functions.
+SQLite is an awesome relational database, and its in-memory storage option allows it to be used as a container for 
+Python objects. [LiteBox](https://github.com/manimino/litebox) is one such implementation.
 
+But `filterbox` was designed only to store and find Python objects quickly. 
+
+As such, filterbox has many advantages over SQLite:
+- The filterbox containers are faster. [Finding objects using filterbox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
+- They can query any Python data type, not just numbers and strings. While there are tricks to get around this in 
+SQLite, those tricks incur other costs in flexibility, complexity, and/or speed.
+- There is no translation of datatypes, allowing faster finds.
+- They use sparse representations. Objects do not need to fill in "NULL" for missing attributes,
+those attributes are simply not stored.
+- FrozenFilterBox is immutable, and so implements optimizations that are not possible in SQLite.
+- There is less cognitive overhead. You'll never need to VACUUM a FilterBox.
 ____

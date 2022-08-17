@@ -37,7 +37,7 @@ class ConcurrentFilterBox:
             self.lock = RWLockFair()
         else:
             raise ValueError(f"priority must be {READERS}, {WRITERS}, or {FAIR}.")
-        self._indices = self.box._indices  # only used during testing
+        self._indexes = self.box._indexes  # only used during testing
 
     @contextmanager
     def read_lock(self):

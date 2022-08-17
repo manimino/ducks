@@ -1,23 +1,23 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /home/theo/repos/filterbox
+rootdir: /home/theo/repos
 plugins: anyio-2.2.0, cov-3.0.0
-collected 464 items
+collected 471 items
 
-test/test_basic_operations.py .......................................... [  9%]
+test/test_basic_operations.py .......................................... [  8%]
 ...........................                                              [ 14%]
-test/test_btree.py ..................................                    [ 22%]
+test/test_btree.py ..................................                    [ 21%]
 test/test_container_ops.py .....................                         [ 26%]
 test/test_edge_cases.py ......................................           [ 34%]
-test/test_examples.py ......                                             [ 36%]
-test/test_exceptions.py ................                                 [ 39%]
+test/test_examples.py ......                                             [ 35%]
+test/test_exceptions.py ...................                              [ 39%]
 test/test_fancy_gets.py ............                                     [ 42%]
-test/test_missing_attribute.py ......................................... [ 51%]
+test/test_missing_attribute.py ......................................... [ 50%]
 .                                                                        [ 51%]
-test/test_mixed_cardinality.py ..................                        [ 55%]
+test/test_mixed_cardinality.py ..................                        [ 54%]
 test/test_mutations.py ...............                                   [ 58%]
-test/test_nones.py ...                                                   [ 59%]
-test/test_range_queries.py ............................................. [ 68%]
+test/test_nones.py .......                                               [ 59%]
+test/test_range_queries.py ............................................. [ 69%]
 ........................................................................ [ 84%]
 .................................                                        [ 91%]
 test/test_stale_objects.py ...........                                   [ 93%]
@@ -30,23 +30,23 @@ test/mutable/test_soak.py .                                              [100%]
 Name                                Stmts   Miss  Cover
 -------------------------------------------------------
 filterbox/__init__.py                   5      0   100%
-filterbox/btree.py                     80      0   100%
+filterbox/btree.py                     76      0   100%
 filterbox/concurrent/__init__.py        0      0   100%
 filterbox/concurrent/main.py           51      0   100%
 filterbox/constants.py                 13      0   100%
 filterbox/exceptions.py                 3      0   100%
 filterbox/frozen/__init__.py            0      0   100%
-filterbox/frozen/froz_attr_val.py      95      0   100%
-filterbox/frozen/main.py               94      0   100%
+filterbox/frozen/froz_attr_val.py      97      0   100%
+filterbox/frozen/main.py               82      0   100%
 filterbox/frozen/utils.py               8      0   100%
 filterbox/init_helpers.py              22      0   100%
 filterbox/mutable/__init__.py           0      0   100%
-filterbox/mutable/main.py              97      0   100%
-filterbox/mutable/mutable_attr.py     103      0   100%
+filterbox/mutable/main.py              99      0   100%
+filterbox/mutable/mutable_attr.py     104      0   100%
 filterbox/perf.py                       0      0   100%
-filterbox/utils.py                     50      0   100%
+filterbox/utils.py                     64      0   100%
 -------------------------------------------------------
-TOTAL                                 621      0   100%
+TOTAL                                 624      0   100%
 
 
-============================= 464 passed in 5.63s ==============================
+============================= 471 passed in 6.61s ==============================

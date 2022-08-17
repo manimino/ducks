@@ -32,7 +32,6 @@ def test_find_wrong_type(box_class, expr, expected, raises):
         expr = {"in": expr}
     objs = [{"x": i} for i in range(10)]
     fb = box_class(objs, "x")
-    print("raises", raises)
     if raises:
         with AssertRaises(TypeError):
             fb.find({"x": expr})
@@ -43,6 +42,6 @@ def test_find_wrong_type(box_class, expr, expected, raises):
 def test_add_wrong_type():
     objs = [{"x": i} for i in range(10)]
     fb = FilterBox(objs, "x")
-    assert len(fb._indices["x"].tree) == 10
+    assert len(fb._indexes["x"].tree) == 10
     with AssertRaises(TypeError):
         fb.add({"x": "lol"})

@@ -31,8 +31,8 @@ def test_add_remove(priority, end_full, expected_len):
     box = ConcurrentFilterBox(objs, ["x"], priority=priority)
     # box = FilterBox(objs, ['x'])  # <--- use this instead, and you will observe frequent failures on this test.
 
-    # Patch indices 'add' to add a small delay, forcing race conditions to occur more often
-    box._indices["x"].add = slow_wrapper(box._indices["x"].add)
+    # Patch indexes 'add' to add a small delay, forcing race conditions to occur more often
+    box._indexes["x"].add = slow_wrapper(box._indexes["x"].add)
 
     duration = 0.2
     t0 = time.time()
@@ -48,4 +48,4 @@ def test_add_remove(priority, end_full, expected_len):
         t1.join()
         t2.join()
         assert len(box) == expected_len
-        assert len(box._indices["x"]) == expected_len  # fails on FilterBox
+        assert len(box._indexes["x"]) == expected_len  # fails on FilterBox

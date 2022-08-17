@@ -1,58 +1,45 @@
 ## How It Works, Frozen Edition
 
-**Note: This assumes familiarity with the regular FilterBox.**
 
-### Implementing dict-of-set using Numpy arrays
+### Implementing BTree-of-set using Numpy arrays
 
 In FrozenFilterBox, we know that:
  - The data will never change
  - The values are always integers
 
-So rather than using a Python `dict of set of object IDs` like FilterBox does, FrozenFilterBox uses numpy arrays to 
-achieve the same thing. This design is much faster and far more memory-efficient.
+This means we can use an array-based implementation rather than a tree. This design is much faster and far more 
+memory-efficient. Bisecting a sorted array allows O(log(n)) lookup, just like a tree, while not incurring the various
+overheads that a tree does. 
 
-Let's look at the structure of a "dict of set as arrays" implementation.
-
-Suppose we have keys A, B, C, and D. 
- - A hashes to 1
- - B hashes to 2
- - C and D both hash to 3
-
-So we have the arrays:
+Pseudocode:
 ```
-keys    = [A, B, B, D, D, C, C, C]  # keys sorted by hash and grouped by key
-hashes  = [1, 2, 2, 3, 3, 3, 3, 3]  # sorted by hash
-obj_ids = [z, h, x, y, n, m, q, r]  # object IDs that we will look up by key
+class FrozenFilterBox:
+    # holds each attribute index and an array of objects
+    indexes = {
+        'attr1': FrozenAttrIndex(),
+        'attr2': FrozenAttrIndex()
+    }
+    'objects': np.array(dtype="O")  
+}
 
-# compute these by run-length-encoding of the hashes array
-unique_hashes   = [1, 2, 3]
-hash_start_pos  = [0, 1, 3]
-hash_run_length = [1, 2, 5]
+class MutableAttrIndex: 
+    # maps the values for an attribute to object array indexes
+    
+    val_arr = np.array(attribute value for each object)  # sorted by value
+    obj_idx_arr = np.array(index in obj array for each object)  # sorted by value
+    
+    # tree stores values for which there are many matching objects
+    tree = BTree({
+        val1: np.array(sorted_obj_arr_indexes),
+        val2: np.array(sorted_obj_arr_indexes)
+    })
 ```
 
-Now let's find the object IDs that match the key B.
- - Hash B to 2
- - Find that 2 is in unique_hashes (it's a sorted array, so this takes log(n))
- - Find start and end positions using hash_start_pos and hash_run_length.
- - hash_start_pos = 1 and hash_run_length = 2, so we'll check keys at positions 1 and 2.
- - The keys at positions 1 and 2 are both B. Get their obj_ids.
- - Return object IDs `[h, x]`.
+Rather than having a dict lookup for object id -> object, we just store the objects in an array. Instead of
+object IDs, we can use indexes into that array. Handily, the indexes can be `int32` if there are less than a few
+billion objects, which is usually the case. `int32` operations are a little faster than `int64`, in addition to being 
+more RAM-efficient.
 
-What if we wanted the object ID for key C? It has the same hash as D does -- how will that work?
- - Hash C to 2
- - Find that C is in unique_hashes (it's a sorted array, so this takes log(n))
- - Find start and end positions using hash_start_pos and hash_run_length.
- - hash_start_pos = 3 and hash_run_length = 5, so we'll check keys in the range (3, 3+5).
- - Initialize a pointer at 3 and a pointer at 8. Move them towards each other, stopping on the first C.
- - Keys 5, 6, and 7 are all C.
- - Return object IDs `[m, q, r]`.
-
-Note that we never sort by value here. There's a good reason for it; the values may not be comparable.
-Maybe A is a string, B is an int, and C is a tuple. Each is hashable, but defining a `<` on them wouldn't make sense.
-That's part of the fun of making a container in Python - you never know what types you're going to get!
-
-Note also that we didn't use the `hashes` array during lookup. It is not actually stored, it's just shown in
-this example for clarity.
 
 ### Set operations on numpy arrays
 
@@ -66,13 +53,10 @@ If you have the arrays:
 What is their intersection? Do you need to convert them to `set` to figure it out? 
 
 Of course not -- sorted array intersection is easy. There's a great package called 
-[sortednp](https://pypi.org/project/sortednp/) that implements fast operations on sorted numpy arrays.
+[sortednp](https://pypi.org/project/sortednp/) that implements fast set operations on sorted numpy arrays.
 
-So once we have the object IDs for each part of a query, `sortednp.intersect` and friends will get us the final
-ID set.
-
-Since we're using parallel numpy arrays, the object IDs are not from Python `id()` here; they are actually just
-indices into a numpy array of objects stored in FrozenFilterBox. 
+So once we have the object indexes for each part of a query, `sortednp.intersect` and friends will get us the final
+object indexes.
 
 ### Wrap up
 

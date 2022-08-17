@@ -100,10 +100,6 @@ def test_keys_values():
 
 def test_bad_expr():
     bt = BTree({"a": 1, "b": 2})
-    with AssertRaises(ValueError):
-        bt.get_range_expr({">": "a", ">=": "a"})
-    with AssertRaises(ValueError):
-        bt.get_range_expr({"<": "a", "<=": "a"})
     with AssertRaises(TypeError):
         bt.get_range_expr({"<=": 99})
 

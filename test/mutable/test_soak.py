@@ -147,12 +147,12 @@ class SoakTest:
         ]
         f_ls = self.f.find({"planet": "saturn"})
         assert len(ls) == len(f_ls)
-        assert len(self.objs) == len(self.f._indices["planet"])
+        assert len(self.objs) == len(self.f._indexes["planet"])
         # check a functional key
         ls = [o for o in self.objs.values() if get_attribute(o, planet_len)[0] == 6]
         f_ls = self.f.find({planet_len: 6})
         assert len(ls) == len(f_ls)
-        assert len(self.objs) == len(self.f._indices[planet_len])
+        assert len(self.objs) == len(self.f._indexes[planet_len])
         # check a null-ish key
         ls = [
             o for o in self.objs.values() if get_attribute(o, "sometimes")[1] == False
@@ -164,7 +164,7 @@ class SoakTest:
         ls = [o for o in self.objs.values() if get_attribute(o, "collider")[0] == c]
         f_ls = self.f.find({"collider": c})
         assert len(ls) == len(f_ls)
-        assert len(self.objs) == len(self.f._indices["collider"])
+        assert len(self.objs) == len(self.f._indexes["collider"])
         # check an object-ish key
         t = self.random_obj()
         if t is not None:
