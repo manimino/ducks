@@ -40,9 +40,7 @@ def standardize_expr(expr: Any) -> Dict:
     if isinstance(expr, list):
         return {"in": expr}
     if isinstance(expr, set) and expr is not ANY:
-        raise ValueError(
-            f"Expression {expr} is a set. Did you mean to make a dict?"
-        )
+        raise ValueError(f"Expression {expr} is a set. Did you mean to make a dict?")
     # otherwise, it's a value
     return {"==": expr}
 

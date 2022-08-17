@@ -44,13 +44,13 @@ def test_find_one(box_class):
 
 def test_find_union(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": {"in": ["Pikachu", "Eevee"]}})
+    result = f.find({"name": ["Pikachu", "Eevee"]})
     assert len(result) == 3
 
 
 def test_find_union_with_mismatch(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": {"in": ["Pikachu", "Shykadu"]}})
+    result = f.find({"name": ["Pikachu", "Shykadu"]})
     assert len(result) == 2
 
 

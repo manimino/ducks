@@ -9,7 +9,7 @@ from bisect import bisect_left, bisect_right
 from typing import Union, Callable, Set
 
 from filterbox.btree import BTree
-from filterbox.constants import SIZE_THRESH
+from filterbox.constants import ANY, SIZE_THRESH
 from filterbox.utils import make_empty_array
 from filterbox.init_helpers import get_vals, run_length_encode
 
@@ -73,6 +73,8 @@ class FrozenAttrValIndex:
 
     def get(self, val) -> np.ndarray:
         """Get indexes of objects whose attribute is val."""
+        if val is ANY:
+            return self.get_all()
         if val is None:
             return self.none_ids
         if val in self.val_to_obj_ids:

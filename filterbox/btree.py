@@ -1,6 +1,6 @@
 from BTrees.OOBTree import OOBTree
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 
 class BTree:
@@ -26,32 +26,8 @@ class BTree:
             self.tree = OOBTree()
             self.length = 0
 
-    def get_range_expr(self, expr: Dict[str, Any]):
-        """
-        Calls self.get_range() with appropriate arguments based on the operations in expr.
-        e.g., translates {'<': 3} into get_values(3, None, True, False).
-        Will ignore keys in expr other than '<', '<=', '>', '>='.
-        """
-        if "<" in expr and "<=" in expr:
-            raise ValueError('Expression should only have one of "<", "<=" operators.')
-        if ">" in expr and ">=" in expr:
-            raise ValueError('Expression should only have one of ">", ">=" operators.')
-        min_key = None
-        max_key = None
-        include_min = True
-        include_max = True
-        if ">" in expr:
-            min_key = expr[">"]
-            include_min = False
-        if ">=" in expr:
-            min_key = expr[">="]
-            include_min = True
-        if "<" in expr:
-            max_key = expr["<"]
-            include_max = False
-        if "<=" in expr:
-            max_key = expr["<="]
-            include_max = True
+    def get_range_expr(self, expr: Dict[str, Any]) -> List:
+        min_key, max_key, include_min, include_max = range_expr_to_args(expr)
         return self.get_range(min_key, max_key, include_min, include_max)
 
     def get_range(
@@ -133,3 +109,28 @@ class BTree:
 
     def __contains__(self, item):
         return item in self.tree
+
+
+def range_expr_to_args(expr: Dict[str, Any]) -> Tuple[Any, Any, bool, bool]:
+    """
+    Turn a range expr into (min_key, max_key, include_min, include_max), which are easier to use with BTrees.
+    e.g., translates {'<': 3} into get_values(3, None, True, False).
+    Will ignore keys in expr other than '<', '<=', '>', '>='.
+    """
+    min_key = None
+    max_key = None
+    include_min = True
+    include_max = True
+    if ">" in expr:
+        min_key = expr[">"]
+        include_min = False
+    if ">=" in expr:
+        min_key = expr[">="]
+        include_min = True
+    if "<" in expr:
+        max_key = expr["<"]
+        include_max = False
+    if "<=" in expr:
+        max_key = expr["<="]
+        include_max = True
+    return min_key, max_key, include_min, include_max

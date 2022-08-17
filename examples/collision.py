@@ -53,8 +53,8 @@ def main():
         # only search the grid squares near this mouse, and only look at Cats
         nearby_cats = fb.find(
             {
-                grid_x: {"in": [grid_x(m), grid_x(m) - 1, grid_x(m) + 1]},
-                grid_y: {"in": [grid_y(m), grid_y(m) - 1, grid_y(m) + 1]},
+                grid_x: [grid_x(m), grid_x(m) - 1, grid_x(m) + 1],
+                grid_y: [grid_y(m), grid_y(m) - 1, grid_y(m) + 1],
                 get_type: "Cat",
             }
         )

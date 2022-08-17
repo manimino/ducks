@@ -170,15 +170,15 @@ class FilterBox:
         """Look at an attr, handle its expr appropriately"""
         matches = None
         # handle 'in' and '=='
-        eq_expr = {
-            op: val for op, val in expr.items() if op in ["==", "in"]
-        }
+        eq_expr = {op: val for op, val in expr.items() if op in ["==", "in"]}
         for op, val in eq_expr.items():
             if op == "==":
                 op_matches = self._indexes[attr].get_obj_ids(val)
             elif op == "in":
                 op_matches = self._match_any_value_in(attr, expr["in"])
-            matches = op_matches if matches is None else cyk_intersect(op_matches, matches)
+            matches = (
+                op_matches if matches is None else cyk_intersect(op_matches, matches)
+            )
 
         # handle range query
         range_expr = {
@@ -186,7 +186,11 @@ class FilterBox:
         }
         if range_expr:
             range_matches = self._indexes[attr].get_ids_by_range(range_expr)
-            matches = range_matches if matches is None else cyk_intersect(range_matches, matches)
+            matches = (
+                range_matches
+                if matches is None
+                else cyk_intersect(range_matches, matches)
+            )
         return matches
 
     def _match_any_value_in(
@@ -194,7 +198,6 @@ class FilterBox:
     ) -> Int64Set:
         """Handle 'in' queries. Return the union of object ID matches for the values."""
         matches = Int64Set()
-        print(values)
         for v in values:
             v_matches = self._indexes[attr].get_obj_ids(v)
             matches = cyk_union(matches, v_matches)
@@ -213,10 +216,6 @@ class FilterBox:
             return list(
                 itemgetter(*obj_ids)(self.obj_map)
             )  # itemgetter returns a tuple of items here, so make it a list
-
-    def __getitem__(self, item):
-        """Shorthand for find(match=item)."""
-        return self.find(item)
 
     def __contains__(self, obj: Any):
         return id(obj) in self.obj_map

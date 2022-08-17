@@ -61,3 +61,11 @@ def test_bad_operator(box_class):
     f = box_class(["ok"], on="x")
     with AssertRaises(ValueError):
         f.find({"x": {"qq": 2}})
+
+
+def test_bad_gt_lt(box_class):
+    f = box_class(["ok"], on="x")
+    with AssertRaises(ValueError):
+        f.find({"x": {">": 2, ">=": 3}})
+    with AssertRaises(ValueError):
+        f.find({"x": {"<": 2, "<=": 3}})
