@@ -15,7 +15,7 @@ Pseudocode:
 ```
 class FrozenFilterBox:
     # holds each attribute index and an array of objects
-    indices = {
+    indexes = {
         'attr1': FrozenAttrIndex(),
         'attr2': FrozenAttrIndex()
     }
@@ -23,20 +23,20 @@ class FrozenFilterBox:
 }
 
 class MutableAttrIndex: 
-    # maps the values for an attribute to object array indices
+    # maps the values for an attribute to object array indexes
     
     val_arr = np.array(attribute value for each object)  # sorted by value
     obj_idx_arr = np.array(index in obj array for each object)  # sorted by value
     
     # tree stores values for which there are many matching objects
     tree = BTree({
-        val1: np.array(sorted_obj_arr_indices),
-        val2: np.array(sorted_obj_arr_indices)
+        val1: np.array(sorted_obj_arr_indexes),
+        val2: np.array(sorted_obj_arr_indexes)
     })
 ```
 
 Rather than having a dict lookup for object id -> object, we just store the objects in an array. Instead of
-object IDs, we can use indices into that array. Handily, the indices can be `int32` if there are less than a few
+object IDs, we can use indexes into that array. Handily, the indexes can be `int32` if there are less than a few
 billion objects, which is usually the case. `int32` operations are a little faster than `int64`, in addition to being 
 more RAM-efficient.
 
@@ -55,8 +55,8 @@ What is their intersection? Do you need to convert them to `set` to figure it ou
 Of course not -- sorted array intersection is easy. There's a great package called 
 [sortednp](https://pypi.org/project/sortednp/) that implements fast set operations on sorted numpy arrays.
 
-So once we have the object indices for each part of a query, `sortednp.intersect` and friends will get us the final
-object indices.
+So once we have the object indexes for each part of a query, `sortednp.intersect` and friends will get us the final
+object indexes.
 
 ### Wrap up
 

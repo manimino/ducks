@@ -45,14 +45,17 @@ def main():
     def grid_y(obj):
         return int(obj.y)
 
-    fb = FilterBox(mice + cats, [grid_x, grid_y, type])
+    def get_type(obj):
+        return type(obj).__name__
+
+    fb = FilterBox(mice + cats, [grid_x, grid_y, get_type])
     for m in mice:
         # only search the grid squares near this mouse, and only look at Cats
         nearby_cats = fb.find(
             {
-                grid_x: [grid_x(m), grid_x(m) - 1, grid_x(m) + 1],
-                grid_y: [grid_y(m), grid_y(m) - 1, grid_y(m) + 1],
-                type: Cat,
+                grid_x: {"in": [grid_x(m), grid_x(m) - 1, grid_x(m) + 1]},
+                grid_y: {"in": [grid_y(m), grid_y(m) - 1, grid_y(m) + 1]},
+                get_type: "Cat",
             }
         )
         for c in nearby_cats:

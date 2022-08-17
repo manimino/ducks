@@ -25,7 +25,20 @@ when it's literally this object. set() is a simple object that satisfies this pr
 """
 ANY = MatchAnything()
 
-VALID_OPERATORS = ["in", "<", "<=", ">", ">=", "lt", "lte", "le", "gt", "gte", "ge"]
+VALID_OPERATORS = [
+    "==",
+    "in",
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "lt",
+    "lte",
+    "le",
+    "gt",
+    "gte",
+    "ge",
+]
 OPERATOR_MAP = {
     "lt": "<",
     "le": "<=",  # Python style <=

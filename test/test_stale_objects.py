@@ -25,7 +25,7 @@ def test_remove_stale_objects(n_items):
     for o in objs:
         f.remove(o)
     assert len(f) == 0
-    assert len(f._indices["z"]) == 0
+    assert len(f._indexes["z"]) == 0
 
 
 @pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH * 2 + 2])

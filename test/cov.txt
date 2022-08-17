@@ -1,6 +1,6 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /home/theo/repos
+rootdir: /home/theo/repos/filterbox
 plugins: anyio-2.2.0, cov-3.0.0
 collected 468 items
 
@@ -49,4 +49,4 @@ filterbox/utils.py                     50      0   100%
 TOTAL                                 619      0   100%
 
 
-============================= 468 passed in 6.78s ==============================
+============================= 468 passed in 5.69s ==============================

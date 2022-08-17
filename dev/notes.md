@@ -28,8 +28,8 @@ which is doable too. Especially if we could remove the hashtable in the process.
 
 Creating a range query thing in numpy:
  - Attempt to sort the values array with `argsort`
- - If that works, sort the values and the indices by the values.
- - Query does `bisect_left()` and `bisect_right()` to get the range of indices for a `<` / `>` query.
+ - If that works, sort the values and the indexes by the values.
+ - Query does `bisect_left()` and `bisect_right()` to get the range of indexes for a `<` / `>` query.
 
 A thought: Is this generally better than what we have? It seems like creating the hash-based arrays
 is more difficult, and while it's versatile, it may not be buying us much. We have to bisect anyway when

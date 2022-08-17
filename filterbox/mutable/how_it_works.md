@@ -5,7 +5,7 @@ Here's more detailed pseudocode of a FilterBox:
 ```
 class FilterBox:
     # holds each attribute index and the id-to-object map
-    indices = {
+    indexes = {
         'attr1': MutableAttrIndex(),
         'attr2': MutableAttrIndex()
     }
