@@ -40,6 +40,7 @@ VALID_OPERATORS = [
     "ge",
 ]
 OPERATOR_MAP = {
+    "eq": "==",
     "lt": "<",
     "le": "<=",  # Python style <=
     "lte": "<=",  # ElasticSearch style <=
