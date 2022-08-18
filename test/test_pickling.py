@@ -1,8 +1,7 @@
 from filterbox import load, save
 
 
-def test_something_else(box_class, tmp_path):
-    # create a file "myfile" in "mydir" in temp directory
+def test_save_and_load(box_class, tmp_path):
     fn = tmp_path / "box.pkl"
     objs = [{"i": i} for i in range(10)]
     box = box_class(objs, "i")
