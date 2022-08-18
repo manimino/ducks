@@ -212,7 +212,7 @@ SQLite is an awesome relational database, and its in-memory storage option allow
 container. For example, [LiteBox](https://github.com/manimino/litebox) is a container that uses 
 SQLite as an index. This is popular, and works fairly well.
 
-But if you don't need a database - and only need to find Python objects - FilterBox is far superior.
+But if you don't need a database - and just need to find Python objects quickly - FilterBox is far superior.
 
 The FilterBox containers have many advantages over SQLite:
 - They are faster. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
