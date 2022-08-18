@@ -68,7 +68,7 @@ Functions are evaluated only once, when the object is added to the FilterBox.
  - `ConcurrentFilterBox` - Thread-safe version of FilterBox. 
  - `FrozenFilterBox` - Cannot be changed after creation. Fastest finds, lower memory usage, and thread-safe.
 
-All three can be pickled using `filterbox.save()` / `filterbox.load()`.
+All three can be pickled using `filterbox.save(fb, filename)` / `filterbox.load(filename)`.
 
 ## More Examples
 
@@ -166,14 +166,13 @@ Note that `None` is treated as a normal value and is stored.
  
  - [Auto-updating](https://github.com/manimino/filterbox/blob/main/examples/update.py) - Keep FilterBox updated when objects change
  - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Solve string matching problems faster than regex
- - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
 ____
 
 ## How it works
 
-For each attribute in the FilterBox, it holds a tree that maps every unique value to the set of objects with 
+For each attribute in the FilterBox, it holds a B-tree that maps every unique value to the set of objects with 
 that value. 
 
 This is a rough idea of the data structure: 
@@ -183,7 +182,7 @@ class FilterBox:
         'attribute1': BTree({10: set(some_obj_ids), 20: set(other_obj_ids)}),
         'attribute2': BTree({'abc': set(some_obj_ids), 'def': set(other_obj_ids)}),
     }
-    'obj_map': {obj_ids: objects}
+    obj_map = {obj_ids: objects}
 }
 ```
 
