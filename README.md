@@ -1,8 +1,6 @@
 # FilterBox
 
-Container for finding Python objects.
-
-Stores objects by their attribute value. Uses B-tree indexes to make finding very fast.
+Container for finding Python objects by their attribute values. Uses B-tree indexes.
 
 [![tests Actions Status](https://github.com/manimino/filterbox/workflows/tests/badge.svg)](https://github.com/manimino/filterbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
@@ -69,6 +67,8 @@ Functions are evaluated only once, when the object is added to the FilterBox.
  - `FilterBox` - can add, remove, and update objects after creation.
  - `ConcurrentFilterBox` - Thread-safe version of FilterBox. 
  - `FrozenFilterBox` - Cannot be changed after creation. Fastest finds, lower memory usage, and thread-safe.
+
+All three can be pickled using `filterbox.save(fb, filename)` / `filterbox.load(filename)`.
 
 ## More Examples
 
@@ -166,14 +166,13 @@ Note that `None` is treated as a normal value and is stored.
  
  - [Auto-updating](https://github.com/manimino/filterbox/blob/main/examples/update.py) - Keep FilterBox updated when objects change
  - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Solve string matching problems faster than regex
- - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
 ____
 
 ## How it works
 
-For each attribute in the FilterBox, it holds a tree that maps every unique value to the set of objects with 
+For each attribute in the FilterBox, it holds a B-tree that maps every unique value to the set of objects with 
 that value. 
 
 This is a rough idea of the data structure: 
@@ -183,7 +182,7 @@ class FilterBox:
         'attribute1': BTree({10: set(some_obj_ids), 20: set(other_obj_ids)}),
         'attribute2': BTree({'abc': set(some_obj_ids), 'def': set(other_obj_ids)}),
     }
-    'obj_map': {obj_ids: objects}
+    obj_map = {obj_ids: objects}
 }
 ```
 
@@ -191,7 +190,7 @@ During `find()`, the object ID sets matching each query value are retrieved. The
 `intersect`, and `difference` are applied to get the matching object IDs. Finally, the object IDs are converted
 to objects and returned.
 
-In practice, FilterBox and FrozenFilterBox have more complexity, as they are optimized to have much better
+In practice, FilterBox and FrozenFilterBox have a bit more to them, as they are optimized to have much better
 memory usage and speed than a naive implementation. 
 
 See the "how it works" pages for more detail:
@@ -208,18 +207,20 @@ See the "how it works" pages for more detail:
 
 ### Why not SQLite?
 
-SQLite is an awesome relational database, and its in-memory storage option allows it to be used as a container for 
-Python objects. [LiteBox](https://github.com/manimino/litebox) is one such implementation.
+SQLite is an awesome relational database, and its in-memory storage option allows it to be used as a Python object 
+container. For example, [LiteBox](https://github.com/manimino/litebox) is a container that uses 
+SQLite as an index. This is popular, and works fairly well.
 
-But `filterbox` was designed only to store and find Python objects quickly. 
+But if you don't need a database - and just need to find Python objects quickly - FilterBox is far superior.
 
-As such, filterbox has many advantages over SQLite:
-- The filterbox containers are faster. [Finding objects using filterbox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
-- They can query any Python data type, not just numbers and strings. While there are tricks to get around this in 
-SQLite, those tricks incur other costs in flexibility, complexity, and/or speed.
-- There is no translation of datatypes, allowing faster finds.
+The FilterBox containers have many advantages over SQLite:
+- They are faster. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 - They use sparse representations. Objects do not need to fill in "NULL" for missing attributes,
 those attributes are simply not stored.
+- They can query any Python data type, not just numbers and strings. While there are tricks to get around this in 
+SQLite, those tricks incur other costs in flexibility, complexity, and/or speed.
+- There is no need to translate datatypes (serialize / deserialize), allowing much faster finds.
 - FrozenFilterBox is immutable, and so implements optimizations that are not possible in SQLite.
-- There is less cognitive overhead. You'll never need to VACUUM a FilterBox.
+- They are much simpler. You'll never worry about whether you've VACUUMed a FilterBox.
+
 ____

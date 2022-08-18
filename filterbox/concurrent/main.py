@@ -1,4 +1,5 @@
-from typing import Any, List, Union, Iterable, Callable, Iterator, Optional
+import pickle
+from typing import Any, List, Union, Iterable, Callable, Iterator, Optional, Dict
 
 from readerwriterlock.rwlock import RWLockRead, RWLockWrite, RWLockFair
 
@@ -99,3 +100,19 @@ class ConcurrentFilterBox:
         """Get a read lock, make a list of the objects in the FilterBox, and return an iter to the list."""
         with self.read_lock():
             return iter(list(self.box))
+
+
+def save(c_box: ConcurrentFilterBox, filepath: str):
+    """Saves a ConcurrentFilterBox to a pickle file."""
+    saved = {
+        "objs": list(c_box.box.obj_map.values()),
+        "on": list(c_box.box._indexes.keys()),
+        "priority": c_box.priority,
+    }
+    with open(filepath, "wb") as fh:
+        pickle.dump(saved, fh)
+
+
+def load(saved: Dict) -> ConcurrentFilterBox:
+    """Creates a ConcurrentFilterBox from the pickle file contents."""
+    return ConcurrentFilterBox(saved["objs"], saved["on"], saved["priority"])

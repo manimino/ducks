@@ -1,3 +1,4 @@
+import pickle
 from operator import itemgetter
 from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 
@@ -225,3 +226,21 @@ class FilterBox:
 
     def __len__(self):
         return len(self.obj_map)
+
+
+def save(box: FilterBox, filepath: str):
+    """Saves this object to a pickle file."""
+    # We can't pickle this easily, because:
+    # - Int64Sets cannot be pickled, so the MutableAttrIndex is hard to save.
+    # - Object IDs are specific to the process that created them, so the object map will be invalid if saved.
+    # Therefore, this just pickles the objects and the list of what to build indexes on.
+    # The FilterBox container will be built anew with __init__ on load.
+    # A bit slow, but it's simple, guaranteed to work, and is very robust against changes in the container code.
+    saved = {"objs": list(box.obj_map.values()), "on": list(box._indexes.keys())}
+    with open(filepath, "wb") as fh:
+        pickle.dump(saved, fh)
+
+
+def load(saved: Dict) -> FilterBox:
+    """Creates a FilterBox from the pickle file."""
+    return FilterBox(saved["objs"], saved["on"])
