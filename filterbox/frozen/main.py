@@ -191,7 +191,7 @@ class FrozenFilterBox:
 
 def save(box: FrozenFilterBox, filepath: str):
     """Saves this object to a pickle file."""
-    with open(filepath, 'wb') as fh:
+    with open(filepath, "wb") as fh:
         pickle.dump(box, fh)
 
 

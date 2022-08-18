@@ -236,14 +236,11 @@ def save(box: FilterBox, filepath: str):
     # Therefore, this just pickles the objects and the list of what to build indexes on.
     # The FilterBox container will be built anew with __init__ on load.
     # A bit slow, but it's simple, guaranteed to work, and is very robust against changes in the container code.
-    saved = {
-        'objs': list(box.obj_map.values()),
-        'on': list(box._indexes.keys())
-    }
-    with open(filepath, 'wb') as fh:
+    saved = {"objs": list(box.obj_map.values()), "on": list(box._indexes.keys())}
+    with open(filepath, "wb") as fh:
         pickle.dump(saved, fh)
 
 
 def load(saved: Dict) -> FilterBox:
     """Creates a FilterBox from the pickle file."""
-    return FilterBox(saved['objs'], saved['on'])
+    return FilterBox(saved["objs"], saved["on"])

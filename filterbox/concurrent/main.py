@@ -105,14 +105,14 @@ class ConcurrentFilterBox:
 def save(c_box: ConcurrentFilterBox, filepath: str):
     """Saves a ConcurrentFilterBox to a pickle file."""
     saved = {
-        'objs': list(c_box.box.obj_map.values()),
-        'on': list(c_box.box._indexes.keys()),
-        'priority': c_box.priority
+        "objs": list(c_box.box.obj_map.values()),
+        "on": list(c_box.box._indexes.keys()),
+        "priority": c_box.priority,
     }
-    with open(filepath, 'wb') as fh:
+    with open(filepath, "wb") as fh:
         pickle.dump(saved, fh)
 
 
 def load(saved: Dict) -> ConcurrentFilterBox:
     """Creates a ConcurrentFilterBox from the pickle file contents."""
-    return ConcurrentFilterBox(saved['objs'], saved['on'], saved['priority'])
+    return ConcurrentFilterBox(saved["objs"], saved["on"], saved["priority"])
