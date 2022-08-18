@@ -60,11 +60,11 @@ fb.find({
 # result: ['kayak', 'racecar', 'stats']
 ```
 
-Functions are evaluated only once, when the object is added to the FilterBox. 
+Functions are evaluated on the object when it is added to the FilterBox. 
 
 ### Classes
 
- - `FilterBox` - can add, remove, and update objects after creation.
+ - `FilterBox` - Objects can be added, removed, and updated after creation. Not thread-safe.
  - `ConcurrentFilterBox` - Thread-safe version of FilterBox. 
  - `FrozenFilterBox` - Cannot be changed after creation. Fastest finds, lower memory usage, and thread-safe.
 
@@ -166,6 +166,7 @@ Note that `None` is treated as a normal value and is stored.
  
  - [Auto-updating](https://github.com/manimino/filterbox/blob/main/examples/update.py) - Keep FilterBox updated when objects change
  - [Wordle solver](https://github.com/manimino/filterbox/blob/main/examples/wordle.ipynb) - Solve string matching problems faster than regex
+ - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
 ____
