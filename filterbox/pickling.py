@@ -11,7 +11,7 @@ from filterbox.mutable.main import FilterBox, save as m_save, load as m_load
 
 
 def save(box: Union[FilterBox, FrozenFilterBox, ConcurrentFilterBox], filepath: str):
-    """Saves a FilterBox, FrozenFilterBox, or ConcurrentFilterBox to a file."""
+    """Save a FilterBox, FrozenFilterBox, or ConcurrentFilterBox to a file."""
     if type(box) is FilterBox:
         m_save(box, filepath)
     if type(box) is FrozenFilterBox:
@@ -21,7 +21,7 @@ def save(box: Union[FilterBox, FrozenFilterBox, ConcurrentFilterBox], filepath: 
 
 
 def load(filepath: str) -> Union[FilterBox, FrozenFilterBox, ConcurrentFilterBox]:
-    """Load pickle file, determine class, call class load function."""
+    """Load a FilterBox, FrozenFilterBox, or ConcurrentFilterBox from a pickle file."""
     with open(filepath, "rb") as fh:
         saved = pickle.load(fh)
         if isinstance(saved, FrozenFilterBox):
