@@ -70,6 +70,8 @@ Functions are evaluated only once, when the object is added to the FilterBox.
  - `ConcurrentFilterBox` - Thread-safe version of FilterBox. 
  - `FrozenFilterBox` - Cannot be changed after creation. Fastest finds, lower memory usage, and thread-safe.
 
+All three can be pickled using `filterbox.save()` / `filterbox.load()`.
+
 ## More Examples
 
 Expand for sample code.
@@ -191,7 +193,7 @@ During `find()`, the object ID sets matching each query value are retrieved. The
 `intersect`, and `difference` are applied to get the matching object IDs. Finally, the object IDs are converted
 to objects and returned.
 
-In practice, FilterBox and FrozenFilterBox have more complexity, as they are optimized to have much better
+In practice, FilterBox and FrozenFilterBox have a bit more to them, as they are optimized to have much better
 memory usage and speed than a naive implementation. 
 
 See the "how it works" pages for more detail:
@@ -208,18 +210,20 @@ See the "how it works" pages for more detail:
 
 ### Why not SQLite?
 
-SQLite is an awesome relational database, and its in-memory storage option allows it to be used as a container for 
-Python objects. [LiteBox](https://github.com/manimino/litebox) is one such implementation.
+SQLite is an awesome relational database, and its in-memory storage option allows it to be used as a Python object 
+container. For example, [LiteBox](https://github.com/manimino/litebox) is a container that uses 
+SQLite as an index. This is popular, and works fairly well.
 
-But `filterbox` was designed only to store and find Python objects quickly. 
+But if you don't need a database - and only need to find Python objects - FilterBox is far superior.
 
-As such, filterbox has many advantages over SQLite:
-- The filterbox containers are faster. [Finding objects using filterbox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
-- They can query any Python data type, not just numbers and strings. While there are tricks to get around this in 
-SQLite, those tricks incur other costs in flexibility, complexity, and/or speed.
-- There is no translation of datatypes, allowing faster finds.
+The FilterBox containers have many advantages over SQLite:
+- They are faster. [Finding objects using FilterBox can be 5-10x faster than SQLite.](https://github.com/manimino/filterbox/blob/main/examples/perf_demo.ipynb)
 - They use sparse representations. Objects do not need to fill in "NULL" for missing attributes,
 those attributes are simply not stored.
+- They can query any Python data type, not just numbers and strings. While there are tricks to get around this in 
+SQLite, those tricks incur other costs in flexibility, complexity, and/or speed.
+- There is no need to translate datatypes (serialize / deserialize), allowing much faster finds.
 - FrozenFilterBox is immutable, and so implements optimizations that are not possible in SQLite.
-- There is less cognitive overhead. You'll never need to VACUUM a FilterBox.
+- They are much simpler. You'll never worry about whether you've VACUUMed a FilterBox.
+
 ____

@@ -1,6 +1,7 @@
 from bisect import bisect_left
 from typing import Optional, Any, Dict, Union, Callable, Iterable, Set
 
+import pickle
 import numpy as np
 import sortednp as snp
 
@@ -186,3 +187,16 @@ class FrozenFilterBox:
 
     def __len__(self):
         return len(self.obj_arr)
+
+
+def save(box: FrozenFilterBox, filepath: str):
+    """Saves this object to a pickle file."""
+    with open(filepath, 'wb') as fh:
+        pickle.dump(box, fh)
+
+
+def load(box: FrozenFilterBox):
+    """Creates a FrozenFilterBox from the pickle file contents."""
+    # If this was created by one Python process and loaded by another, the object IDs will no longer
+    # correspond to the objects. Re-create the object ID array with the correct IDs.
+    box.sorted_obj_ids = np.sort([id(obj) for obj in box.obj_arr])
