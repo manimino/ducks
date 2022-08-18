@@ -208,8 +208,8 @@ See the "how it works" pages for more detail:
 ### Why not SQLite?
 
 SQLite is an awesome relational database, and its in-memory storage option allows it to be used as a Python object 
-container. For example, [LiteBox](https://github.com/manimino/litebox) is a container that uses 
-SQLite as an index. This is popular, and works fairly well.
+container. This is popular, and works fairly well. For example, [LiteBox](https://github.com/manimino/litebox) is a 
+container that uses SQLite as an index. 
 
 But if you don't need a database - and just need to find Python objects quickly - FilterBox is far superior.
 
