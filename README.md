@@ -1,8 +1,6 @@
 # FilterBox
 
-Container for finding Python objects.
-
-Stores objects by their attribute value. Uses B-tree indexes to make finding very fast.
+Container for finding Python objects by their attribute values. Uses B-tree indexes.
 
 [![tests Actions Status](https://github.com/manimino/filterbox/workflows/tests/badge.svg)](https://github.com/manimino/filterbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)

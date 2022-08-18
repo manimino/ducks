@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "filterbox"
 version = "0.9.4"
-description = "Finds Python objects by attribute value"
+description = "Container for finding Python objects by their attribute values. Uses B-tree indexes."
 authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/manimino/filterbox/"
