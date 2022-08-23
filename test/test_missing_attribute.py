@@ -1,9 +1,9 @@
 import pytest
 
 
-from filterbox import ANY, FilterBox
-from filterbox.exceptions import MissingAttribute
-from filterbox.constants import SIZE_THRESH
+from dbox import ANY, DBox
+from dbox.exceptions import MissingAttribute
+from dbox.constants import SIZE_THRESH
 
 
 @pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH + 1])
@@ -33,7 +33,7 @@ missing_attr_data = [
 
 
 def test_add_with_missing_attributes():
-    fb = FilterBox([], ["a", "b"])
+    fb = DBox([], ["a", "b"])
     for d in missing_attr_data:
         fb.add(d)
     assert len(fb) == 4
@@ -44,7 +44,7 @@ def test_add_with_missing_attributes():
 
 
 def test_remove_with_missing_attributes():
-    fb = FilterBox(missing_attr_data, ["a", "b"])
+    fb = DBox(missing_attr_data, ["a", "b"])
     for d in missing_attr_data:
         fb.remove(d)
     assert len(fb) == 0
@@ -61,7 +61,7 @@ def test_missing_attributes(box_class):
 
 
 def test_add_none():
-    f = FilterBox(on="s")
+    f = DBox(on="s")
     f.add(None)
     result = f.find({"s": None})
     assert result == []

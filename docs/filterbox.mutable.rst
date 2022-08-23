@@ -1,21 +1,21 @@
-filterbox.mutable package
+dbox.mutable package
 =========================
 
 Submodules
 ----------
 
-filterbox.mutable.main module
+dbox.mutable.main module
 -----------------------------
 
-.. automodule:: filterbox.mutable.main
+.. automodule:: dbox.mutable.main
    :members:
    :undoc-members:
    :show-inheritance:
 
-filterbox.mutable.mutable\_attr module
+dbox.mutable.mutable\_attr module
 --------------------------------------
 
-.. automodule:: filterbox.mutable.mutable_attr
+.. automodule:: dbox.mutable.mutable_attr
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ filterbox.mutable.mutable\_attr module
 Module contents
 ---------------
 
-.. automodule:: filterbox.mutable
+.. automodule:: dbox.mutable
    :members:
    :undoc-members:
    :show-inheritance:

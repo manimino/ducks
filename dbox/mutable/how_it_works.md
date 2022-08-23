@@ -1,9 +1,9 @@
 ## How It Works, Mutable Edition
 
-Here's more detailed pseudocode of a FilterBox:
+Here's more detailed pseudocode of a DBox:
 
 ```
-class FilterBox:
+class DBox:
     # holds each attribute index and the id-to-object map
     indexes = {
         'attr1': MutableAttrIndex(),
@@ -21,8 +21,8 @@ class MutableAttrIndex:
     })
 ```
 
-On `FilterBox.find()`:
- - FilterBox breaks the query down into individual attribute value lookups.
+On `DBox.find()`:
+ - DBox breaks the query down into individual attribute value lookups.
  - The object IDs associated with the query attribute values are retrieved from MutableAttrIndex.
  - Set operations like `intersect` are performed on the object IDs to get a final set.
  - The object IDs are mapped to objects, which are then returned.
@@ -56,9 +56,9 @@ That table tells us a story:
  - Immutable collections are cheaper. Tuples, arrays, and numpy arrays cost less memory than the set types.
  - Typed collections are cheaper. Numpy arrays and [cykhash](https://github.com/realead/cykhash) Int64Sets are cheaper than tuples or Python sets.
 
-The best collection in terms of memory usage is a big array. But FilterBox is mutable; we need to add and remove
+The best collection in terms of memory usage is a big array. But DBox is mutable; we need to add and remove
 objects in a few microseconds. Rewriting a big array on change is too slow. So we'll save the arrays for 
-`FrozenFilterBox`. 
+`FrozenDBox`. 
 
 ### Blending collection types
 
@@ -69,7 +69,7 @@ And for collections of size 1... we just store the number, no container needed! 
 
 So the code is a bit more complex than the pseudocode above, in order to keep collection overhead from filling RAM.
 
-Here is the table again. FilterBox (line 3) uses cykhash, array, and integer types to stay RAM-efficient at all 
+Here is the table again. DBox (line 3) uses cykhash, array, and integer types to stay RAM-efficient at all 
 collection sizes.
 
 |                     | 1     | 2     | 3     | 4    | 5     | 10    | 25    | 50   | 100   | 1000  | 10000 |
@@ -77,6 +77,6 @@ collection sizes.
 | set                 | 260.1 | 146.3 | 108.4 | 89.4 | 195.0 | 113.8 | 124.2 | 78.3 | 116.9 | 65.5  | 85.5  |
 | cykhash Int64Set    | 160.1 | 79.9  | 53.1  | 47.7 | 38.1  | 25.3  | 15.5  | 23.5 | 22.4  | 17.1  | 13.7  |
 | array (int64)       | 106.0 | 53.2  | 35.6  | 26.8 | 28.0  | 21.0  | 11.6  | 10.6 | 9.1   | 8.3   | 8.1   |
-| FilterBox storage   | 28.0  | 53.2  | 35.6  | 26.8 | 28.0  | 21.0  | 15.5  | 23.5 | 22.4  | 17.1  | 13.7  |
+| DBox storage   | 28.0  | 53.2  | 35.6  | 26.8 | 28.0  | 21.0  | 15.5  | 23.5 | 22.4  | 17.1  | 13.7  |
 
 That's 4 to 10 times better than naively using Python sets to store ints, with no measurable impact on find speed.

@@ -1,26 +1,26 @@
 import pytest
 
-from filterbox import FilterBox, FrozenFilterBox, ConcurrentFilterBox
-from filterbox.exceptions import AttributeNotFoundError
-from filterbox.constants import SIZE_THRESH
+from dbox import DBox, FrozenDBox, ConcurrentDBox
+from dbox.exceptions import AttributeNotFoundError
+from dbox.constants import SIZE_THRESH
 
 from .conftest import AssertRaises, BadHash
 
 
 def test_remove_empty():
-    f = FilterBox([], on=["stuff"])
+    f = DBox([], on=["stuff"])
     with AssertRaises(KeyError):
         f.remove("nope")
 
 
 def test_no_index():
     with AssertRaises(ValueError):
-        FilterBox(["a"])
+        DBox(["a"])
 
 
 def test_empty_index():
     with AssertRaises(ValueError):
-        FrozenFilterBox(["a"], [])
+        FrozenDBox(["a"], [])
 
 
 def test_bad_query(box_class):
@@ -40,7 +40,7 @@ def test_remove_missing_value(n_items):
     an empty result correctly retrieved?
     """
     data = [BadHash(i) for i in range(5)]
-    f = FilterBox(data, ["n"])
+    f = DBox(data, ["n"])
     assert len(f.find({"n": -1})) == 0
     with AssertRaises(KeyError):
         f.remove(BadHash(-1))
@@ -48,7 +48,7 @@ def test_remove_missing_value(n_items):
 
 def test_bad_priority():
     with AssertRaises(ValueError):
-        _ = ConcurrentFilterBox(None, on=["x"], priority="lol")
+        _ = ConcurrentDBox(None, on=["x"], priority="lol")
 
 
 def test_bad_expr(box_class):

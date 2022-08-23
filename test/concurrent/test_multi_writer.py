@@ -4,11 +4,11 @@ import pytest
 
 from typing import List, Any
 
-from filterbox import ConcurrentFilterBox
+from dbox import ConcurrentDBox
 from .concurrent_utils import priority, slow_wrapper
 
 
-def worker_add_remove(objs: List[Any], box: ConcurrentFilterBox, end_full=True):
+def worker_add_remove(objs: List[Any], box: ConcurrentDBox, end_full=True):
     """The worker thread adds and removes each element of objs."""
     for i in range(10):
         for obj in objs:
@@ -28,8 +28,8 @@ def worker_add_remove(objs: List[Any], box: ConcurrentFilterBox, end_full=True):
 def test_add_remove(priority, end_full, expected_len):
     objs = [{"x": i % 2} for i in range(10)]
 
-    box = ConcurrentFilterBox(objs, ["x"], priority=priority)
-    # box = FilterBox(objs, ['x'])  # <--- use this instead, and you will observe frequent failures on this test.
+    box = ConcurrentDBox(objs, ["x"], priority=priority)
+    # box = DBox(objs, ['x'])  # <--- use this instead, and you will observe frequent failures on this test.
 
     # Patch indexes 'add' to add a small delay, forcing race conditions to occur more often
     box._indexes["x"].add = slow_wrapper(box._indexes["x"].add)
@@ -48,4 +48,4 @@ def test_add_remove(priority, end_full, expected_len):
         t1.join()
         t2.join()
         assert len(box) == expected_len
-        assert len(box._indexes["x"]) == expected_len  # fails on FilterBox
+        assert len(box._indexes["x"]) == expected_len  # fails on DBox

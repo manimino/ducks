@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "filterbox"
-version = "0.9.4"
-description = "Container for finding Python objects by their attribute values. Uses B-tree indexes."
+name = "dbox"
+version = "0.0.1"
+description = "Container for finding Python objects using database-like indexes."
 authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/manimino/filterbox/"
-documentation = "https://pypi.org/project/filterbox/"
+repository = "https://github.com/manimino/dbox/"
+documentation = "https://pypi.org/project/dbox/"
 readme = "README.md"
 
 [tool.poetry.dependencies]

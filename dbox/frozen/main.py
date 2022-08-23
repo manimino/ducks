@@ -5,10 +5,10 @@ import pickle
 import numpy as np
 import sortednp as snp
 
-from filterbox.btree import range_expr_to_args
-from filterbox.frozen.froz_attr_val import FrozenAttrValIndex
-from filterbox.frozen.utils import snp_difference
-from filterbox.utils import (
+from dbox.btree import range_expr_to_args
+from dbox.frozen.froz_attr_val import FrozenAttrValIndex
+from dbox.frozen.utils import snp_difference
+from dbox.utils import (
     make_empty_array,
     standardize_expr,
     validate_query,
@@ -16,11 +16,11 @@ from filterbox.utils import (
 )
 
 
-class FrozenFilterBox:
-    """Create a FrozenFilterBox containing the ``objs``, queryable by the ``on`` attributes.
+class FrozenDBox:
+    """Create a FrozenDBox containing the ``objs``, queryable by the ``on`` attributes.
 
     Args:
-        objs: The objects that FrozenFilterBox will contain.
+        objs: The objects that FrozenDBox will contain.
 
         on: The attributes that will be used for finding objects.
             Must contain at least one.
@@ -56,7 +56,7 @@ class FrozenFilterBox:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> np.ndarray:
-        """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
+        """Find objects in the FrozenDBox that satisfy the match and exclude constraints.
 
         Args:
             match: Dict of ``{attribute: expression}`` defining the subset of objects that match.
@@ -68,7 +68,7 @@ class FrozenFilterBox:
                  - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
                  - A single value, which is a shorthand for `{'==': value}`.
                  - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
-                 - ``filterbox.ANY``, which matches all objects having the attribute.
+                 - ``dbox.ANY``, which matches all objects having the attribute.
 
                  Valid operators are '==' 'in', '<', '<=', '>', '>='.
                  The aliases 'eq' 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
@@ -189,14 +189,14 @@ class FrozenFilterBox:
         return len(self.obj_arr)
 
 
-def save(box: FrozenFilterBox, filepath: str):
+def save(box: FrozenDBox, filepath: str):
     """Saves this object to a pickle file."""
     with open(filepath, "wb") as fh:
         pickle.dump(box, fh)
 
 
-def load(box: FrozenFilterBox):
-    """Creates a FrozenFilterBox from the pickle file contents."""
+def load(box: FrozenDBox):
+    """Creates a FrozenDBox from the pickle file contents."""
     # If this was created by one Python process and loaded by another, the object IDs will no longer
     # correspond to the objects. Re-create the object ID array with the correct IDs.
     box.sorted_obj_ids = np.sort([id(obj) for obj in box.obj_arr])

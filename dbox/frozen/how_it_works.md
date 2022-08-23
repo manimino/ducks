@@ -3,7 +3,7 @@
 
 ### Implementing BTree-of-set using Numpy arrays
 
-In FrozenFilterBox, we know that:
+In FrozenDBox, we know that:
  - The data will never change
  - The values are always integers
 
@@ -13,7 +13,7 @@ overheads that a tree does.
 
 Pseudocode:
 ```
-class FrozenFilterBox:
+class FrozenDBox:
     # holds each attribute index and an array of objects
     indexes = {
         'attr1': FrozenAttrIndex(),
@@ -60,13 +60,13 @@ object indexes.
 
 ### Wrap up
 
-Using low-level array operations is wonderful when you can do it. The FrozenFilterBox performance and efficiency
+Using low-level array operations is wonderful when you can do it. The FrozenDBox performance and efficiency
 are very good.
 
 Further optimization would probably look like:
  - Numba, which was not used due to requirements conflicts (it's pretty restrictive)
  - Rewriting in a compiled language
  - Bypassing the GIL
- - Running in a distributed form (many FrozenFilterBox services executing queries in parallel)
+ - Running in a distributed form (many FrozenDBox services executing queries in parallel)
 
 But within the limits of being a versatile Python container - this is probably the best you can get.

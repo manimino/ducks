@@ -1,10 +1,10 @@
 ## How It Works, Concurrent Edition
 
-ConcurrentFilterBox contains:
- - an instance of FilterBox
+ConcurrentDBox contains:
+ - an instance of DBox
  - a [readerwriterlock](https://github.com/elarivie/pyReaderWriterLock)
 
-It exposes each method of the FilterBox, wrapped in the appropriate lock type using `with read_lock()` or 
+It exposes each method of the DBox, wrapped in the appropriate lock type using `with read_lock()` or 
 `with write_lock()`.
 
 ### Performance Tips
@@ -17,17 +17,17 @@ For this reason, the `read_lock()` and `write_lock()` methods are available.
 
 This allows patterns like:
 ```
-cfb = ConcurrentFilterBox(...)
+cfb = ConcurrentDBox(...)
 with cfb.write_lock()
     for item in a_million_items:
-        cfb.box.add(item)  # cfb.box is the underlying FilterBox.
+        cfb.box.add(item)  # cfb.box is the underlying DBox.
 ```
 which are faster than calling `cfb.add()` many times.
 
 ### Reasons to trust it
 
-Concurrency bugs are notoriously tricky to find. ConcurrentFilterBox is unlikely to have them because:
+Concurrency bugs are notoriously tricky to find. ConcurrentDBox is unlikely to have them because:
  - It uses a very simple, coarse-grained concurrency that locks the whole object for every read and write
  - It's built on a widely-used lock library
- - There are concurrent operation tests that succeed on ConcurrentFilterBox and fail on FilterBox, proving the
+ - There are concurrent operation tests that succeed on ConcurrentDBox and fail on DBox, proving the
   locks are working properly (see `tests/concurrent`).

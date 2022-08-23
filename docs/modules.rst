@@ -1,7 +1,7 @@
-filterbox
+dbox
 =========
 
 .. toctree::
    :maxdepth: 4
 
-   filterbox
+   dbox

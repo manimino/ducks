@@ -1,6 +1,6 @@
 """
 This script was used to measure RAM usage of different collection sizes.
-This was used during design; it's not relevant to users of FilterBox.
+This was used during design; it's not relevant to users of DBox.
 """
 
 import os

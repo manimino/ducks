@@ -4,9 +4,9 @@ Try doing various bad things with types.
 """
 import pytest
 
-from filterbox.btree import BTree
+from dbox.btree import BTree
 
-from filterbox import FilterBox
+from dbox import DBox
 from .conftest import AssertRaises
 
 
@@ -41,7 +41,7 @@ def test_find_wrong_type(box_class, expr, expected, raises):
 
 def test_add_wrong_type():
     objs = [{"x": i} for i in range(10)]
-    fb = FilterBox(objs, "x")
+    fb = DBox(objs, "x")
     assert len(fb._indexes["x"].tree) == 10
     with AssertRaises(TypeError):
         fb.add({"x": "lol"})

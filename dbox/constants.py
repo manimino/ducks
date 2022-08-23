@@ -27,18 +27,25 @@ ANY = MatchAnything()
 
 VALID_OPERATORS = [
     "==",
+    "eq",
+    "!=",
+    "ne",
     "in",
+    "not in",
     "<",
-    "<=",
-    ">",
-    ">=",
     "lt",
+    "<=",
     "lte",
     "le",
+    ">",
     "gt",
+    ">=",
     "gte",
     "ge",
+    "is",
+    "is not"
 ]
+
 OPERATOR_MAP = {
     "eq": "==",
     "lt": "<",
@@ -47,4 +54,9 @@ OPERATOR_MAP = {
     "gt": ">",
     "ge": ">=",  # Python style >=
     "gte": ">=",  # ElasticSearch style >=
+}
+
+EXCLUDE_OPERATORS = {
+    'not in': 'in',
+    '!=': '=='
 }

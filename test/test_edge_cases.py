@@ -1,5 +1,5 @@
-from filterbox import FilterBox
-from filterbox.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
+from dbox import DBox
+from dbox.constants import HASH_MIN, HASH_MAX, SIZE_THRESH
 import pytest
 
 from .conftest import AssertRaises, BadHash
@@ -46,7 +46,7 @@ def test_edge_hash_mutable(n_items, delete_bucket):
     for i in range(n_items):
         arrs[i % 3].append({"z": EdgeHash(i % 3)})
 
-    f = FilterBox(on=["z"])
+    f = DBox(on=["z"])
     for arr in arrs:
         for obj in arr:
             f.add(obj)
@@ -83,7 +83,7 @@ def test_grouped_hash(delete_bucket):
     for i in range(SIZE_THRESH * 3 + 3):
         arrs[i % 3].append({"z": GroupedHash(i % 3)})
 
-    f = FilterBox(on=["z"])
+    f = DBox(on=["z"])
     for arr in arrs:
         for gh in arr:
             f.add(gh)
@@ -118,7 +118,7 @@ def test_get_in_no_results(box_class):
 
 
 def test_double_add():
-    f = FilterBox(on="s")
+    f = DBox(on="s")
     x = {"s": "hello"}
     f.add(x)
     f.add(x)
@@ -139,7 +139,7 @@ def test_empty_index(box_class):
 
 def test_arg_order():
     data = [{"a": i % 5, "b": i % 3} for i in range(100)]
-    f = FilterBox(data, ["a", "b"])
+    f = DBox(data, ["a", "b"])
     assert len(f.find({"a": 1, "b": 2})) == len(f.find({"b": 2, "a": 1}))
 
 

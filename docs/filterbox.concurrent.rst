@@ -1,13 +1,13 @@
-filterbox.concurrent package
+dbox.concurrent package
 ============================
 
 Submodules
 ----------
 
-filterbox.concurrent.main module
+dbox.concurrent.main module
 --------------------------------
 
-.. automodule:: filterbox.concurrent.main
+.. automodule:: dbox.concurrent.main
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ filterbox.concurrent.main module
 Module contents
 ---------------
 
-.. automodule:: filterbox.concurrent
+.. automodule:: dbox.concurrent
    :members:
    :undoc-members:
    :show-inheritance:

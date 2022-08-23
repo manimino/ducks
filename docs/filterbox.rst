@@ -1,4 +1,4 @@
-filterbox package
+dbox package
 =================
 
 Subpackages
@@ -7,48 +7,48 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   filterbox.frozen
-   filterbox.mutable
+   dbox.frozen
+   dbox.mutable
 
 Submodules
 ----------
 
-filterbox.constants module
+dbox.constants module
 --------------------------
 
-.. automodule:: filterbox.constants
+.. automodule:: dbox.constants
    :members:
    :undoc-members:
    :show-inheritance:
 
-filterbox.exceptions module
+dbox.exceptions module
 ---------------------------
 
-.. automodule:: filterbox.exceptions
+.. automodule:: dbox.exceptions
    :members:
    :undoc-members:
    :show-inheritance:
 
-filterbox.init\_helpers module
+dbox.init\_helpers module
 ------------------------------
 
-.. automodule:: filterbox.init_helpers
+.. automodule:: dbox.init_helpers
    :members:
    :undoc-members:
    :show-inheritance:
 
-filterbox.perf module
+dbox.perf module
 ---------------------
 
-.. automodule:: filterbox.perf
+.. automodule:: dbox.perf
    :members:
    :undoc-members:
    :show-inheritance:
 
-filterbox.utils module
+dbox.utils module
 ----------------------
 
-.. automodule:: filterbox.utils
+.. automodule:: dbox.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -56,7 +56,7 @@ filterbox.utils module
 Module contents
 ---------------
 
-.. automodule:: filterbox
+.. automodule:: dbox
    :members:
    :undoc-members:
    :show-inheritance:

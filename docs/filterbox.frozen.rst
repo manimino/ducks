@@ -1,29 +1,29 @@
-filterbox.frozen package
+dbox.frozen package
 ========================
 
 Submodules
 ----------
 
-filterbox.frozen.frozen\_attr module
+dbox.frozen.frozen\_attr module
 ------------------------------------
 
-.. automodule:: filterbox.frozen.frozen_attr
+.. automodule:: dbox.frozen.frozen_attr
    :members:
    :undoc-members:
    :show-inheritance:
 
-filterbox.frozen.main module
+dbox.frozen.main module
 ----------------------------
 
-.. automodule:: filterbox.frozen.main
+.. automodule:: dbox.frozen.main
    :members:
    :undoc-members:
    :show-inheritance:
 
-filterbox.frozen.utils module
+dbox.frozen.utils module
 -----------------------------
 
-.. automodule:: filterbox.frozen.utils
+.. automodule:: dbox.frozen.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ filterbox.frozen.utils module
 Module contents
 ---------------
 
-.. automodule:: filterbox.frozen
+.. automodule:: dbox.frozen
    :members:
    :undoc-members:
    :show-inheritance:
