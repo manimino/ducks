@@ -5,7 +5,7 @@
 
 # FilterBox
 
-Container that stores objects database-like indexes for fast lookup.
+Container that stores objects in database-like indexes for fast lookup.
 
 Install: `pip install filterbox`
 
