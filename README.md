@@ -41,7 +41,7 @@ not any do other database things like SQL, tables, etc. This keeps FilterBox sim
 
 Yes. Here's how FilterBox compares to other object-finders on an example task.
 
-![Example benchmark](docs/perf_bench.png)
+![Example benchmark](examples/img/perf_bench.png)
 
 [Benchmark code](examples/perf_demo.ipynb)
 

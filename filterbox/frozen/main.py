@@ -18,23 +18,23 @@ from filterbox.utils import (
 
 
 class FrozenFilterBox:
-    """Create a FrozenFilterBox containing the ``objs``, queryable by the ``on`` attributes.
-
-    Args:
-        objs: The objects that FrozenFilterBox will contain.
-
-        on: The attributes that will be used for finding objects.
-            Must contain at least one.
-
-    It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
-    stored, and can found with ``find()``.
-
-    For the objects that do contain the attributes on ``on``, those attribute values must be hashable and sortable.
-    Most Python objects are hashable. Implement the function ``__lt__(self, other)`` to make a class sortable.
-    An attribute value of ``None`` is acceptable as well, even though None is not sortable.
-    """
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
+        """Create a FrozenFilterBox containing the ``objs``, queryable by the ``on`` attributes.
+
+        Args:
+            objs: The objects that FrozenFilterBox will contain.
+
+            on: The attributes that will be used for finding objects.
+                Must contain at least one.
+
+        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
+        stored, and can found with ``find()``.
+
+        For the objects that do contain the attributes on ``on``, those attribute values must be hashable and sortable.
+        Most Python objects are hashable. Implement the function ``__lt__(self, other)`` to make a class sortable.
+        An attribute value of ``None`` is acceptable as well, even though None is not sortable.
+        """
         if not on:
             raise ValueError("Need at least one attribute.")
         if isinstance(on, str):
