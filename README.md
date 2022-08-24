@@ -12,7 +12,7 @@ Install: `pip install filterbox`
 Usage:
 ```
 from filterbox import FilterBox
-objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5]
+objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5}]
 fb = FilterBox(objects, ['x', 'y'])  # create FilterBox containing objects, indexed on x and y
 fb[{
     'x': {'>': 5, '<': 10},     # find objects where x is between 5 and 10
@@ -37,35 +37,6 @@ Yes. Here's how FilterBox compares to other object-finders on an example task.
 
 The closest thing to a FilterBox is an in-memory SQLite. While SQLite is a fantastic database, it requires
 more overhead. As such, FilterBox is generally faster.
-
-### Example
-
-Find a good day for flying a kite. It needs to have sunny skies and a wind speed between 5 and 10.
-
-```
-from filterbox import FilterBox
-
-days = [
-    {'day': 'Saturday', 'sky': 'sunny', 'wind_speed': 1},
-    {'day': 'Sunday', 'sky': 'rainy', 'wind_speed': 3},
-    {'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7},
-    {'day': 'Tuesday', 'sky': 'rainy', 'wind_speed': 9},
-    {'day': 'Wednesday', 'sky': 'sunny', 'wind_speed': 25}
-]
-
-fb = FilterBox(                     # make a FilterBox
-     days,                     # add objects of any Python type
-     on=['sky', 'wind_speed']  # what to index on
-)
-
-fb[{
-    'sky': 'sunny', 
-    'wind_speed': {'>': 5, '<': 10}
-}]
-# result: [{'day': 'Monday', 'sky': 'sunny', 'wind_speed': 7}]
-```
-
-`{'sky': 'sunny'}` is a shorthand for `{'sky': {'==': sunny}}`.
 
 ### Class APIs
 
