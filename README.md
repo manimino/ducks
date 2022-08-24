@@ -46,11 +46,11 @@ more overhead. As such, FilterBox is generally faster.
 
 There are three containers.
  - [FilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox): 
-Can add / remove items after creation.
+Can `add`, `remove`, and `update` objects after creation.
  - [ConcurrentFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.concurrent.html#filterbox.concurrent.main.ConcurrentFilterBox): 
 Same as FilterBox, but thread-safe.
  - [FrozenFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox):
-Cannot add / remove items after creation, it's read-only. But it's super fast, and of course thread-safe.
+Cannot be changed after creation, it's read-only. But it's super fast, and of course thread-safe.
 
 All three can be pickled using the special functions `filterbox.save()` / `filterbox.load()`. 
 
