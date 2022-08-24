@@ -13,7 +13,7 @@ Usage:
 ```
 from filterbox import FilterBox
 objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5]
-fb = FilterBox(, ['x', 'y'])  # create FilterBox containing objects, indexed on x and y
+fb = FilterBox(objects, ['x', 'y'])  # create FilterBox containing objects, indexed on x and y
 fb[{
     'x': {'>': 5, '<': 10},     # find objects where x is between 5 and 10
     'y': {'in': [1, 2, 3]}      # and y is 1, 2, or 3
