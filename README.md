@@ -7,9 +7,13 @@
 
 Container that stores objects in database-like indexes for fast lookup.
 
-Install: `pip install filterbox`
+#### Install: 
 
-Usage:
+```
+pip install filterbox
+```
+
+#### Usage:
 ```
 from filterbox import FilterBox
 objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5}]
