@@ -18,11 +18,9 @@ Running the workflow takes between 600ms (low-cardinality case) and 1.5s (high-c
 """
 
 import numpy as np
-from array import array
-from typing import Tuple, Union, Callable, Any, Iterable
+from typing import Union, Callable
 from filterbox.utils import get_attribute, make_empty_array
-from filterbox.constants import ARR_TYPE, ARRAY_SIZE_MAX
-from cykhash import Int64Set
+
 
 
 def get_vals(objs: np.ndarray, obj_id_arr: np.ndarray, attr: Union[Callable, str]):

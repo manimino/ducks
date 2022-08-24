@@ -7,11 +7,20 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   filterbox.concurrent
    filterbox.frozen
    filterbox.mutable
 
 Submodules
 ----------
+
+filterbox.btree module
+----------------------
+
+.. automodule:: filterbox.btree
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 filterbox.constants module
 --------------------------
@@ -29,18 +38,10 @@ filterbox.exceptions module
    :undoc-members:
    :show-inheritance:
 
-filterbox.init\_helpers module
-------------------------------
+filterbox.pickling module
+-------------------------
 
-.. automodule:: filterbox.init_helpers
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-filterbox.perf module
----------------------
-
-.. automodule:: filterbox.perf
+.. automodule:: filterbox.pickling
    :members:
    :undoc-members:
    :show-inheritance:

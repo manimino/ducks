@@ -11,7 +11,7 @@ from typing import Union, Callable, Set
 from filterbox.btree import BTree
 from filterbox.constants import ANY, SIZE_THRESH
 from filterbox.utils import make_empty_array
-from filterbox.init_helpers import get_vals, run_length_encode
+from filterbox.frozen.init_helpers import get_vals, run_length_encode
 
 
 class FrozenAttrIndex:

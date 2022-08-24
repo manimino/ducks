@@ -14,13 +14,6 @@ FAIR = "fair"
 
 
 class ConcurrentFilterBox:
-    """Contains a FilterBox instance and a readerwriterlock. Wraps each FilterBox method in a read or write lock.
-
-    Args:
-        objs: see FilterBox API
-        on: see FilterBox API
-        priority: 'readers', 'writers', or 'fair'. Default 'readers'. Change this according to your usage pattern.
-    """
 
     def __init__(
         self,
@@ -28,6 +21,13 @@ class ConcurrentFilterBox:
         on: Iterable[Union[str, Callable]] = None,
         priority: str = READERS,
     ):
+        """Contains a FilterBox instance and a readerwriterlock. Wraps each FilterBox method in a read or write lock.
+
+        Args:
+            objs: see FilterBox API
+            on: see FilterBox API
+            priority: 'readers', 'writers', or 'fair'. Default 'readers'. Change this according to your usage pattern.
+        """
         self.priority = priority
         self.box = FilterBox(objs, on)
         if priority == READERS:
