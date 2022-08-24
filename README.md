@@ -32,6 +32,8 @@ Yes. Here's how DBox compares to other object-finders on an example task.
 
 ![Example benchmark](docs/perf_bench.png)
 
+[Benchmark code](examples/perf_demo.ipynb)
+
 The closest thing to a DBox is an in-memory SQLite. While SQLite is a fantastic database, it requires much
 more overhead. As such, DBox is generally faster.
 
