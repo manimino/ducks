@@ -12,8 +12,8 @@ Install: `pip install filterbox`
 Usage:
 ```
 from filterbox import FilterBox
-d = FilterBox(objects, ['x', 'y'])  # create FilterBox containing objects, indexed on x and y
-d[{
+fb = FilterBox(your_objects, ['x', 'y'])  # create FilterBox containing objects, indexed on x and y
+fb[{
     'x': {'>': 5, '<': 10},     # find objects where x is between 5 and 10
     'y': {'in': [1, 2, 3]}      # and y is 1, 2, or 3
 }]
