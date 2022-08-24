@@ -69,7 +69,7 @@ And for collections of size 1... we just store the number, no container needed! 
 
 So the code is a bit more complex than the pseudocode above, in order to keep collection overhead from filling RAM.
 
-Here is the table again. FilterBox (line 3) uses cykhash, array, and integer types to stay RAM-efficient at all 
+Here is the table again. FilterBox (bottom line) uses cykhash, array, and integer types to stay RAM-efficient at all 
 collection sizes.
 
 |                     | 1     | 2     | 3     | 4    | 5     | 10    | 25    | 50   | 100   | 1000  | 10000 |

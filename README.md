@@ -19,7 +19,7 @@ from filterbox import FilterBox
 
 objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5}]
 
-# create FilterBox containing objects, indexed on x and y
+# create a FilterBox containing objects, indexed on x and y
 fb = FilterBox(objects, ['x', 'y'])  
 
 # find the ones you want

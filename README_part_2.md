@@ -8,7 +8,7 @@ Expand for sample code.
 
 <details>
 <summary>Use functions of the object as attributes</summary>
-
+<br />
 You can also index on functions evaluated on the object, as if they were attributes.
 
 Find palindromes of length 5 or 7:
