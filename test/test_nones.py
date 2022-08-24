@@ -13,7 +13,7 @@ def test_none(box_class):
     objs = [{"ok": i} for i in range(10)]
     objs.append({"ok": None})
     fb = box_class(objs, "ok")
-    assert len(fb.find({"ok": None})) == 1
+    assert len(fb[{"ok": None}]) == 1
 
 
 @pytest.mark.parametrize(
@@ -24,8 +24,8 @@ def test_add_remove_none(n_none):
     for i in range(n_none):
         objs.append({"a": None})
     fb = DBox(objs, "a")
-    assert len(fb.find({"a": {"in": [1, 2, None]}})) == 2 + n_none
-    assert len(fb.find({"a": {"in": [None]}})) == n_none
+    assert len(fb[{"a": [1, 2, None]}]) == 2 + n_none
+    assert len(fb[{"a": [None]}]) == n_none
     fb.remove(objs[0])  # {'a': 0}
     fb.remove(objs[-1])  # {'a': None}
     assert len(fb) == len(objs) - 2

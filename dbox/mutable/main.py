@@ -222,8 +222,10 @@ class DBox:
     def __len__(self):
         return len(self.obj_map)
 
-    def __getitem__(self, query: Union[Dict, Any]) -> List[Any]:
+    def __getitem__(self, query: Dict) -> List[Any]:
         """calls _find() with its contents"""
+        if not isinstance(query, dict):
+            raise TypeError(f'Got {type(query)}; expected a dict.')
         std_query = dict()
         for attr, expr in query.items():
             std_query[attr] = standardize_expr(expr)

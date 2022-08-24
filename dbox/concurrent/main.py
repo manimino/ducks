@@ -96,7 +96,7 @@ class ConcurrentDBox:
         with self.read_lock():
             return iter(list(self.box))
 
-    def __getitem__(self, query: Union[Dict, Any]) -> List[Any]:
+    def __getitem__(self, query: Dict) -> List[Any]:
         """Get a read lock and perform DBox __getitem__."""
         with self.read_lock():
             return self.box[query]

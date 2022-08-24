@@ -72,7 +72,7 @@ def make_dict_thing(id_num):
 class SoakTest:
     """
     Keep running insert / update / remove operations at random for a long time.
-    Check periodically to make sure find() results are correct.
+    Check periodically to make sure[] results are correct.
     """
 
     def __init__(self):
@@ -145,24 +145,24 @@ class SoakTest:
         ls = [
             o for o in self.objs.values() if get_attribute(o, "planet")[0] == "saturn"
         ]
-        f_ls = self.f.find({"planet": "saturn"})
+        f_ls = self.f[{"planet": "saturn"}]
         assert len(ls) == len(f_ls)
         assert len(self.objs) == len(self.f._indexes["planet"])
         # check a functional key
         ls = [o for o in self.objs.values() if get_attribute(o, planet_len)[0] == 6]
-        f_ls = self.f.find({planet_len: 6})
+        f_ls = self.f[{planet_len: 6}]
         assert len(ls) == len(f_ls)
         assert len(self.objs) == len(self.f._indexes[planet_len])
         # check a null-ish key
         ls = [
             o for o in self.objs.values() if get_attribute(o, "sometimes")[1] == False
         ]
-        f_ls = self.f.find(exclude={"sometimes": True})
+        f_ls = self.f[{"sometimes": {'!=': True}}]
         assert len(ls) == len(f_ls)
         # check a colliding key
         c = Collider()
         ls = [o for o in self.objs.values() if get_attribute(o, "collider")[0] == c]
-        f_ls = self.f.find({"collider": c})
+        f_ls = self.f[{"collider": c}]
         assert len(ls) == len(f_ls)
         assert len(self.objs) == len(self.f._indexes["collider"])
         # check an object-ish key
@@ -174,7 +174,7 @@ class SoakTest:
                 for o in self.objs.values()
                 if get_attribute(o, "ts_sec")[0] == target_ts[0]
             ]
-            f_ls = self.f.find({"ts_sec": target_ts[0]})
+            f_ls = self.f[{"ts_sec": target_ts[0]}]
             assert len(ls) == len(f_ls)
 
 

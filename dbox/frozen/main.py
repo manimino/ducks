@@ -10,6 +10,7 @@ from dbox.frozen.froz_attr_val import FrozenAttrValIndex
 from dbox.frozen.utils import snp_difference
 from dbox.utils import (
     make_empty_array,
+    split_query,
     standardize_expr,
     validate_query,
     validate_and_standardize_operators,
@@ -51,7 +52,7 @@ class FrozenDBox:
         # only used during contains() checks
         self.sorted_obj_ids = np.sort([id(obj) for obj in self.obj_arr])
 
-    def find(
+    def _find(
         self,
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
@@ -187,6 +188,16 @@ class FrozenDBox:
 
     def __len__(self):
         return len(self.obj_arr)
+
+    def __getitem__(self, query: Dict) -> np.ndarray:
+        """calls _find() with its contents"""
+        if not isinstance(query, dict):
+            raise TypeError(f'Got {type(query)}; expected a dict.')
+        std_query = dict()
+        for attr, expr in query.items():
+            std_query[attr] = standardize_expr(expr)
+        match_query, exclude_query = split_query(std_query)
+        return self._find(match_query, exclude_query)
 
 
 def save(box: FrozenDBox, filepath: str):

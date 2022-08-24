@@ -56,7 +56,7 @@ def test_find_union_with_mismatch(box_class):
 
 def test_find_in_iterable_of_one(box_class):
     f = make_test_dbox(box_class)
-    result = f["name": {"in": {"Pikachu"}}]
+    result = f[{"name": {"in": {"Pikachu"}}}]
     assert len(result) == 2
 
 
@@ -87,12 +87,9 @@ def test_find_sub_obj(box_class):
         {"p": Pokemon("Pikachu", "Electric", None)},
     ]
     f = box_class(objs, on=["p"])
-    found = f[None]
     found_empty = f[{}]
-    assert len(found) == 2
     assert len(found_empty) == 2
     for obj in objs:
-        assert obj in found
         assert obj in found_empty
 
 
@@ -128,7 +125,7 @@ def test_three_attrs(box_class):
 
 def test_exclude_all(box_class):
     f = make_test_dbox(box_class)
-    result = f[{"type1": {"in": ["Electric", "Normal"]}}]
+    result = f[{"type1": {"not in": ["Electric", "Normal"]}}]
     assert len(result) == 0
 
 
@@ -159,7 +156,10 @@ def test_add(box_class):
 
 def test_multi_exclude(box_class):
     fb = make_test_dbox(box_class)
-    res = fb["name": {'!=': "Pikachu"}, "type1": {"not in": ["Normal"]}]
+    res = fb[{
+        "name": {'!=': "Pikachu"},
+        "type1": {"not in": ["Normal"]}
+    }]
     zapdos_ls = [p for p in fb if p.name == "Zapdos"]
     assert res == zapdos_ls
 

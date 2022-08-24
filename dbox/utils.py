@@ -89,10 +89,6 @@ def validate_query(
     match: Optional[Dict[Union[str, Callable], Any]] = None,
     exclude: Optional[Dict[Union[str, Callable], Any]] = None,
 ):
-    for m in match, exclude:
-        if m is not None:
-            if not isinstance(m, dict):
-                raise TypeError("Arguments must be of type dict or None.")
     # input validation -- check that we have an index for all desired lookups
     required_indexes = set()
     if match:
@@ -102,7 +98,7 @@ def validate_query(
     missing_indexes = required_indexes.difference(indexes)
     if missing_indexes:
         raise AttributeNotFoundError(
-            f"Cannot find on: {list(missing_indexes)}. Atributes must be specified on creation."
+            f"Cannot find on: {list(missing_indexes)}. Attributes must be specified on creation."
         )
 
 

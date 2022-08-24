@@ -12,7 +12,7 @@ def test_get_nearby(box_class):
         return int(obj[1])
 
     f = box_class(t, [_x, _y])
-    for pt in f.find({_x: 0, _y: 0}):
+    for pt in f[{_x: 0, _y: 0}]:
         assert _x(pt) < 1 and _y(pt) < 1
 
 
@@ -31,7 +31,7 @@ def test_wordle(box_class):
         return "H" in w[0]
 
     f = box_class(ws, [has_t, has_h])
-    found = f.find()
+    found = f[{}]
     found_ws = [f[0] for f in found]
     for w in ws:
         assert w[0] in found_ws
