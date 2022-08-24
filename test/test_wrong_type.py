@@ -34,9 +34,9 @@ def test_find_wrong_type(box_class, expr, expected, raises):
     fb = box_class(objs, "x")
     if raises:
         with AssertRaises(TypeError):
-            fb.find({"x": expr})
+            fb[{"x": expr}]
     else:
-        assert len(fb.find({"x": expr})) == expected
+        assert len(fb[{"x": expr}]) == expected
 
 
 def test_add_wrong_type():

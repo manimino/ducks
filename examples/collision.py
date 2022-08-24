@@ -51,13 +51,13 @@ def main():
     fb = FilterBox(mice + cats, [grid_x, grid_y, get_type])
     for m in mice:
         # only search the grid squares near this mouse, and only look at Cats
-        nearby_cats = fb.find(
+        nearby_cats = fb[
             {
                 grid_x: [grid_x(m), grid_x(m) - 1, grid_x(m) + 1],
                 grid_y: [grid_y(m), grid_y(m) - 1, grid_y(m) + 1],
                 get_type: "Cat",
             }
-        )
+        ]
         for c in nearby_cats:
             if in_range(m, c):
                 print(f"Mouse {m.name} is in range of cat {c.name}!")

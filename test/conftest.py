@@ -24,29 +24,18 @@ class AssertRaises:
         return True  # suppress the exception
 
 
-class BadHash:
-    def __init__(self, n):
+class Attr:
+    def __init__(self, n: int):
         self.n = n
 
     def __hash__(self):
-        return 42
+        return self.n
 
     def __eq__(self, other):
         return self.n == other.n
 
     def __repr__(self):
         return str(self.n)
-
-    def __lt__(self, other):
-        return self.n < other.n
-
-
-class TwoHash:
-    def __init__(self, n):
-        self.n = n
-
-    def __hash__(self):
-        return self.n % 2
 
     def __lt__(self, other):
         return self.n < other.n

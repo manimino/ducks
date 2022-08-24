@@ -4,7 +4,13 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 
 from cykhash import Int64Set
 
-from filterbox.utils import cyk_intersect, cyk_union, standardize_expr, validate_query
+from filterbox.utils import (
+    cyk_intersect,
+    cyk_union,
+    split_query,
+    standardize_expr,
+    validate_query,
+)
 from filterbox.mutable.mutable_attr import MutableAttrIndex
 
 
@@ -46,10 +52,10 @@ class FilterBox:
         for attr in on:
             self._indexes[attr] = MutableAttrIndex(attr, objs)
 
-    def find(
+    def _find(
         self,
-        match: Optional[Dict[Union[str, Callable], Any]] = None,
-        exclude: Optional[Dict[Union[str, Callable], Any]] = None,
+        match: Dict[Union[str, Callable], Dict[str, Any]],
+        exclude: Dict[Union[str, Callable], Dict[str, Any]],
     ) -> List:
         """Find objects in the FilterBox that satisfy the match and exclude constraints.
 
@@ -81,11 +87,6 @@ class FilterBox:
         """
         # validate input and convert expressions to dict
         validate_query(self._indexes, match, exclude)
-        for arg in [match, exclude]:
-            if arg:
-                for key in arg:
-                    arg[key] = standardize_expr(arg[key])
-
         obj_ids = self._find_ids(match, exclude)
         return self._obj_ids_to_objs(obj_ids)
 
@@ -226,6 +227,38 @@ class FilterBox:
 
     def __len__(self):
         return len(self.obj_map)
+
+    def __getitem__(self, query: Dict) -> List[Any]:
+        """Find objects in the FilterBox that satisfy the constraints.
+
+                Args:
+                    query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
+                        If ``{}``, all objects will match.
+
+                        Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+
+                        The expression can be any of the following:
+                         - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
+                         - A single value, which is a shorthand for `{'==': value}`.
+                         - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
+
+                         The expression ``{'==': filterbox.ANY}`` will match all objects having the attribute.
+                         The expression ``{'!=': filterbox.ANY}`` will match all objects without the attribute.
+
+                         Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
+                         The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
+                         To match a None value, use ``{'==': None}``. There is no separate operator for None values.
+
+                Returns:
+                    List of objects matching the constraints. List will be unordered.
+        """
+        if not isinstance(query, dict):
+            raise TypeError(f"Got {type(query)}; expected a dict.")
+        std_query = dict()
+        for attr, expr in query.items():
+            std_query[attr] = standardize_expr(expr)
+        match_query, exclude_query = split_query(std_query)
+        return self._find(match_query, exclude_query)
 
 
 def save(box: FilterBox, filepath: str):

@@ -9,8 +9,8 @@ def test_save_and_load(box_class, tmp_path):
     box2 = load(fn)
     assert len(box2) == 10
     objs2 = list(box2)  # objs get cloned as well
-    assert box2.find({"i": 3}) == [objs2[3]]
-    assert box2.find({"i": [6]}) == [objs2[6]]
-    assert box2.find({"i": {">": 8}}) == [objs2[9]]
+    assert box2[{"i": 3}] == [objs2[3]]
+    assert box2[{"i": [6]}] == [objs2[6]]
+    assert box2[{"i": {">": 8}}] == [objs2[9]]
     for obj in objs2:
         assert obj in box2

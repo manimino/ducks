@@ -14,7 +14,7 @@ from filterbox.utils import make_empty_array
 from filterbox.init_helpers import get_vals, run_length_encode
 
 
-class FrozenAttrValIndex:
+class FrozenAttrIndex:
     """
     Stores data and handles requests that are relevant to a single attribute of a FrozenFilterBox.
 

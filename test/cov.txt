@@ -1,28 +1,28 @@
 ============================= test session starts ==============================
 platform linux -- Python 3.9.7, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
-rootdir: /home/theo/repos/filterbox
-plugins: anyio-2.2.0, cov-3.0.0
-collected 486 items
+rootdir: /home/theo/repos
+plugins: Faker-9.8.2, cov-3.0.0, anyio-3.3.4
+collected 471 items
 
 test/test_basic_operations.py .......................................... [  8%]
 ...........................                                              [ 14%]
 test/test_btree.py ..................................                    [ 21%]
-test/test_container_ops.py .....................                         [ 25%]
-test/test_edge_cases.py ......................................           [ 33%]
-test/test_examples.py ......                                             [ 34%]
-test/test_exceptions.py ...................                              [ 38%]
-test/test_fancy_gets.py ............                                     [ 40%]
-test/test_missing_attribute.py ......................................... [ 49%]
-.                                                                        [ 49%]
-test/test_mixed_cardinality.py ..................                        [ 53%]
-test/test_multiple_operations.py ............                            [ 55%]
-test/test_mutations.py ...............                                   [ 58%]
-test/test_nones.py .......                                               [ 60%]
-test/test_pickling.py ...                                                [ 60%]
-test/test_range_queries.py ............................................. [ 70%]
-........................................................................ [ 84%]
-.................................                                        [ 91%]
-test/test_stale_objects.py ...........                                   [ 94%]
+test/test_container_ops.py .....................                         [ 26%]
+test/test_edge_cases.py ....................                             [ 30%]
+test/test_examples.py ......                                             [ 31%]
+test/test_exceptions.py ...................                              [ 35%]
+test/test_fancy_gets.py ............                                     [ 38%]
+test/test_missing_attribute.py ......................................... [ 47%]
+.                                                                        [ 47%]
+test/test_mixed_cardinality.py ..................                        [ 51%]
+test/test_multiple_operations.py ............                            [ 53%]
+test/test_mutations.py ...............                                   [ 56%]
+test/test_nones.py .......                                               [ 58%]
+test/test_pickling.py ...                                                [ 59%]
+test/test_range_queries.py ............................................. [ 68%]
+........................................................................ [ 83%]
+.................................                                        [ 90%]
+test/test_stale_objects.py ..............                                [ 93%]
 test/test_wrong_type.py ................                                 [ 97%]
 test/concurrent/test_multi_writer.py ......                              [ 98%]
 test/concurrent/test_read_update.py ......                               [ 99%]
@@ -35,21 +35,21 @@ filterbox/__init__.py                   6      0   100%
 filterbox/btree.py                     76      0   100%
 filterbox/concurrent/__init__.py        0      0   100%
 filterbox/concurrent/main.py           58      0   100%
-filterbox/constants.py                 13      0   100%
+filterbox/constants.py                 10      0   100%
 filterbox/exceptions.py                 3      0   100%
 filterbox/frozen/__init__.py            0      0   100%
 filterbox/frozen/froz_attr_val.py      97      0   100%
-filterbox/frozen/main.py               88      0   100%
+filterbox/frozen/main.py               96      0   100%
 filterbox/frozen/utils.py               8      0   100%
 filterbox/init_helpers.py              22      0   100%
 filterbox/mutable/__init__.py           0      0   100%
-filterbox/mutable/main.py             105      0   100%
+filterbox/mutable/main.py             109      0   100%
 filterbox/mutable/mutable_attr.py     104      0   100%
 filterbox/perf.py                       0      0   100%
 filterbox/pickling.py                  21      0   100%
-filterbox/utils.py                     64      0   100%
+filterbox/utils.py                     75      0   100%
 -------------------------------------------------------
-TOTAL                                 665      0   100%
+TOTAL                                 685      0   100%
 
 
-============================= 486 passed in 5.63s ==============================
+============================= 471 passed in 6.56s ==============================

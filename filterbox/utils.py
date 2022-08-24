@@ -4,7 +4,7 @@ from typing import List, Union, Callable, Optional, Any, Dict, Tuple
 
 from cykhash import Int64Set
 
-from filterbox.constants import ANY, VALID_OPERATORS, OPERATOR_MAP
+from filterbox.constants import ANY, VALID_OPERATORS, OPERATOR_MAP, EXCLUDE_OPERATORS
 from filterbox.exceptions import AttributeNotFoundError, MissingAttribute
 
 
@@ -31,6 +31,26 @@ def get_attribute(obj: Any, attr: Union[Callable, str]) -> Tuple[Any, bool]:
 def get_attributes(cls) -> List[str]:
     """Helper function to grab the attributes of a class"""
     return list(cls.__annotations__.keys())
+
+
+def split_query(query: Dict) -> Tuple[Dict, Dict]:
+    """Split query into match and exclude terms"""
+    match_query = dict()
+    exclude_query = dict()
+    for attr, expr in query.items():
+        match_expr = dict()
+        exclude_expr = dict()
+        for op, val in expr.items():
+            if op in EXCLUDE_OPERATORS:
+                # invert "not in" -> "in", etc.
+                exclude_expr[EXCLUDE_OPERATORS[op]] = val
+            else:
+                match_expr[op] = val
+        if match_expr:
+            match_query[attr] = match_expr
+        if exclude_expr:
+            exclude_query[attr] = exclude_expr
+    return match_query, exclude_query
 
 
 def standardize_expr(expr: Any) -> Dict:
@@ -69,10 +89,6 @@ def validate_query(
     match: Optional[Dict[Union[str, Callable], Any]] = None,
     exclude: Optional[Dict[Union[str, Callable], Any]] = None,
 ):
-    for m in match, exclude:
-        if m is not None:
-            if not isinstance(m, dict):
-                raise TypeError("Arguments must be of type dict or None.")
     # input validation -- check that we have an index for all desired lookups
     required_indexes = set()
     if match:
@@ -82,7 +98,7 @@ def validate_query(
     missing_indexes = required_indexes.difference(indexes)
     if missing_indexes:
         raise AttributeNotFoundError(
-            f"Cannot find on: {list(missing_indexes)}. Atributes must be specified on creation."
+            f"Cannot find on: {list(missing_indexes)}. Attributes must be specified on creation."
         )
 
 

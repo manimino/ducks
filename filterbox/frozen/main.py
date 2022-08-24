@@ -6,10 +6,11 @@ import numpy as np
 import sortednp as snp
 
 from filterbox.btree import range_expr_to_args
-from filterbox.frozen.froz_attr_val import FrozenAttrValIndex
+from filterbox.frozen.frozen_attr import FrozenAttrIndex
 from filterbox.frozen.utils import snp_difference
 from filterbox.utils import (
     make_empty_array,
+    split_query,
     standardize_expr,
     validate_query,
     validate_and_standardize_operators,
@@ -46,12 +47,12 @@ class FrozenFilterBox:
 
         self._indexes = {}
         for attr in on:
-            self._indexes[attr] = FrozenAttrValIndex(attr, self.obj_arr, self.dtype)
+            self._indexes[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
 
         # only used during contains() checks
         self.sorted_obj_ids = np.sort([id(obj) for obj in self.obj_arr])
 
-    def find(
+    def _find(
         self,
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
@@ -187,6 +188,38 @@ class FrozenFilterBox:
 
     def __len__(self):
         return len(self.obj_arr)
+
+    def __getitem__(self, query: Dict) -> np.ndarray:
+        """Find objects in the FrozenFilterBox that satisfy the constraints.
+
+                Args:
+                    query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
+                        If ``{}``, all objects will match.
+
+                        Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+
+                        The expression can be any of the following:
+                         - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
+                         - A single value, which is a shorthand for `{'==': value}`.
+                         - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
+
+                         The expression ``{'==': filterbox.ANY}`` will match all objects having the attribute.
+                         The expression ``{'!=': filterbox.ANY}`` will match all objects without the attribute.
+
+                         Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
+                         The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
+                         To match a None value, use ``{'==': None}``. There is no separate operator for None values.
+
+                Returns:
+                    Numpy array of objects matching the constraints. Array will be in the same order as the original objects.
+        """
+        if not isinstance(query, dict):
+            raise TypeError(f"Got {type(query)}; expected a dict.")
+        std_query = dict()
+        for attr, expr in query.items():
+            std_query[attr] = standardize_expr(expr)
+        match_query, exclude_query = split_query(std_query)
+        return self._find(match_query, exclude_query)
 
 
 def save(box: FrozenFilterBox, filepath: str):

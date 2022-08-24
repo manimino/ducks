@@ -33,13 +33,13 @@ def main():
     p_latency = functools.partial(percentile, cutoffs, "latency")
     fb = FilterBox(objs, [p_latency])
     print("requests with first-percentile latency:")
-    for obj in fb.find({p_latency: [0, 1]}):
+    for obj in fb[{p_latency: [0, 1]}]:
         print(obj)
     print("\nrequests with median (50th percentile) latency:")
-    for obj in fb.find({p_latency: 50}):
+    for obj in fb[{p_latency: 50}]:
         print(obj)
     print("\nrequests with 99th percentile latency:")
-    for obj in fb.find({p_latency: 99}):
+    for obj in fb[{p_latency: 99}]:
         print(obj)
 
 

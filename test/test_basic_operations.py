@@ -38,25 +38,25 @@ def make_test_filterbox(box_class) -> Union[FilterBox, FrozenFilterBox]:
 
 def test_find_one(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": "Zapdos"})
+    result = f[{"name": "Zapdos"}]
     assert len(result) == 1
 
 
 def test_find_union(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": ["Pikachu", "Eevee"]})
+    result = f[{"name": ["Pikachu", "Eevee"]}]
     assert len(result) == 3
 
 
 def test_find_union_with_mismatch(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": ["Pikachu", "Shykadu"]})
+    result = f[{"name": ["Pikachu", "Shykadu"]}]
     assert len(result) == 2
 
 
 def test_find_in_iterable_of_one(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": {"in": {"Pikachu"}}})
+    result = f[{"name": {"in": {"Pikachu"}}}]
     assert len(result) == 2
 
 
@@ -77,7 +77,7 @@ def test_find_in_iterable_of_one(box_class):
 )
 def test_find_greater_less(box_class, expr, expected_len):
     f = make_test_filterbox(box_class)
-    result = f.find({"name": expr})
+    result = f[{"name": expr}]
     assert len(result) == expected_len
 
 
@@ -87,28 +87,28 @@ def test_find_sub_obj(box_class):
         {"p": Pokemon("Pikachu", "Electric", None)},
     ]
     f = box_class(objs, on=["p"])
-    found = f.find()
-    found_empty = f.find({}, {})
-    assert len(found) == 2
+    found_empty = f[{}]
     assert len(found_empty) == 2
     for obj in objs:
-        assert obj in found
         assert obj in found_empty
 
 
 def test_find_exclude_only(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find(exclude={"type2": None})  # Zapdos is the only one with a type2
+    result = f[{"type2": {"!=": None}}]  # Zapdos is the only one with a type2
     assert len(result) == 1
     assert result[0].name == "Zapdos"
 
 
 def test_two_attrs(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find(
-        match={"name": {"in": ["Pikachu", "Zapdos"]}, "type1": "Electric"},
-        exclude={"type2": "Flying"},
-    )
+    result = f[
+        {
+            "name": {"in": ["Pikachu", "Zapdos"]},
+            "type1": "Electric",
+            "type2": {"!=": "Flying"},
+        }
+    ]
     assert len(result) == 2
     assert result[0].name == "Pikachu"
     assert result[1].name == "Pikachu"
@@ -116,33 +116,29 @@ def test_two_attrs(box_class):
 
 def test_three_attrs(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find(
-        match={
-            "name": {"in": ["Pikachu", "Zapdos"]},
-            "type1": "Electric",
-            "type2": "Flying",
-        }
-    )
+    result = f[
+        {"name": {"in": ["Pikachu", "Zapdos"]}, "type1": "Electric", "type2": "Flying",}
+    ]
     assert len(result) == 1
     assert result[0].name == "Zapdos"
 
 
 def test_exclude_all(box_class):
     f = make_test_filterbox(box_class)
-    result = f.find(exclude={"type1": {"in": ["Electric", "Normal"]}})
+    result = f[{"type1": {"not in": ["Electric", "Normal"]}}]
     assert len(result) == 0
 
 
 def test_remove(box_class):
     f = make_test_filterbox(box_class)
-    two_chus = f.find({"name": "Pikachu"})
+    two_chus = f[{"name": "Pikachu"}]
     assert len(two_chus) == 2
     if box_class == FrozenFilterBox:
         with AssertRaises(AttributeError):
             f.remove(two_chus[1])
     else:
         f.remove(two_chus[1])
-        one_chu = f.find({"name": "Pikachu"})
+        one_chu = f[{"name": "Pikachu"}]
         assert len(one_chu) == 1
 
 
@@ -154,13 +150,13 @@ def test_add(box_class):
             f.add(glaceon)
     else:
         f.add(glaceon)
-        res = f.find({"name": "Glaceon"})
+        res = f[{"name": "Glaceon"}]
         assert res == [glaceon]
 
 
 def test_multi_exclude(box_class):
     fb = make_test_filterbox(box_class)
-    res = fb.find(exclude={"name": "Pikachu", "type1": {"in": ["Normal"]}})
+    res = fb[{"name": {"!=": "Pikachu"}, "type1": {"not in": ["Normal"]}}]
     zapdos_ls = [p for p in fb if p.name == "Zapdos"]
     assert res == zapdos_ls
 

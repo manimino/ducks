@@ -61,11 +61,6 @@ class ConcurrentFilterBox:
         with self.lock.gen_wlock():
             yield
 
-    def find(self, match=None, exclude=None) -> List[Any]:
-        """Get a read lock and perform FilterBox find()."""
-        with self.read_lock():
-            return self.box.find(match, exclude)
-
     def get_values(self, attr: Union[str, Callable]):
         """Get a read lock and perform FilterBox get_values()."""
         with self.read_lock():
@@ -100,6 +95,11 @@ class ConcurrentFilterBox:
         """Get a read lock, make a list of the objects in the FilterBox, and return an iter to the list."""
         with self.read_lock():
             return iter(list(self.box))
+
+    def __getitem__(self, query: Dict) -> List[Any]:
+        """Get a read lock and perform FilterBox __getitem__."""
+        with self.read_lock():
+            return self.box[query]
 
 
 def save(c_box: ConcurrentFilterBox, filepath: str):
