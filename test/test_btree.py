@@ -1,6 +1,6 @@
 import pytest
 
-from dbox.btree import BTree
+from filterbox.btree import BTree
 from .conftest import AssertRaises
 
 

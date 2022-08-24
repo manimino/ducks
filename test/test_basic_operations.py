@@ -3,8 +3,8 @@ from typing import Optional, Union
 
 import pytest
 
-from dbox import DBox, FrozenDBox
-from dbox.utils import get_attributes
+from filterbox import FilterBox, FrozenFilterBox
+from filterbox.utils import get_attributes
 from .conftest import AssertRaises
 
 
@@ -27,7 +27,7 @@ class Pokemon:
         return self.name < other.name
 
 
-def make_test_dbox(box_class) -> Union[DBox, FrozenDBox]:
+def make_test_filterbox(box_class) -> Union[FilterBox, FrozenFilterBox]:
     zapdos = Pokemon("Zapdos", "Electric", "Flying")
     pikachu_1 = Pokemon("Pikachu", "Electric", None)
     pikachu_2 = Pokemon("Pikachu", "Electric", None)
@@ -37,25 +37,25 @@ def make_test_dbox(box_class) -> Union[DBox, FrozenDBox]:
 
 
 def test_find_one(box_class):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f[{"name": "Zapdos"}]
     assert len(result) == 1
 
 
 def test_find_union(box_class):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f[{"name": ["Pikachu", "Eevee"]}]
     assert len(result) == 3
 
 
 def test_find_union_with_mismatch(box_class):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f[{"name": ["Pikachu", "Shykadu"]}]
     assert len(result) == 2
 
 
 def test_find_in_iterable_of_one(box_class):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f[{"name": {"in": {"Pikachu"}}}]
     assert len(result) == 2
 
@@ -76,7 +76,7 @@ def test_find_in_iterable_of_one(box_class):
     ],
 )
 def test_find_greater_less(box_class, expr, expected_len):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f[{"name": expr}]
     assert len(result) == expected_len
 
@@ -94,46 +94,46 @@ def test_find_sub_obj(box_class):
 
 
 def test_find_exclude_only(box_class):
-    f = make_test_dbox(box_class)
-    result = f[{"type2": {'!=': None}}]  # Zapdos is the only one with a type2
+    f = make_test_filterbox(box_class)
+    result = f[{"type2": {"!=": None}}]  # Zapdos is the only one with a type2
     assert len(result) == 1
     assert result[0].name == "Zapdos"
 
 
 def test_two_attrs(box_class):
-    f = make_test_dbox(box_class)
-    result = f[{
-        "name": {"in": ["Pikachu", "Zapdos"]},
-        "type1": "Electric",
-        "type2": {'!=': "Flying"},
-    }]
+    f = make_test_filterbox(box_class)
+    result = f[
+        {
+            "name": {"in": ["Pikachu", "Zapdos"]},
+            "type1": "Electric",
+            "type2": {"!=": "Flying"},
+        }
+    ]
     assert len(result) == 2
     assert result[0].name == "Pikachu"
     assert result[1].name == "Pikachu"
 
 
 def test_three_attrs(box_class):
-    f = make_test_dbox(box_class)
-    result = f[{
-        "name": {"in": ["Pikachu", "Zapdos"]},
-        "type1": "Electric",
-        "type2": "Flying",
-    }]
+    f = make_test_filterbox(box_class)
+    result = f[
+        {"name": {"in": ["Pikachu", "Zapdos"]}, "type1": "Electric", "type2": "Flying",}
+    ]
     assert len(result) == 1
     assert result[0].name == "Zapdos"
 
 
 def test_exclude_all(box_class):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     result = f[{"type1": {"not in": ["Electric", "Normal"]}}]
     assert len(result) == 0
 
 
 def test_remove(box_class):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     two_chus = f[{"name": "Pikachu"}]
     assert len(two_chus) == 2
-    if box_class == FrozenDBox:
+    if box_class == FrozenFilterBox:
         with AssertRaises(AttributeError):
             f.remove(two_chus[1])
     else:
@@ -143,9 +143,9 @@ def test_remove(box_class):
 
 
 def test_add(box_class):
-    f = make_test_dbox(box_class)
+    f = make_test_filterbox(box_class)
     glaceon = Pokemon("Glaceon", "Ice", None)
-    if box_class == FrozenDBox:
+    if box_class == FrozenFilterBox:
         with AssertRaises(AttributeError):
             f.add(glaceon)
     else:
@@ -155,17 +155,14 @@ def test_add(box_class):
 
 
 def test_multi_exclude(box_class):
-    fb = make_test_dbox(box_class)
-    res = fb[{
-        "name": {'!=': "Pikachu"},
-        "type1": {"not in": ["Normal"]}
-    }]
+    fb = make_test_filterbox(box_class)
+    res = fb[{"name": {"!=": "Pikachu"}, "type1": {"not in": ["Normal"]}}]
     zapdos_ls = [p for p in fb if p.name == "Zapdos"]
     assert res == zapdos_ls
 
 
 def test_get_values(box_class):
-    fb = make_test_dbox(box_class)
+    fb = make_test_filterbox(box_class)
     assert fb.get_values("name") == {"Zapdos", "Pikachu", "Eevee"}
     assert fb.get_values("type1") == {"Electric", "Normal"}
     assert fb.get_values("type2") == {"Flying", None}

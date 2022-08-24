@@ -4,12 +4,12 @@ This is just a place to note things that could be implemented in future.
 
 ### BTree indexing
 
-The weak point of dbox at present is high-cardinality data, such as numerics. Those don't go well in the 
+The weak point of filterbox at present is high-cardinality data, such as numerics. Those don't go well in the 
 hash-based data structures.
 
 But that could be pretty easily improved. 
 
-#### DBox implementation
+#### FilterBox implementation
 
 The `BTrees` package contains an `OLBTree` that would work well. 
 
@@ -24,7 +24,7 @@ So it would work perfectly.
 The build time is around 1s / million items, so it's viable there. The RAM usage was something like 70 bytes / object
 which is doable too. Especially if we could remove the hashtable in the process. Might be a different subclass type.
 
-#### FrozenDBox implementation
+#### FrozenFilterBox implementation
 
 Creating a range query thing in numpy:
  - Attempt to sort the values array with `argsort`

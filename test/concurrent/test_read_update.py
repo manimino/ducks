@@ -1,10 +1,10 @@
 import threading
 
-from dbox import ConcurrentDBox, DBox
+from filterbox import ConcurrentFilterBox, FilterBox
 from .concurrent_utils import priority
 
 
-def worker_read_update(cfb: ConcurrentDBox):
+def worker_read_update(cfb: ConcurrentFilterBox):
     # this is one concurrency mode -- using the cfb's lock while
     # modifying both the objects and cfb. It's... probably the wrong pattern.
     for obj in cfb:
@@ -15,7 +15,7 @@ def worker_read_update(cfb: ConcurrentDBox):
 
 def test_read_update(priority):
     objs = [{"x": 0} for _ in range(10)]
-    cfb = ConcurrentDBox(objs, ["x"], priority=priority)
+    cfb = ConcurrentFilterBox(objs, ["x"], priority=priority)
     threads = []
     for _ in range(5):
         threads.append(threading.Thread(target=worker_read_update, args=(cfb,)))
@@ -41,7 +41,7 @@ def test_two_lock_updating(priority):
     # the other one wouldn't. But this one also allows reads to happen between the writes
     # so that's nice.
     objs = [{"x": 0} for _ in range(10)]
-    cfb = ConcurrentDBox(objs, ["x"], priority=priority)
+    cfb = ConcurrentFilterBox(objs, ["x"], priority=priority)
     threads = []
     obj_lock = threading.Lock()
     for _ in range(5):

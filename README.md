@@ -1,18 +1,18 @@
-[![tests Actions Status](https://github.com/manimino/dbox/workflows/tests/badge.svg)](https://github.com/manimino/dbox/actions)
+[![tests Actions Status](https://github.com/manimino/filterbox/workflows/tests/badge.svg)](https://github.com/manimino/filterbox/actions)
 [![Coverage - 100%](https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f)](test/cov.txt)
 [![license - MIT](https://img.shields.io/static/v1?label=license&message=MIT&color=2ea44f)](/LICENSE)
 ![python - 3.7+](https://img.shields.io/static/v1?label=python&message=3.7%2B&color=2ea44f)
 
-# DBox
+# FilterBox
 
 Container that stores objects in tree indexes for fast lookup.
 
-Install: `pip install dbox`
+Install: `pip install filterbox`
 
 Usage:
 ```
-from dbox import DBox
-d = DBox(objects, ['x', 'y'])  # create DBox containing objects, indexed on x and y
+from filterbox import FilterBox
+d = FilterBox(objects, ['x', 'y'])  # create FilterBox containing objects, indexed on x and y
 d[{
     'x': {'>': 5, '<': 10},     # find objects where x is between 5 and 10
     'y': {'in': [1, 2, 3]}      # and y is 1, 2, or 3
@@ -21,28 +21,28 @@ d[{
 
 Valid operators are ==, !=, <, <=, >, >=, in, not in. 
 
-#### Is DBox a database?
+#### Is FilterBox a database?
 
-No. But like a database, DBox builds B-tree indexes and uses them to find results very quickly. It does
-not any do other database things like SQL, tables, etc. This keeps DBox simple, light, and performant.
+No. But like a database, FilterBox builds B-tree indexes and uses them to find results very quickly. It does
+not any do other database things like SQL, tables, etc. This keeps FilterBox simple, light, and performant.
 
-#### Is DBox fast?
+#### Is FilterBox fast?
 
-Yes. Here's how DBox compares to other object-finders on an example task.
+Yes. Here's how FilterBox compares to other object-finders on an example task.
 
 ![Example benchmark](docs/perf_bench.png)
 
 [Benchmark code](examples/perf_demo.ipynb)
 
-The closest thing to a DBox is an in-memory SQLite. While SQLite is a fantastic database, it requires much
-more overhead. As such, DBox is generally faster.
+The closest thing to a FilterBox is an in-memory SQLite. While SQLite is a fantastic database, it requires
+more overhead. As such, FilterBox is generally faster.
 
 ### Example
 
 Find a good day for flying a kite. It needs to have sunny skies and a wind speed between 5 and 10.
 
 ```
-from dbox import DBox
+from filterbox import FilterBox
 
 days = [
     {'day': 'Saturday', 'sky': 'sunny', 'wind_speed': 1},
@@ -52,12 +52,12 @@ days = [
     {'day': 'Wednesday', 'sky': 'sunny', 'wind_speed': 25}
 ]
 
-d = DBox(                     # make a DBox
-    days,                     # add objects of any Python type
-    on=['sky', 'wind_speed']  # what to index on
+fb = FilterBox(                     # make a FilterBox
+     days,                     # add objects of any Python type
+     on=['sky', 'wind_speed']  # what to index on
 )
 
-dbox[{
+fb[{
     'sky': 'sunny', 
     'wind_speed': {'>': 5, '<': 10}
 }]
@@ -69,14 +69,14 @@ dbox[{
 ### Class APIs
 
 There are three containers.
- - [DBox](https://dbox.readthedocs.io/en/latest/dbox.mutable.html#dbox.mutable.main.DBox): 
+ - [FilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.mutable.html#filterbox.mutable.main.FilterBox): 
 Can add / remove items after creation.
- - [ConcurrentDBox](https://dbox.readthedocs.io/en/latest/dbox.concurrent.html#dbox.concurrent.main.ConcurrentDBox): 
-Same as DBox, but thread-safe.
- - [FrozenDBox](https://dbox.readthedocs.io/en/latest/dbox.frozen.html#dbox.frozen.main.FrozenDBox):
+ - [ConcurrentFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.concurrent.html#filterbox.concurrent.main.ConcurrentFilterBox): 
+Same as FilterBox, but thread-safe.
+ - [FrozenFilterBox](https://filterbox.readthedocs.io/en/latest/filterbox.frozen.html#filterbox.frozen.main.FrozenFilterBox):
 Cannot add / remove items after creation, it's read-only. But it's super fast, and of course thread-safe.
 
-All three can be pickled using the special functions `dbox.save()` / `dbox.load()`. 
+All three can be pickled using the special functions `filterbox.save()` / `filterbox.load()`. 
 
 ### Part 2
 

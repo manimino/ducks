@@ -10,7 +10,7 @@ from bisect import bisect_left
 import numpy as np
 from typing import Any
 
-from dbox import DBox
+from filterbox import FilterBox
 
 
 def percentile(cutoffs: np.ndarray, attr: str, obj: Any) -> int:
@@ -31,15 +31,15 @@ def main():
     latencies = np.array([obj["latency"] for obj in objs])
     cutoffs = np.quantile(latencies, np.linspace(0, 1, 100))
     p_latency = functools.partial(percentile, cutoffs, "latency")
-    fb = DBox(objs, [p_latency])
+    fb = FilterBox(objs, [p_latency])
     print("requests with first-percentile latency:")
-    for obj in fb.find({p_latency: [0, 1]}):
+    for obj in fb[{p_latency: [0, 1]}]:
         print(obj)
     print("\nrequests with median (50th percentile) latency:")
-    for obj in fb.find({p_latency: 50}):
+    for obj in fb[{p_latency: 50}]:
         print(obj)
     print("\nrequests with 99th percentile latency:")
-    for obj in fb.find({p_latency: 99}):
+    for obj in fb[{p_latency: 99}]:
         print(obj)
 
 

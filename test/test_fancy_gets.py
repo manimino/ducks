@@ -3,8 +3,8 @@ Test attribute lookups of different kinds
 e.g. getting dict attributes, or applying functions, or getting properties from namedtuples
 """
 
-from dbox import DBox
-from dbox.constants import SIZE_THRESH
+from filterbox import FilterBox
+from filterbox.constants import SIZE_THRESH
 import pytest
 
 
@@ -20,11 +20,9 @@ def make_dict_data():
 def test_dicts(box_class):
     dicts = make_dict_data()
     f = box_class(dicts, ["t0", "t1", "s"])
-    result = f[{
-        "t0": {"in": [0.1, 0.3]},
-        "s": {"in": ["ABC", "DEF"]},
-        "t1": {'!=': 0.4},
-    }]
+    result = f[
+        {"t0": {"in": [0.1, 0.3]}, "s": {"in": ["ABC", "DEF"]}, "t1": {"!=": 0.4},}
+    ]
     assert result == [dicts[0]]
 
 

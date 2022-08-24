@@ -1,6 +1,6 @@
 import pytest
 
-from dbox.constants import SIZE_THRESH
+from filterbox.constants import SIZE_THRESH
 from .conftest import Attr
 
 

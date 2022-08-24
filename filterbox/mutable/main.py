@@ -4,16 +4,22 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 
 from cykhash import Int64Set
 
-from dbox.utils import cyk_intersect, cyk_union, split_query, standardize_expr, validate_query
-from dbox.mutable.mutable_attr import MutableAttrIndex
+from filterbox.utils import (
+    cyk_intersect,
+    cyk_union,
+    split_query,
+    standardize_expr,
+    validate_query,
+)
+from filterbox.mutable.mutable_attr import MutableAttrIndex
 
 
-class DBox:
+class FilterBox:
     """
-    Create a DBox containing the ``objs``, queryable by the ``on`` attributes.
+    Create a FilterBox containing the ``objs``, queryable by the ``on`` attributes.
 
     Args:
-        objs: The objects that DBox will contain initially. Optional.
+        objs: The objects that FilterBox will contain initially. Optional.
 
         on: The attributes that will be used for finding objects.
             Must contain at least one.
@@ -49,9 +55,9 @@ class DBox:
     def _find(
         self,
         match: Dict[Union[str, Callable], Dict[str, Any]],
-        exclude: Dict[Union[str, Callable], Dict[str, Any]]
+        exclude: Dict[Union[str, Callable], Dict[str, Any]],
     ) -> List:
-        """Find objects in the DBox that satisfy the match and exclude constraints.
+        """Find objects in the FilterBox that satisfy the match and exclude constraints.
 
         Args:
             match: Dict of ``{attribute: expression}`` defining the subset of objects that match.
@@ -64,7 +70,7 @@ class DBox:
                  - A single value, which is a shorthand for `{'==': value}`.
                  - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
 
-                 The special value ``dbox.ANY`` will match all objects having the attribute.
+                 The special value ``filterbox.ANY`` will match all objects having the attribute.
 
                  Valid operators are '==' 'in', '<', '<=', '>', '>='.
                  The aliases 'eq' 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
@@ -223,9 +229,31 @@ class DBox:
         return len(self.obj_map)
 
     def __getitem__(self, query: Dict) -> List[Any]:
-        """calls _find() with its contents"""
+        """Find objects in the FilterBox that satisfy the constraints.
+
+                Args:
+                    query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
+                        If ``{}``, all objects will match.
+
+                        Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+
+                        The expression can be any of the following:
+                         - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
+                         - A single value, which is a shorthand for `{'==': value}`.
+                         - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
+
+                         The expression ``{'==': filterbox.ANY}`` will match all objects having the attribute.
+                         The expression ``{'!=': filterbox.ANY}`` will match all objects without the attribute.
+
+                         Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
+                         The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
+                         To match a None value, use ``{'==': None}``. There is no separate operator for None values.
+
+                Returns:
+                    List of objects matching the constraints. List will be unordered.
+        """
         if not isinstance(query, dict):
-            raise TypeError(f'Got {type(query)}; expected a dict.')
+            raise TypeError(f"Got {type(query)}; expected a dict.")
         std_query = dict()
         for attr, expr in query.items():
             std_query[attr] = standardize_expr(expr)
@@ -233,19 +261,19 @@ class DBox:
         return self._find(match_query, exclude_query)
 
 
-def save(box: DBox, filepath: str):
+def save(box: FilterBox, filepath: str):
     """Saves this object to a pickle file."""
     # We can't pickle this easily, because:
     # - Int64Sets cannot be pickled, so the MutableAttrIndex is hard to save.
     # - Object IDs are specific to the process that created them, so the object map will be invalid if saved.
     # Therefore, this just pickles the objects and the list of what to build indexes on.
-    # The DBox container will be built anew with __init__ on load.
+    # The FilterBox container will be built anew with __init__ on load.
     # A bit slow, but it's simple, guaranteed to work, and is very robust against changes in the container code.
     saved = {"objs": list(box.obj_map.values()), "on": list(box._indexes.keys())}
     with open(filepath, "wb") as fh:
         pickle.dump(saved, fh)
 
 
-def load(saved: Dict) -> DBox:
-    """Creates a DBox from the pickle file."""
-    return DBox(saved["objs"], saved["on"])
+def load(saved: Dict) -> FilterBox:
+    """Creates a FilterBox from the pickle file."""
+    return FilterBox(saved["objs"], saved["on"])

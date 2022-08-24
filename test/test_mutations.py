@@ -1,6 +1,6 @@
 import pytest
 
-from dbox.constants import SIZE_THRESH, ARRAY_SIZE_MAX, SET_SIZE_MIN
+from filterbox.constants import SIZE_THRESH, ARRAY_SIZE_MAX, SET_SIZE_MIN
 
 
 @pytest.mark.parametrize(
@@ -16,49 +16,20 @@ def test_many_gets(box_class, n_items):
     f = box_class(data, ["n", f5])
     for _ in range(4):
         # just a lot of queries in every conceivable flavor
-        assert (
-            len(f[{"n": {"in": [1, 2, 3, 4, 5]}, f5: {"in": [3, 4]}}]) == 2
-        )
+        assert len(f[{"n": {"in": [1, 2, 3, 4, 5]}, f5: {"in": [3, 4]}}]) == 2
         assert len(f[{"n": {"in": [1, 2]}, f5: {"in": [1, 2]}}]) == 2
         assert len(f[{"n": {"in": [1, 2, 3, 4, 5]}}]) == 5
+        assert len(f[{"n": {"in": [1, 2, 3, 4, 5]}, f5: {"not in": [1, 2]}}]) == 3
+        assert len(f[{"n": {"in": [6, 7, 8], "!=": 3}, f5: {"not in": [1, 2]}}]) == 1
         assert (
-            len(
-                f[{"n": {"in": [1, 2, 3, 4, 5]}, f5: {"not in": [1, 2]}}]
-            )
-            == 3
+            len(f[{"n": {"in": [6, 7, 8], "!=": -1000}, f5: {"not in": [3, 4]}}]) == 2
+        )
+        assert (
+            len(f[{f5: {"==": 1, "in": [3, 4]}, "n": {"==": -1000, "!=": -1000}}]) == 0
         )
         assert (
             len(
-                f[
-                    {"n": {"in": [6, 7, 8], '!=': 3},
-                     f5: {"not in": [1, 2]}}
-                ]
-            )
-            == 1
-        )
-        assert (
-            len(
-                f[{"n": {"in": [6, 7, 8], '!=': -1000}, f5: {"not in": [3, 4]}}]
-            )
-            == 2
-        )
-        assert (
-            len(
-                f[{f5: {'==': 1, 'in': [3, 4]},
-                   "n": {'==': -1000, '!=': -1000}
-                   }]
-            )
-            == 0
-        )
-        assert (
-            len(
-                f[{
-                    "n": {
-                        'in': [-1000, 3, 4, 5],
-                        '!=': -1000
-                    },
-                    f5: {"not in": [3, 4]},
-                }]
+                f[{"n": {"in": [-1000, 3, 4, 5], "!=": -1000}, f5: {"not in": [3, 4]},}]
             )
             == 1
         )

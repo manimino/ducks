@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "dbox"
+project = "filterbox"
 copyright = "2022, Theo Walker"
 author = "Theo Walker"
 

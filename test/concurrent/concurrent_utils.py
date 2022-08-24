@@ -1,7 +1,7 @@
 import pytest
 import time
 
-from dbox.concurrent.main import READERS, WRITERS, FAIR
+from filterbox.concurrent.main import READERS, WRITERS, FAIR
 
 
 def slow_wrapper(method):

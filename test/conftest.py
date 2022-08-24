@@ -1,8 +1,8 @@
 import pytest
-from dbox import DBox, FrozenDBox, ConcurrentDBox
+from filterbox import FilterBox, FrozenFilterBox, ConcurrentFilterBox
 
 
-@pytest.fixture(params=[DBox, FrozenDBox, ConcurrentDBox])
+@pytest.fixture(params=[FilterBox, FrozenFilterBox, ConcurrentFilterBox])
 def box_class(request):
     return request.param
 
@@ -39,4 +39,3 @@ class Attr:
 
     def __lt__(self, other):
         return self.n < other.n
-

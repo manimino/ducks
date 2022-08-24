@@ -5,10 +5,10 @@ import pickle
 import numpy as np
 import sortednp as snp
 
-from dbox.btree import range_expr_to_args
-from dbox.frozen.froz_attr_val import FrozenAttrValIndex
-from dbox.frozen.utils import snp_difference
-from dbox.utils import (
+from filterbox.btree import range_expr_to_args
+from filterbox.frozen.frozen_attr import FrozenAttrIndex
+from filterbox.frozen.utils import snp_difference
+from filterbox.utils import (
     make_empty_array,
     split_query,
     standardize_expr,
@@ -17,11 +17,11 @@ from dbox.utils import (
 )
 
 
-class FrozenDBox:
-    """Create a FrozenDBox containing the ``objs``, queryable by the ``on`` attributes.
+class FrozenFilterBox:
+    """Create a FrozenFilterBox containing the ``objs``, queryable by the ``on`` attributes.
 
     Args:
-        objs: The objects that FrozenDBox will contain.
+        objs: The objects that FrozenFilterBox will contain.
 
         on: The attributes that will be used for finding objects.
             Must contain at least one.
@@ -47,7 +47,7 @@ class FrozenDBox:
 
         self._indexes = {}
         for attr in on:
-            self._indexes[attr] = FrozenAttrValIndex(attr, self.obj_arr, self.dtype)
+            self._indexes[attr] = FrozenAttrIndex(attr, self.obj_arr, self.dtype)
 
         # only used during contains() checks
         self.sorted_obj_ids = np.sort([id(obj) for obj in self.obj_arr])
@@ -57,7 +57,7 @@ class FrozenDBox:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> np.ndarray:
-        """Find objects in the FrozenDBox that satisfy the match and exclude constraints.
+        """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
 
         Args:
             match: Dict of ``{attribute: expression}`` defining the subset of objects that match.
@@ -69,7 +69,7 @@ class FrozenDBox:
                  - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
                  - A single value, which is a shorthand for `{'==': value}`.
                  - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
-                 - ``dbox.ANY``, which matches all objects having the attribute.
+                 - ``filterbox.ANY``, which matches all objects having the attribute.
 
                  Valid operators are '==' 'in', '<', '<=', '>', '>='.
                  The aliases 'eq' 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
@@ -190,9 +190,31 @@ class FrozenDBox:
         return len(self.obj_arr)
 
     def __getitem__(self, query: Dict) -> np.ndarray:
-        """calls _find() with its contents"""
+        """Find objects in the FrozenFilterBox that satisfy the constraints.
+
+                Args:
+                    query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
+                        If ``{}``, all objects will match.
+
+                        Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+
+                        The expression can be any of the following:
+                         - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
+                         - A single value, which is a shorthand for `{'==': value}`.
+                         - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
+
+                         The expression ``{'==': filterbox.ANY}`` will match all objects having the attribute.
+                         The expression ``{'!=': filterbox.ANY}`` will match all objects without the attribute.
+
+                         Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
+                         The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
+                         To match a None value, use ``{'==': None}``. There is no separate operator for None values.
+
+                Returns:
+                    Numpy array of objects matching the constraints. Array will be in the same order as the original objects.
+        """
         if not isinstance(query, dict):
-            raise TypeError(f'Got {type(query)}; expected a dict.')
+            raise TypeError(f"Got {type(query)}; expected a dict.")
         std_query = dict()
         for attr, expr in query.items():
             std_query[attr] = standardize_expr(expr)
@@ -200,14 +222,14 @@ class FrozenDBox:
         return self._find(match_query, exclude_query)
 
 
-def save(box: FrozenDBox, filepath: str):
+def save(box: FrozenFilterBox, filepath: str):
     """Saves this object to a pickle file."""
     with open(filepath, "wb") as fh:
         pickle.dump(box, fh)
 
 
-def load(box: FrozenDBox):
-    """Creates a FrozenDBox from the pickle file contents."""
+def load(box: FrozenFilterBox):
+    """Creates a FrozenFilterBox from the pickle file contents."""
     # If this was created by one Python process and loaded by another, the object IDs will no longer
     # correspond to the objects. Re-create the object ID array with the correct IDs.
     box.sorted_obj_ids = np.sort([id(obj) for obj in box.obj_arr])

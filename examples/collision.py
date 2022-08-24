@@ -1,10 +1,10 @@
 """
 Are any mice in range of a cat? Let's find out.
-We don't want to do all n_cats * n_mice comparisons, so we'll use DBox to find ones in the same or adjacent
+We don't want to do all n_cats * n_mice comparisons, so we'll use FilterBox to find ones in the same or adjacent
 grid squares.
 """
 
-from dbox import DBox
+from filterbox import FilterBox
 
 
 class Cat:
@@ -48,16 +48,16 @@ def main():
     def get_type(obj):
         return type(obj).__name__
 
-    fb = DBox(mice + cats, [grid_x, grid_y, get_type])
+    fb = FilterBox(mice + cats, [grid_x, grid_y, get_type])
     for m in mice:
         # only search the grid squares near this mouse, and only look at Cats
-        nearby_cats = fb.find(
+        nearby_cats = fb[
             {
                 grid_x: [grid_x(m), grid_x(m) - 1, grid_x(m) + 1],
                 grid_y: [grid_y(m), grid_y(m) - 1, grid_y(m) + 1],
                 get_type: "Cat",
             }
-        )
+        ]
         for c in nearby_cats:
             if in_range(m, c):
                 print(f"Mouse {m.name} is in range of cat {c.name}!")

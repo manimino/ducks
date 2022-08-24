@@ -37,7 +37,7 @@ VALID_OPERATORS = [
     "gte",
     "ge",
     "is",
-    "is not"
+    "is not",
 ]
 
 OPERATOR_MAP = {
@@ -50,7 +50,4 @@ OPERATOR_MAP = {
     "gte": ">=",  # ElasticSearch style >=
 }
 
-EXCLUDE_OPERATORS = {
-    'not in': 'in',
-    '!=': '=='
-}
+EXCLUDE_OPERATORS = {"not in": "in", "!=": "=="}

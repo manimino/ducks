@@ -1,9 +1,9 @@
 import pytest
 
 
-from dbox import ANY, DBox
-from dbox.exceptions import MissingAttribute
-from dbox.constants import SIZE_THRESH
+from filterbox import ANY, FilterBox
+from filterbox.exceptions import MissingAttribute
+from filterbox.constants import SIZE_THRESH
 
 
 @pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH + 1])
@@ -19,7 +19,7 @@ def test_missing_function(box_class, n_items):
     n_odd = n_items - n_even
     assert len(fb) == n_items
     assert len(fb[{even: True}]) == n_even
-    assert len(fb[{even: {'!=': True}}]) == n_odd
+    assert len(fb[{even: {"!=": True}}]) == n_odd
     for idx in fb._indexes.values():
         assert len(idx) == n_even
 
@@ -33,7 +33,7 @@ missing_attr_data = [
 
 
 def test_add_with_missing_attributes():
-    fb = DBox([], ["a", "b"])
+    fb = FilterBox([], ["a", "b"])
     for d in missing_attr_data:
         fb.add(d)
     assert len(fb) == 4
@@ -44,7 +44,7 @@ def test_add_with_missing_attributes():
 
 
 def test_remove_with_missing_attributes():
-    fb = DBox(missing_attr_data, ["a", "b"])
+    fb = FilterBox(missing_attr_data, ["a", "b"])
     for d in missing_attr_data:
         fb.remove(d)
     assert len(fb) == 0
@@ -61,7 +61,7 @@ def test_missing_attributes(box_class):
 
 
 def test_add_none():
-    f = DBox(on="s")
+    f = FilterBox(on="s")
     f.add(None)
     result = f[{"s": None}]
     assert result == []
@@ -81,10 +81,10 @@ def test_find_having_attr(box_class):
 
 def test_find_missing_attr(box_class):
     fb = box_class(missing_attr_data, ["a", "b"])
-    assert len(fb[{"a": {'!=': ANY}}]) == 2
-    assert len(fb[{"b": {'!=': ANY}}]) == 2
-    assert len(fb[{"a": 3, "b": {'!=': ANY}}]) == 1
-    assert len(fb[{"a": {'!=': ANY}, "b": {'!=': ANY}}]) == 1
+    assert len(fb[{"a": {"!=": ANY}}]) == 2
+    assert len(fb[{"b": {"!=": ANY}}]) == 2
+    assert len(fb[{"a": 3, "b": {"!=": ANY}}]) == 1
+    assert len(fb[{"a": {"!=": ANY}, "b": {"!=": ANY}}]) == 1
 
 
 @pytest.mark.parametrize("n_items", [2, 10, SIZE_THRESH * 2 + 2])
@@ -97,7 +97,7 @@ def test_many_missing(box_class, n_items):
             data.append({})
     fb = box_class(data, ["a"])
     assert len(fb[{"a": ANY}]) == n_items // 2
-    assert len(fb[{"a": {'!=': ANY}}]) == n_items // 2
+    assert len(fb[{"a": {"!=": ANY}}]) == n_items // 2
 
 
 @pytest.mark.parametrize("n_items", [2, 10, SIZE_THRESH * 2 + 2])
