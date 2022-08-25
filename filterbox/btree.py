@@ -27,6 +27,7 @@ class BTree:
             self.length = 0
 
     def get_range_expr(self, expr: Dict[str, Any]) -> List:
+        """Get values matching a range expression like {'>': 3, '<=': 5}"""
         min_key, max_key, include_min, include_max = range_expr_to_args(expr)
         return self.get_range(min_key, max_key, include_min, include_max)
 
@@ -48,28 +49,9 @@ class BTree:
         """
         if len(self) == 0:
             return []
-        if include_min and include_max:
-            return self.tree.values(min_key, max_key)
-
-        # get keys between min and max (inclusive) and apply min / max inequality constraints
-        keys = self.tree.keys(min_key, max_key)
-        if len(keys) == 0:
-            return []
-        left = 0
-        right = len(keys) - 1
-
-        # move left pointer up if it's on min_key and we're not doing include_min
-        if not include_min and keys[left] == min_key:
-            left += 1
-        if left == len(keys) or left > right:
-            return []
-
-        # move right pointer down if it's on max_key and we're not doing include_max
-        if not include_max and keys[right] == max_key:
-            right -= 1
-        if right < left:
-            return []
-        return self.tree.values(keys[left], keys[right])
+        excludemin = not include_min
+        excludemax = not include_max
+        return self.tree.values(min_key, max_key, excludemin=excludemin, excludemax=excludemax)
 
     def get(self, key, default=None):
         return self.tree.get(key, default)
