@@ -60,6 +60,9 @@ Cannot be changed after creation, it's read-only. But it's super fast, and of co
 
 All three can be pickled using the special functions `filterbox.save()` / `filterbox.load()`. 
 
+
+____
+
 ### Fancy Tricks
 
 Expand for sample code.
