@@ -5,7 +5,7 @@
 
 # FilterBox
 
-Container that stores objects in database-like indexes for fast lookup.
+Container that stores Python objects in database-like indexes for fast lookup.
 
 #### Install: 
 
@@ -60,8 +60,6 @@ Cannot be changed after creation, it's read-only. But it's super fast, and of co
 
 All three can be pickled using the special functions `filterbox.save()` / `filterbox.load()`. 
 
-
-____
 
 ### Fancy Tricks
 
@@ -157,7 +155,6 @@ Note that `None` is treated as a normal value and is stored.
  - [Collision detection](https://github.com/manimino/filterbox/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
  - [Percentiles](https://github.com/manimino/filterbox/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
 
-____
 
 ## How FilterBox works
 
