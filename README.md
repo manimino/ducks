@@ -177,7 +177,7 @@ During a lookup, the object ID sets matching each query value are retrieved. The
 to objects and returned.
 
 In practice, FilterBox and FrozenFilterBox have a bit more to them, as they are optimized to have much better
-memory usage and speed than a naive implementation. 
+memory usage and speed than a naive implementation. For example, FrozenFilterBox uses an array-based tree structure.
 
 See the "how it works" pages for more detail:
  - [How FilterBox works](filterbox/mutable/how_it_works.md)
