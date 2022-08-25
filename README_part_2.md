@@ -1,6 +1,6 @@
 # Part 2
 
-Now for the fun part.
+Now for the fun part! 
 
 ### Fancy Tricks
 
@@ -87,6 +87,7 @@ fb[{'a': {'!=': ANY}}]  # result: [{}]
 
 Note that `None` is treated as a normal value and is stored.
 </details>
+
 
 ### Recipes
  
