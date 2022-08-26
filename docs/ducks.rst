@@ -1,5 +1,5 @@
-ducks package
-=============
+API
+===
 
 Subpackages
 -----------

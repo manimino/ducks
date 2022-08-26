@@ -1,5 +1,5 @@
 ducks
-=========
+=====
 
 .. toctree::
    :maxdepth: 4
