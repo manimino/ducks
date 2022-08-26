@@ -29,27 +29,26 @@ test/concurrent/test_read_update.py ......                               [ 99%]
 test/mutable/test_soak.py .                                              [100%]
 
 ----------- coverage: platform linux, python 3.9.7-final-0 -----------
-Name                                Stmts   Miss  Cover
--------------------------------------------------------
-filterbox/__init__.py                   6      0   100%
-filterbox/btree.py                     76      0   100%
-filterbox/concurrent/__init__.py        0      0   100%
-filterbox/concurrent/main.py           58      0   100%
-filterbox/constants.py                 10      0   100%
-filterbox/exceptions.py                 3      0   100%
-filterbox/frozen/__init__.py            0      0   100%
-filterbox/frozen/froz_attr_val.py      97      0   100%
-filterbox/frozen/main.py               96      0   100%
-filterbox/frozen/utils.py               8      0   100%
-filterbox/init_helpers.py              22      0   100%
-filterbox/mutable/__init__.py           0      0   100%
-filterbox/mutable/main.py             109      0   100%
-filterbox/mutable/mutable_attr.py     104      0   100%
-filterbox/perf.py                       0      0   100%
-filterbox/pickling.py                  21      0   100%
-filterbox/utils.py                     75      0   100%
--------------------------------------------------------
-TOTAL                                 685      0   100%
+Name                            Stmts   Miss  Cover
+---------------------------------------------------
+ducks/__init__.py                   6      0   100%
+ducks/btree.py                     63      0   100%
+ducks/concurrent/__init__.py        0      0   100%
+ducks/concurrent/main.py           58      0   100%
+ducks/constants.py                 10      0   100%
+ducks/exceptions.py                 3      0   100%
+ducks/frozen/__init__.py            0      0   100%
+ducks/frozen/frozen_attr.py        97      0   100%
+ducks/frozen/init_helpers.py       19      0   100%
+ducks/frozen/main.py               96      0   100%
+ducks/frozen/utils.py               8      0   100%
+ducks/mutable/__init__.py           0      0   100%
+ducks/mutable/main.py             109      0   100%
+ducks/mutable/mutable_attr.py     104      0   100%
+ducks/pickling.py                  21      0   100%
+ducks/utils.py                     75      0   100%
+---------------------------------------------------
+TOTAL                             669      0   100%
 
 
-============================= 471 passed in 6.56s ==============================
+============================= 471 passed in 7.01s ==============================

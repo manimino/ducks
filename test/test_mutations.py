@@ -1,6 +1,6 @@
 import pytest
 
-from filterbox.constants import SIZE_THRESH, ARRAY_SIZE_MAX, SET_SIZE_MIN
+from ducks.constants import SIZE_THRESH, ARRAY_SIZE_MAX, SET_SIZE_MIN
 
 
 @pytest.mark.parametrize(

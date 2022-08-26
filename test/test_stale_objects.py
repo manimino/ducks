@@ -1,7 +1,7 @@
 import pytest
 
-from filterbox.constants import SIZE_THRESH
-from filterbox import FilterBox
+from ducks.constants import SIZE_THRESH
+from ducks import Dex
 from .conftest import Attr, AssertRaises
 
 
@@ -20,7 +20,7 @@ def test_get_stale_objects(box_class, n_items):
 @pytest.mark.parametrize("n_items", [1, SIZE_THRESH * 2 + 2])
 def test_remove_stale_objects(n_items):
     objs = [{"z": 1} for _ in range(n_items)]
-    f = FilterBox(objs, ["z"])
+    f = Dex(objs, ["z"])
     for o in objs:
         o["z"] = 2
     for o in objs:
@@ -32,7 +32,7 @@ def test_remove_stale_objects(n_items):
 @pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH * 2 + 2])
 def test_remove_missing_object(n_items):
     objs = [{"z": Attr(1)} for _ in range(n_items)]
-    f = FilterBox(objs, ["z"])
+    f = Dex(objs, ["z"])
     with AssertRaises(KeyError):
         f.remove(Attr(2))
 

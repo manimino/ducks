@@ -1,4 +1,4 @@
-from filterbox import FilterBox
+from ducks import Dex
 
 from .conftest import AssertRaises
 
@@ -22,7 +22,7 @@ def test_get_in_no_results(box_class):
 
 
 def test_double_add():
-    f = FilterBox(on="s")
+    f = Dex(on="s")
     x = {"s": "hello"}
     f.add(x)
     f.add(x)
@@ -43,7 +43,7 @@ def test_empty_index(box_class):
 
 def test_arg_order():
     data = [{"a": i % 5, "b": i % 3} for i in range(100)]
-    f = FilterBox(data, ["a", "b"])
+    f = Dex(data, ["a", "b"])
     assert len(f[{"a": 1, "b": 2}]) == len(f[{"b": 2, "a": 1}])
 
 

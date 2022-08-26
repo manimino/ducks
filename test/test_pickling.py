@@ -1,4 +1,4 @@
-from filterbox import load, save
+from ducks import load, save
 
 
 def test_save_and_load(box_class, tmp_path):

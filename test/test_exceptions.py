@@ -1,26 +1,26 @@
 import pytest
 
-from filterbox import FilterBox, FrozenFilterBox, ConcurrentFilterBox
-from filterbox.exceptions import AttributeNotFoundError
-from filterbox.constants import SIZE_THRESH
+from ducks import Dex, FrozenDex, ConcurrentDex
+from ducks.exceptions import AttributeNotFoundError
+from ducks.constants import SIZE_THRESH
 
 from .conftest import AssertRaises, Attr
 
 
 def test_remove_empty():
-    f = FilterBox([], on=["stuff"])
+    f = Dex([], on=["stuff"])
     with AssertRaises(KeyError):
         f.remove("nope")
 
 
 def test_no_index():
     with AssertRaises(ValueError):
-        FilterBox(["a"])
+        Dex(["a"])
 
 
 def test_empty_index():
     with AssertRaises(ValueError):
-        FrozenFilterBox(["a"], [])
+        FrozenDex(["a"], [])
 
 
 def test_bad_query(box_class):
@@ -40,7 +40,7 @@ def test_remove_missing_value(n_items):
     an empty result correctly retrieved?
     """
     data = [Attr(i) for i in range(5)]
-    f = FilterBox(data, ["n"])
+    f = Dex(data, ["n"])
     assert len(f[{"n": -1}]) == 0
     with AssertRaises(KeyError):
         f.remove(Attr(-1))
@@ -48,7 +48,7 @@ def test_remove_missing_value(n_items):
 
 def test_bad_priority():
     with AssertRaises(ValueError):
-        _ = ConcurrentFilterBox(None, on=["x"], priority="lol")
+        _ = ConcurrentDex(None, on=["x"], priority="lol")
 
 
 def test_bad_expr(box_class):

@@ -3,13 +3,13 @@ from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable, Set
 
 from cykhash import Int64Set
 
-from filterbox.constants import ANY, ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
-from filterbox.utils import get_attribute
-from filterbox.btree import BTree
+from ducks.constants import ANY, ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
+from ducks.utils import get_attribute
+from ducks.btree import BTree
 
 
 class MutableAttrIndex:
-    """Stores data and handles requests that are relevant to a single attribute of a FilterBox."""
+    """Stores data and handles requests that are relevant to a single attribute of a Dex."""
 
     def __init__(
         self, attr: Union[Callable, str], objs: Optional[Iterable[Any]] = None,
@@ -45,7 +45,7 @@ class MutableAttrIndex:
             return Int64Set([ids])
 
     def remove(self, ptr: int, obj: Any):
-        """Remove a single object from the index. ptr is already known to be in the FilterBox.
+        """Remove a single object from the index. ptr is already known to be in the Dex.
         Runs in O(1) if obj has this attr and the value of the attr hasn't changed. O(n_keys) otherwise."""
         removed = False
         val, success = get_attribute(obj, self.attr)

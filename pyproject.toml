@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "filterbox"
-version = "1.0.0"
-description = "Container for finding Python objects using database-like indexes."
+name = "ducks"
+version = "0.4.2"
+description = "Provides Dex, a Python container for indexing objects of any type."
 authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/manimino/filterbox/"
-documentation = "https://pypi.org/project/filterbox/"
+repository = "https://github.com/manimino/ducks/"
+documentation = "https://pypi.org/project/ducks/"
 readme = "README.md"
 
 [tool.poetry.dependencies]

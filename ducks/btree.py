@@ -8,9 +8,7 @@ class BTree:
     Wraps an OOBTree instance. Not subclassing because we only need a few methods.
      - BTrees len() does a full tree traversal, which is very slow. So we maintain a count instead.
      - BTrees stores None values as if they were just really really small. So "x < 1" will find the Nones.
-     Let's disallow None entirely, make it throw TypeError. Just like sorting [1, 2, None] would do.
-     - BTrees values(min_key, max_key) does an inclusive range [min_key, max_key]. But often you need one or both
-     sides to exclude the endpoints, so that's implemented here.
+       Let's disallow None entirely, make it throw TypeError. Just like sorting [1, 2, None] would do.
      - Provides a nice interface for using >, >=, <, <= to get value ranges.
     """
 

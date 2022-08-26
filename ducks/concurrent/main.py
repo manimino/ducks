@@ -3,7 +3,7 @@ from typing import Any, List, Union, Iterable, Callable, Iterator, Optional, Dic
 
 from readerwriterlock.rwlock import RWLockRead, RWLockWrite, RWLockFair
 
-from filterbox.mutable.main import FilterBox
+from ducks.mutable.main import Dex
 from contextlib import contextmanager
 
 
@@ -13,7 +13,7 @@ WRITERS = "writers"
 FAIR = "fair"
 
 
-class ConcurrentFilterBox:
+class ConcurrentDex:
 
     def __init__(
         self,
@@ -21,15 +21,15 @@ class ConcurrentFilterBox:
         on: Iterable[Union[str, Callable]] = None,
         priority: str = READERS,
     ):
-        """Contains a FilterBox instance and a readerwriterlock. Wraps each FilterBox method in a read or write lock.
+        """Contains a Dex instance and a readerwriterlock. Wraps each Dex method in a read or write lock.
 
         Args:
-            objs: see FilterBox API
-            on: see FilterBox API
+            objs: see Dex API
+            on: see Dex API
             priority: 'readers', 'writers', or 'fair'. Default 'readers'. Change this according to your usage pattern.
         """
         self.priority = priority
-        self.box = FilterBox(objs, on)
+        self.box = Dex(objs, on)
         if priority == READERS:
             self.lock = RWLockRead()
         elif priority == WRITERS:
@@ -42,18 +42,18 @@ class ConcurrentFilterBox:
 
     @contextmanager
     def read_lock(self):
-        """Lock the ConcurrentFilterBox for reading."""
+        """Lock the ConcurrentDex for reading."""
         with self.lock.gen_rlock():
             yield
 
     @contextmanager
     def write_lock(self):
-        """Lock the ConcurrentFilterBox for writing.
+        """Lock the ConcurrentDex for writing.
 
         When doing many write operations at once, it is more efficient to do::
             with cfb.read_lock():
                 for item in items:
-                    cfb.box.add(item)  # calls add() on the underlying FilterBox.
+                    cfb.box.add(item)  # calls add() on the underlying Dex.
 
         This performs locking only once, versus calling cfb.add() which locks for each item.
         The same pattern works for update() and remove().
@@ -62,48 +62,48 @@ class ConcurrentFilterBox:
             yield
 
     def get_values(self, attr: Union[str, Callable]):
-        """Get a read lock and perform FilterBox get_values()."""
+        """Get a read lock and perform Dex get_values()."""
         with self.read_lock():
             return self.box.get_values(attr)
 
     def remove(self, obj: Any):
-        """Get a write lock and perform FilterBox.remove()."""
+        """Get a write lock and perform Dex.remove()."""
         with self.write_lock():
             self.box.remove(obj)
 
     def add(self, obj: Any):
-        """Get a write lock and perform FilterBox.add()."""
+        """Get a write lock and perform Dex.add()."""
         with self.write_lock():
             self.box.add(obj)
 
     def update(self, obj: Any):
-        """Get a write lock and perform FilterBox.update()."""
+        """Get a write lock and perform Dex.update()."""
         with self.write_lock():
             self.box.update(obj)
 
     def __len__(self) -> int:
-        """Get a read lock and get length of FilterBox."""
+        """Get a read lock and get length of Dex."""
         with self.read_lock():
             return len(self.box)
 
     def __contains__(self, obj: Any) -> bool:
-        """Get a read lock and check if the item is in the FilterBox."""
+        """Get a read lock and check if the item is in the Dex."""
         with self.read_lock():
             return obj in self.box
 
     def __iter__(self) -> Iterator:
-        """Get a read lock, make a list of the objects in the FilterBox, and return an iter to the list."""
+        """Get a read lock, make a list of the objects in the Dex, and return an iter to the list."""
         with self.read_lock():
             return iter(list(self.box))
 
     def __getitem__(self, query: Dict) -> List[Any]:
-        """Get a read lock and perform FilterBox __getitem__."""
+        """Get a read lock and perform Dex __getitem__."""
         with self.read_lock():
             return self.box[query]
 
 
-def save(c_box: ConcurrentFilterBox, filepath: str):
-    """Saves a ConcurrentFilterBox to a pickle file."""
+def save(c_box: ConcurrentDex, filepath: str):
+    """Saves a ConcurrentDex to a pickle file."""
     saved = {
         "objs": list(c_box.box.obj_map.values()),
         "on": list(c_box.box._indexes.keys()),
@@ -113,6 +113,6 @@ def save(c_box: ConcurrentFilterBox, filepath: str):
         pickle.dump(saved, fh)
 
 
-def load(saved: Dict) -> ConcurrentFilterBox:
-    """Creates a ConcurrentFilterBox from the pickle file contents."""
-    return ConcurrentFilterBox(saved["objs"], saved["on"], saved["priority"])
+def load(saved: Dict) -> ConcurrentDex:
+    """Creates a ConcurrentDex from the pickle file contents."""
+    return ConcurrentDex(saved["objs"], saved["on"], saved["priority"])

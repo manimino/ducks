@@ -1,13 +1,13 @@
 """
-FilterBox (mutable form) is pretty complex.
+Dex (mutable form) is pretty complex.
 Let's run a lengthy test to make sure all the pieces work as expected across many add / remove operations.
 """
 
 import random
 import time
 from datetime import datetime
-from filterbox import FilterBox
-from filterbox.utils import get_attribute
+from ducks import Dex
+from ducks.utils import get_attribute
 
 
 PLANETS = (
@@ -82,10 +82,10 @@ class SoakTest:
         self.seed = random.choice(range(10 ** 6))
         print("running soak test with seed:", self.seed)
         random.seed(self.seed)
-        self.f = FilterBox(
+        self.f = Dex(
             on=["ts_sec", "ts", "planet", "collider", "sometimes", planet_len]
         )
-        #  self.f = FilterBox(on=[planet_len])
+        #  self.f = Dex(on=[planet_len])
         self.objs = dict()
         self.max_id_num = 0
 
