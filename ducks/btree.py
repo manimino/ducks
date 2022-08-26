@@ -5,11 +5,11 @@ from typing import List, Dict, Any, Tuple
 
 class BTree:
     """
-    Wraps an OOBTree instance. Not subclassing because we only need a few methods.
+    Wraps an OOBTree instance. Tweaks it a bit:
      - BTrees len() does a full tree traversal, which is very slow. So we maintain a count instead.
      - BTrees stores None values as if they were just really really small. So "x < 1" will find the Nones.
-       Let's disallow None entirely, make it throw TypeError. Just like sorting [1, 2, None] would do.
-     - Provides a nice interface for using >, >=, <, <= to get value ranges.
+       Here instead we disallow None entirely, make it throw TypeError.
+     - Provide a nice interface for using >, >=, <, <= to get value ranges.
     """
 
     def __init__(self, d: Dict[Any, Any] = None):

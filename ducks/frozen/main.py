@@ -28,8 +28,7 @@ class FrozenDex:
             on: The attributes that will be used for finding objects.
                 Must contain at least one.
 
-        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
-        stored, and can found with ``find()``.
+        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``.
 
         For the objects that do contain the attributes on ``on``, those attribute values must be hashable and sortable.
         Most Python objects are hashable. Implement the function ``__lt__(self, other)`` to make a class sortable.

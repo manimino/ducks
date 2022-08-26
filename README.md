@@ -28,12 +28,12 @@ objects = [
 # Index on x and y.
 dex = Dex(objects, ['x', 'y'])  
 
-# find the ones you want
-dex[{                        # find objects
+# get objects
+dex[{                        
     'x': {'>': 5, '<': 10},  # where 5 < x < 10
     'y': {'in': [1, 2, 3]}   # and y is 1, 2, or 3
 }]
-# result: [{'x': 6, 'y': 2}]
+# result: [{'x': 6, 'y': 3}]
 ```
 
 #### Docs

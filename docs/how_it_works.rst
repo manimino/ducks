@@ -2,8 +2,7 @@
 How ducks works
 ===============
 
-For each attribute in a Dex, it holds a B-tree that maps every unique value to the set of objects with
-that value.
+For each attribute in a Dex, it holds a B-tree that maps every unique value to the objects with that value.
 
 This is a rough idea of the data structure:
 
@@ -17,7 +16,7 @@ This is a rough idea of the data structure:
         obj_map = {obj_ids: objects}
     }
 
-During a lookup, the object ID sets matching each query value are retrieved. Then set operations like `union`,
+During a lookup, the object ID sets matching each query value are retrieved. The set operations `union`,
 `intersect`, and `difference` are applied to get the matching object IDs. Finally, the object IDs are converted
 to objects and returned.
 
