@@ -35,4 +35,4 @@ Valid operators are ==, !=, <, <=, >, >=, in, not in.
 
 #### Docs
 
-There's more to `ducks` than making a `Dex` of `dict`s. [See the docs.](https://ducks.readthedocs.io)
+There's more to `ducks` than making a `Dex` of dicts. [See the docs.](https://ducks.readthedocs.io)
