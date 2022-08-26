@@ -5,8 +5,8 @@ These tests check that None is handled properly.
 """
 
 import pytest
-from filterbox import FilterBox
-from filterbox.constants import SET_SIZE_MIN, ARRAY_SIZE_MAX
+from ducks import Dex
+from ducks.constants import SET_SIZE_MIN, ARRAY_SIZE_MAX
 
 
 def test_none(box_class):
@@ -23,7 +23,7 @@ def test_add_remove_none(n_none):
     objs = [{"a": i} for i in range(10)]
     for i in range(n_none):
         objs.append({"a": None})
-    fb = FilterBox(objs, "a")
+    fb = Dex(objs, "a")
     assert len(fb[{"a": [1, 2, None]}]) == 2 + n_none
     assert len(fb[{"a": [None]}]) == n_none
     fb.remove(objs[0])  # {'a': 0}

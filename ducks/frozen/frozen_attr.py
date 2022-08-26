@@ -1,5 +1,5 @@
 """
-Performs object lookup for a single attribute in a FrozenFilterBox.
+Performs object lookup for a single attribute in a FrozenDex.
 """
 
 
@@ -8,15 +8,15 @@ import numpy as np
 from bisect import bisect_left, bisect_right
 from typing import Union, Callable, Set
 
-from filterbox.btree import BTree
-from filterbox.constants import ANY, SIZE_THRESH
-from filterbox.utils import make_empty_array
-from filterbox.frozen.init_helpers import get_vals, run_length_encode
+from ducks.btree import BTree
+from ducks.constants import ANY, SIZE_THRESH
+from ducks.utils import make_empty_array
+from ducks.frozen.init_helpers import get_vals, run_length_encode
 
 
 class FrozenAttrIndex:
     """
-    Stores data and handles requests that are relevant to a single attribute of a FrozenFilterBox.
+    Stores data and handles requests that are relevant to a single attribute of a FrozenDex.
 
     There are three places where object indexes are stored.
      - none_ids stores all indexes for with the attribute value None

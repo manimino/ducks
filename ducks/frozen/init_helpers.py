@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Union, Callable
-from filterbox.utils import get_attribute, make_empty_array
+from ducks.utils import get_attribute, make_empty_array
 
 
 def get_vals(objs: np.ndarray, obj_id_arr: np.ndarray, attr: Union[Callable, str]):

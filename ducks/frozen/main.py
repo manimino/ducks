@@ -5,10 +5,10 @@ import pickle
 import numpy as np
 import sortednp as snp
 
-from filterbox.btree import range_expr_to_args
-from filterbox.frozen.frozen_attr import FrozenAttrIndex
-from filterbox.frozen.utils import snp_difference
-from filterbox.utils import (
+from ducks.btree import range_expr_to_args
+from ducks.frozen.frozen_attr import FrozenAttrIndex
+from ducks.frozen.utils import snp_difference
+from ducks.utils import (
     make_empty_array,
     split_query,
     standardize_expr,
@@ -17,13 +17,13 @@ from filterbox.utils import (
 )
 
 
-class FrozenFilterBox:
+class FrozenDex:
 
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
-        """Create a FrozenFilterBox containing the ``objs``, queryable by the ``on`` attributes.
+        """Create a FrozenDex containing the ``objs``, queryable by the ``on`` attributes.
 
         Args:
-            objs: The objects that FrozenFilterBox will contain.
+            objs: The objects that FrozenDex will contain.
 
             on: The attributes that will be used for finding objects.
                 Must contain at least one.
@@ -57,7 +57,7 @@ class FrozenFilterBox:
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
     ) -> np.ndarray:
-        """Find objects in the FrozenFilterBox that satisfy the match and exclude constraints.
+        """Find objects in the FrozenDex that satisfy the match and exclude constraints.
 
         Args:
             match: Dict of ``{attribute: expression}`` defining the subset of objects that match.
@@ -69,7 +69,7 @@ class FrozenFilterBox:
                  - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
                  - A single value, which is a shorthand for `{'==': value}`.
                  - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
-                 - ``filterbox.ANY``, which matches all objects having the attribute.
+                 - ``ducks.ANY``, which matches all objects having the attribute.
 
                  Valid operators are '==' 'in', '<', '<=', '>', '>='.
                  The aliases 'eq' 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
@@ -190,7 +190,7 @@ class FrozenFilterBox:
         return len(self.obj_arr)
 
     def __getitem__(self, query: Dict) -> np.ndarray:
-        """Find objects in the FrozenFilterBox that satisfy the constraints.
+        """Find objects in the FrozenDex that satisfy the constraints.
 
                 Args:
                     query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
@@ -203,8 +203,8 @@ class FrozenFilterBox:
                          - A single value, which is a shorthand for `{'==': value}`.
                          - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
 
-                         The expression ``{'==': filterbox.ANY}`` will match all objects having the attribute.
-                         The expression ``{'!=': filterbox.ANY}`` will match all objects without the attribute.
+                         The expression ``{'==': ducks.ANY}`` will match all objects having the attribute.
+                         The expression ``{'!=': ducks.ANY}`` will match all objects without the attribute.
 
                          Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
                          The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
@@ -222,14 +222,14 @@ class FrozenFilterBox:
         return self._find(match_query, exclude_query)
 
 
-def save(box: FrozenFilterBox, filepath: str):
+def save(box: FrozenDex, filepath: str):
     """Saves this object to a pickle file."""
     with open(filepath, "wb") as fh:
         pickle.dump(box, fh)
 
 
-def load(box: FrozenFilterBox):
-    """Creates a FrozenFilterBox from the pickle file contents."""
+def load(box: FrozenDex):
+    """Creates a FrozenDex from the pickle file contents."""
     # If this was created by one Python process and loaded by another, the object IDs will no longer
     # correspond to the objects. Re-create the object ID array with the correct IDs.
     box.sorted_obj_ids = np.sort([id(obj) for obj in box.obj_arr])

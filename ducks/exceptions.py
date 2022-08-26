@@ -1,5 +1,5 @@
 class FrozenError(Exception):
-    """Raised when attempting to modify a FrozenFilterBox"""
+    """Raised when attempting to modify a FrozenDex"""
 
 
 class AttributeNotFoundError(Exception):

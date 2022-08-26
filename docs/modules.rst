@@ -1,7 +1,7 @@
-filterbox
+ducks
 =========
 
 .. toctree::
    :maxdepth: 4
 
-   filterbox
+   ducks

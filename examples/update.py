@@ -1,14 +1,14 @@
-from filterbox import FilterBox
+from ducks import Dex
 
 
 class Changey:
-    """A class containing a variable _n that changes. On change, it will update each FilterBox in its listeners."""
+    """A class containing a variable _n that changes. On change, it will update each Dex in its listeners."""
 
     def __init__(self, n):
         self._n = n
         self.listeners = []
 
-    def add_listener(self, f: FilterBox):
+    def add_listener(self, f: Dex):
         self.listeners.append(f)
 
     @property
@@ -26,7 +26,7 @@ class Changey:
 
 def main():
     objs = [Changey(1) for _ in range(10)]
-    f = FilterBox(objs, ["n"])
+    f = Dex(objs, ["n"])
     for obj in objs:
         obj.add_listener(f)
     assert len(f[{"n": 1}]) == 10
@@ -34,7 +34,7 @@ def main():
     # change an object
     objs[0].n = 2
 
-    # see that changes are propagated to FilterBox
+    # see that changes are propagated to Dex
     assert len(f[{"n": 1}]) == 9
     assert len(f[{"n": 2}]) == 1
     print("Completed. See code for details.")

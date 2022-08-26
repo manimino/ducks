@@ -4,17 +4,17 @@ from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
 
 from cykhash import Int64Set
 
-from filterbox.utils import (
+from ducks.utils import (
     cyk_intersect,
     cyk_union,
     split_query,
     standardize_expr,
     validate_query,
 )
-from filterbox.mutable.mutable_attr import MutableAttrIndex
+from ducks.mutable.mutable_attr import MutableAttrIndex
 
 
-class FilterBox:
+class Dex:
 
     def __init__(
         self,
@@ -22,10 +22,10 @@ class FilterBox:
         on: Iterable[Union[str, Callable]] = None,
     ):
         """
-        Create a FilterBox containing the ``objs``, queryable by the ``on`` attributes.
+        Create a Dex containing the ``objs``, queryable by the ``on`` attributes.
 
         Args:
-            objs: The objects that FilterBox will contain initially. Optional.
+            objs: The objects that Dex will contain initially. Optional.
 
             on: The attributes that will be used for finding objects.
                 Must contain at least one.
@@ -57,7 +57,7 @@ class FilterBox:
         match: Dict[Union[str, Callable], Dict[str, Any]],
         exclude: Dict[Union[str, Callable], Dict[str, Any]],
     ) -> List:
-        """Find objects in the FilterBox that satisfy the match and exclude constraints.
+        """Find objects in the Dex that satisfy the match and exclude constraints.
 
         Args:
             match: Dict of ``{attribute: expression}`` defining the subset of objects that match.
@@ -70,7 +70,7 @@ class FilterBox:
                  - A single value, which is a shorthand for `{'==': value}`.
                  - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
 
-                 The special value ``filterbox.ANY`` will match all objects having the attribute.
+                 The special value ``ducks.ANY`` will match all objects having the attribute.
 
                  Valid operators are '==' 'in', '<', '<=', '>', '>='.
                  The aliases 'eq' 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
@@ -229,7 +229,7 @@ class FilterBox:
         return len(self.obj_map)
 
     def __getitem__(self, query: Dict) -> List[Any]:
-        """Find objects in the FilterBox that satisfy the constraints.
+        """Find objects in the Dex that satisfy the constraints.
 
                 Args:
                     query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
@@ -242,8 +242,8 @@ class FilterBox:
                          - A single value, which is a shorthand for `{'==': value}`.
                          - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
 
-                         The expression ``{'==': filterbox.ANY}`` will match all objects having the attribute.
-                         The expression ``{'!=': filterbox.ANY}`` will match all objects without the attribute.
+                         The expression ``{'==': ducks.ANY}`` will match all objects having the attribute.
+                         The expression ``{'!=': ducks.ANY}`` will match all objects without the attribute.
 
                          Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
                          The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
@@ -261,19 +261,19 @@ class FilterBox:
         return self._find(match_query, exclude_query)
 
 
-def save(box: FilterBox, filepath: str):
+def save(box: Dex, filepath: str):
     """Saves this object to a pickle file."""
     # We can't pickle this easily, because:
     # - Int64Sets cannot be pickled, so the MutableAttrIndex is hard to save.
     # - Object IDs are specific to the process that created them, so the object map will be invalid if saved.
     # Therefore, this just pickles the objects and the list of what to build indexes on.
-    # The FilterBox container will be built anew with __init__ on load.
+    # The Dex container will be built anew with __init__ on load.
     # A bit slow, but it's simple, guaranteed to work, and is very robust against changes in the container code.
     saved = {"objs": list(box.obj_map.values()), "on": list(box._indexes.keys())}
     with open(filepath, "wb") as fh:
         pickle.dump(saved, fh)
 
 
-def load(saved: Dict) -> FilterBox:
-    """Creates a FilterBox from the pickle file."""
-    return FilterBox(saved["objs"], saved["on"])
+def load(saved: Dict) -> Dex:
+    """Creates a Dex from the pickle file."""
+    return Dex(saved["objs"], saved["on"])

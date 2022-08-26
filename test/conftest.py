@@ -1,8 +1,8 @@
 import pytest
-from filterbox import FilterBox, FrozenFilterBox, ConcurrentFilterBox
+from ducks import Dex, FrozenDex, ConcurrentDex
 
 
-@pytest.fixture(params=[FilterBox, FrozenFilterBox, ConcurrentFilterBox])
+@pytest.fixture(params=[Dex, FrozenDex, ConcurrentDex])
 def box_class(request):
     return request.param
 

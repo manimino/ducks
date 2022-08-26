@@ -1,6 +1,6 @@
 import pytest
-from filterbox import FilterBox, FrozenFilterBox
-from filterbox.constants import SIZE_THRESH
+from ducks import Dex, FrozenDex
+from ducks.constants import SIZE_THRESH
 
 
 def test_iter_small(box_class):
@@ -30,7 +30,7 @@ def test_iter_large(box_class, idx_order):
 @pytest.mark.parametrize("idx_order", [["i", "j"], ["j", "i"],])
 def test_make_from(box_class, idx_order):
     """See if we can make one index type from the other type."""
-    make_type = FilterBox if box_class == FrozenFilterBox else FrozenFilterBox
+    make_type = Dex if box_class == FrozenDex else FrozenDex
     ls = [{"i": i, "j": -(i % 3)} for i in range(SIZE_THRESH * 3 + 3)]
     f = box_class(ls, on=idx_order)
     other_f = make_type(f, on=idx_order)

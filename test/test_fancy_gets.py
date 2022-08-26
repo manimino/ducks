@@ -3,8 +3,8 @@ Test attribute lookups of different kinds
 e.g. getting dict attributes, or applying functions, or getting properties from namedtuples
 """
 
-from filterbox import FilterBox
-from filterbox.constants import SIZE_THRESH
+from ducks import Dex
+from ducks.constants import SIZE_THRESH
 import pytest
 
 

@@ -4,8 +4,8 @@ from typing import List, Union, Callable, Optional, Any, Dict, Tuple
 
 from cykhash import Int64Set
 
-from filterbox.constants import ANY, VALID_OPERATORS, OPERATOR_MAP, EXCLUDE_OPERATORS
-from filterbox.exceptions import AttributeNotFoundError, MissingAttribute
+from ducks.constants import ANY, VALID_OPERATORS, OPERATOR_MAP, EXCLUDE_OPERATORS
+from ducks.exceptions import AttributeNotFoundError, MissingAttribute
 
 
 def get_attribute(obj: Any, attr: Union[Callable, str]) -> Tuple[Any, bool]:
