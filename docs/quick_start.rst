@@ -10,17 +10,22 @@ Basic Usage
 
     from ducks import Dex
 
-    objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5}]
+    objects = [
+        {'x': 4, 'y': 1},
+        {'x': 6, 'y': 3},
+        {'x': 8, 'y': 5}
+    ]
 
-    # Create a Dex containing the objects. Index on x and y.
+    # Create a Dex containing the objects.
+    # Index on x and y.
     dex = Dex(objects, ['x', 'y'])
 
-    # find the ones you want
-    dex[{                           # find objects
-        'x': {'>': 5, '<': 10},     # where x is between 5 and 10
-        'y': {'in': [1, 2, 3]}      # and y is 1, 2, or 3
+    # get objects
+    dex[{
+        'x': {'>': 5, '<': 10},  # where 5 < x < 10
+        'y': {'in': [1, 2, 3]}   # and y is 1, 2, or 3
     }]
-    # result: [{'x': 6, 'y': 2}]
+    # result: [{'x': 6, 'y': 3}]
 
 Valid operators are ==, !=, <, <=, >, >=, in, not in.
 
@@ -28,25 +33,30 @@ Valid operators are ==, !=, <, <=, >, >=, in, not in.
 Function attributes
 -------------------
 
-You can index on functions evaluated on the object, as if they were attributes.
+You can index on functions evaluated on the object.
 
-Find palindromes of length 5 or 7:
+Find palindromes of length 3:
 
 .. code-block::
 
     from ducks import Dex
-    strings = ['bob', 'fives', 'kayak', 'stats', 'pullup', 'racecar']
+    strings = [
+        'ooh', 'wow',
+        'kayak', 'bob'
+    ]
 
-    # define a function that takes the object as input
+    # define a function that
+    # takes the object as input
     def is_palindrome(s):
         return s == s[::-1]
 
+    # make a Dex
     dex = Dex(strings, [is_palindrome, len])
     dex[{
         is_palindrome: True,
-        len: {'in': [5, 7]}
+        len: 3
     }]
-    # result: ['kayak', 'racecar', 'stats']
+    # result: ['wow', 'bob']
 
 Functions are evaluated on the object when it is added to the Dex.
 
@@ -78,10 +88,12 @@ Missing attributes
 
 Objects don't need to have every attribute.
 
-* Objects that are missing an attribute will not be stored under that attribute. This saves lots of memory.
+Indexes are sparse. Objects that are missing an attribute will not be stored
+under that attribute. This saves lots of memory.
+
 * To find all objects that have an attribute, match the special value ``ANY``.
-* To find objects missing the attribute, exclude ``ANY``.
-* In functions, raise ``MissingAttribute`` to tell Dex the object is missing.
+* To find objects missing the attribute, do ``{'!=': ANY}``.
+* In functions, raise ``MissingAttribute`` to tell ducks the attribute is missing.
 
 Example:
 
@@ -103,7 +115,7 @@ Example:
     dex[{get_a: ANY}]        # result: [{'a': 1}, {'a': 2}]
     dex[{'a': {'!=': ANY}}]  # result: [{}]
 
-Note that ``None`` is treated as a normal value and is stored.
+Note that ``None`` is treated as a normal attribute value and is stored.
 
 
 -------
@@ -112,7 +124,7 @@ Classes
 
 There are three container classes:
 
-* **Dex**: Can `add`, `remove`, and `update` objects after creation.
+* **Dex**: Can ``add``, ``remove``, and ``update`` objects after creation.
   `[API] <https://ducks.readthedocs.io/en/latest/ducks.mutable.html#ducks.mutable.main.Dex>`_
 * **ConcurrentDex**: Same as Dex, but thread-safe.
   `[API] <https://ducks.readthedocs.io/en/latest/ducks.concurrent.html#ducks.concurrent.main.ConcurrentDex>`_

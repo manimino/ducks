@@ -30,8 +30,7 @@ class Dex:
             on: The attributes that will be used for finding objects.
                 Must contain at least one.
 
-        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``. They will still be
-        stored, and can found with ``find()``.
+        It's OK if the objects in ``objs`` are missing some or all of the attributes in ``on``.
 
         For the objects that do contain the attributes in ``on``, those attribute values must be hashable and sortable.
         Most Python objects are hashable. Implement the function ``__lt__(self, other)`` to make a class sortable.
@@ -116,7 +115,7 @@ class Dex:
         self.add(obj)
 
     def get_values(self, attr: Union[str, Callable]) -> Set:
-        """Get the unique values we have for the given attribute. Useful for deciding what to ``find()`` on.
+        """Get the unique values we have for the given attribute.
 
         Args:
             attr: The attribute to get values for.

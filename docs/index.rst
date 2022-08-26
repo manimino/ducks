@@ -20,7 +20,7 @@ Yes. Here's how Dex compares to other object-finders on an example task.
 
 .. image:: img/perf_bench.png
 
-`Benchmark code <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
+`Benchmark source <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
 
 The closest thing to a Dex is an in-memory SQLite. While SQLite is a fantastic database, it requires
 more overhead. As such, Dex is generally faster.

@@ -18,21 +18,26 @@ pip install ducks
 ```
 from ducks import Dex
 
-objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5}]
+objects = [
+    {'x': 4, 'y': 1}, 
+    {'x': 6, 'y': 3}, 
+    {'x': 8, 'y': 5}
+]
 
-# Create a Dex containing the objects. Index on x and y.
+# Create a Dex containing the objects. 
+# Index on x and y.
 dex = Dex(objects, ['x', 'y'])  
 
-# find the ones you want
-dex[{                           # find objects
-    'x': {'>': 5, '<': 10},     # where x is between 5 and 10
-    'y': {'in': [1, 2, 3]}      # and y is 1, 2, or 3
+# get objects
+dex[{                        
+    'x': {'>': 5, '<': 10},  # where 5 < x < 10
+    'y': {'in': [1, 2, 3]}   # and y is 1, 2, or 3
 }]
-# result: [{'x': 6, 'y': 2}]
+# result: [{'x': 6, 'y': 3}]
 ```
-
-Valid operators are ==, !=, <, <=, >, >=, in, not in. 
 
 #### Docs
 
-There's more to `ducks` than making a `Dex` of dicts. [See the docs.](https://ducks.readthedocs.io)
+There's more to ducks than making a Dex of dicts. 
+
+[See the docs.](https://ducks.readthedocs.io)
