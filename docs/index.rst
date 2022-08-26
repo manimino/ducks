@@ -1,10 +1,11 @@
 .. ducks documentation master file, created by
    sphinx-quickstart on Fri Aug  5 07:18:13 2022.
 
+=====
 ducks
 =====
 
-
+Provides Dex, a Python container for indexing objects of any type.
 
 Is Dex a database?
 ==================
@@ -28,16 +29,13 @@ Contents
 ========
 
 .. toctree::
+   :maxdepth: 1
 
    Home <self>
    quick_start
+   demos
    how_it_works
    ducks
-   demos
 
 * :ref:`modindex`
 * :ref:`search`
-
-The examples `in the README`_ are the best way to get started.
-
-.. _in the README: https://pypi.org/project/ducks/

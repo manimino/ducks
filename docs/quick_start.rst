@@ -28,7 +28,7 @@ Valid operators are ==, !=, <, <=, >, >=, in, not in.
 Function attributes
 -------------------
 
-You can also index on functions evaluated on the object, as if they were attributes.
+You can index on functions evaluated on the object, as if they were attributes.
 
 Find palindromes of length 5 or 7:
 
@@ -50,8 +50,9 @@ Find palindromes of length 5 or 7:
 
 Functions are evaluated on the object when it is added to the Dex.
 
+-----------
 Nested data
-===========
+-----------
 
 Use functions to get values from nested data structures.
 
@@ -78,16 +79,15 @@ Missing attributes
 Objects don't need to have every attribute.
 
 * Objects that are missing an attribute will not be stored under that attribute. This saves lots of memory.
-* To find all objects that have an attribute, match the special value <code>ANY</code>.
-* To find objects missing the attribute, exclude <code>ANY</code>.
-* In functions, raise <code>MissingAttribute</code> to tell Dex the object is missing.
+* To find all objects that have an attribute, match the special value ``ANY``.
+* To find objects missing the attribute, exclude ``ANY``.
+* In functions, raise ``MissingAttribute`` to tell Dex the object is missing.
 
 Example:
 
 .. code-block::
 
-    from ducks import Dex, ANY
-    from ducks.exceptions import MissingAttribute
+    from ducks import Dex, ANY, MissingAttribute
 
     objs = [{'a': 1}, {'a': 2}, {}]
 
@@ -112,11 +112,28 @@ Classes
 
 There are three container classes:
 
-* Dex: Can `add`, `remove`, and `update` objects after creation.
-  `Dex API <https://ducks.readthedocs.io/en/latest/ducks.mutable.html#ducks.mutable.main.Dex>`_
-* ConcurrentDex: Same as Dex, but thread-safe.
-  `ConcurrentDex API <https://ducks.readthedocs.io/en/latest/ducks.concurrent.html#ducks.concurrent.main.ConcurrentDex>`_
-* FrozenDex: Cannot be changed after creation, it's read-only. But it's super fast, and of course thread-safe.
-  `FrozenDex API <https://ducks.readthedocs.io/en/latest/ducks.frozen.html#ducks.frozen.main.FrozenDex>`_
+* **Dex**: Can `add`, `remove`, and `update` objects after creation.
+  `[API] <https://ducks.readthedocs.io/en/latest/ducks.mutable.html#ducks.mutable.main.Dex>`_
+* **ConcurrentDex**: Same as Dex, but thread-safe.
+  `[API] <https://ducks.readthedocs.io/en/latest/ducks.concurrent.html#ducks.concurrent.main.ConcurrentDex>`_
+* **FrozenDex**: Cannot be changed after creation, it's read-only. But it's super fast, and of course thread-safe.
+  `[API] <https://ducks.readthedocs.io/en/latest/ducks.frozen.html#ducks.frozen.main.FrozenDex>`_
 
-All three can be pickled using the special functions ``ducks.save(dex, file)`` / ``ducks.load(file)``.
+
+--------
+Pickling
+--------
+
+Dex, ConcurrentDex, and FrozenDex can be pickled using the special functions
+``save`` and ``load``.
+
+.. code-block::
+
+    from ducks import Dex, save, load
+    dex = Dex([1.2, 1.8, 2.7], [round])
+    save(dex, 'dex.pkl')
+    loaded_dex = load('dex.pkl')
+    loaded_dex[{round: 2}]
+    # result: 1.8
+
+Objects inside the dex will be saved along with it.
