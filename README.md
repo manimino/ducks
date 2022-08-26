@@ -3,23 +3,24 @@
 [![license - MIT](https://img.shields.io/static/v1?label=license&message=MIT&color=2ea44f)](/LICENSE)
 ![python - 3.7+](https://img.shields.io/static/v1?label=python&message=3.7%2B&color=2ea44f)
 
-# ducks
+# ducks 🦆
 
 Provides Dex, a Python container for indexing objects of any type.
 
-#### Install: 
+#### Install
 
 ```
 pip install ducks
 ```
 
-#### Usage:
+#### Usage
+
 ```
 from ducks import Dex
 
 objects = [{'x': 4, 'y': 1}, {'x': 6, 'y': 2}, {'x': 8, 'y': 5}]
 
-# Create a Dex containing objects. Index on x and y.
+# Create a Dex containing the dicts. Index on x and y.
 dex = Dex(objects, ['x', 'y'])  
 
 # find the ones you want
@@ -41,9 +42,9 @@ not any do other database things like SQL, tables, etc. This keeps Dex simple, l
 
 Yes. Here's how Dex compares to other object-finders on an example task.
 
-![Example benchmark](examples/img/perf_bench.png)
+![Example benchmark](https://github.com/manimino/ducks/blob/main/examples/img/perf_bench.png)
 
-[Benchmark code](examples/perf_demo.ipynb)
+[Benchmark code](https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb)
 
 The closest thing to a Dex is an in-memory SQLite. While SQLite is a fantastic database, it requires
 more overhead. As such, Dex is generally faster.
@@ -147,39 +148,4 @@ dex[{'a': {'!=': ANY}}]  # result: [{}]
 Note that `None` is treated as a normal value and is stored.
 </details>
 
-
-### Recipes
- 
- - [Auto-updating](https://github.com/manimino/ducks/blob/main/examples/update.py) - Keep Dex updated when objects change
- - [Wordle solver](https://github.com/manimino/ducks/blob/main/examples/wordle.ipynb) - Solve string matching problems faster than regex
- - [Collision detection](https://github.com/manimino/ducks/blob/main/examples/collision.py) - Find objects based on type and proximity (grid-based)
- - [Percentiles](https://github.com/manimino/ducks/blob/main/examples/percentile.py) - Find by percentile (median, p99, etc.)
-
-
-## How Dex works
-
-For each attribute in the Dex, it holds a B-tree that maps every unique value to the set of objects with 
-that value. 
-
-This is a rough idea of the data structure: 
-```
-class Dex:
-    indexes = {
-        'attribute1': BTree({10: set(some_obj_ids), 20: set(other_obj_ids)}),
-        'attribute2': BTree({'abc': set(some_obj_ids), 'def': set(other_obj_ids)}),
-    }
-    obj_map = {obj_ids: objects}
-}
-```
-
-During a lookup, the object ID sets matching each query value are retrieved. Then set operations like `union`, 
-`intersect`, and `difference` are applied to get the matching object IDs. Finally, the object IDs are converted
-to objects and returned.
-
-In practice, Dex and FrozenDex have a bit more to them, as they are optimized to have much better
-memory usage and speed than a naive implementation. For example, FrozenDex uses an array-based tree structure.
-
-See the "how it works" pages for more detail:
- - [How Dex works](ducks/mutable/how_it_works.md)
- - [How ConcurrentDex works](ducks/concurrent/how_it_works.md)
- - [How FrozenDex works](ducks/frozen/how_it_works.md)
+Now you've got a ducks Dex of dicts. For lots more, [read the docs](https://ducks.readthedocs.io).

@@ -1,8 +1,15 @@
 .. ducks documentation master file, created by
    sphinx-quickstart on Fri Aug  5 07:18:13 2022.
 
-Dex API Reference
-=======================
+ducks
+=====
+
+.. toctree::
+
+   Home <self>
+   how_it_works
+   ducks
+   demos
 
 * :ref:`modindex`
 * :ref:`search`
