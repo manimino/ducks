@@ -48,7 +48,7 @@ The main container in ducks is called Dex.
 
     # match objects
     dex[{
-        'x': {'>': 4, '<': 8},   # where 4 < x < 8
+        'x': {'>': 5, '<': 10},  # where 5 < x < 10
         'y': {'in': ['a', 'b']}  # and y is 'a' or 'b'
     }]
     # result: [{'x': 6, 'y': 'b'}]
