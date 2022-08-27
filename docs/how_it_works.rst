@@ -153,7 +153,7 @@ Pseudocode:
         'objects': np.array(dtype="O")
     }
 
-    class MutableAttrIndex:
+    class FrozenAttrIndex:
         # maps the values for an attribute to object array indexes
 
         val_arr = np.array(attribute value for each object)  # sorted by value
@@ -161,8 +161,8 @@ Pseudocode:
 
         # tree stores values for which there are many matching objects
         tree = BTree({
-            val1: np.array(sorted_obj_arr_indexes),
-            val2: np.array(sorted_obj_arr_indexes)
+            val1: np.array(some_sorted_obj_arr_indexes),
+            val2: np.array(more_sorted_obj_arr_indexes)
         })
 
 
