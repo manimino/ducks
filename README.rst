@@ -27,6 +27,8 @@ Install
 Usage
 =====
 
+The main container in ducks is called Dex.
+
 .. code-block::
 
     from ducks import Dex
