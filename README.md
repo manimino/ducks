@@ -7,10 +7,6 @@
 
 Provides Dex, a Python container for indexing objects of any type.
 
-Lookups are very fast.
-
-![ducks outperforms comparable data structures](docs/img/perf_bench.png)
-
 #### Install
 
 ```
@@ -39,6 +35,12 @@ dex[{
 }]
 # result: [{'x': 6, 'y': 3}]
 ```
+
+#### It's fast
+
+![ducks outperforms comparable data structures](docs/img/perf_bench.png)
+
+Ducks outperforms the other data structures for finding Python objects.
 
 #### Docs
 
