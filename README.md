@@ -38,9 +38,9 @@ dex[{
 
 ### It's fast
 
-![ducks outperforms comparable data structures](docs/img/perf_bench.png)
+<img src="https://github.com/manimino/ducks/blob/tweaks/docs/img/perf_bench.png" width="500" />
 
-Ducks outperforms the other data structures for finding Python objects.
+Ducks outperforms other data structures for finding Python objects.
 
 ### Docs
 
