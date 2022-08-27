@@ -5,7 +5,7 @@
 ducks
 =====
 
-Provides Dex, a Python container for indexing objects of any type.
+Index your Python objects for fast lookup by their attributes.
 
 Is Dex a database?
 ==================
