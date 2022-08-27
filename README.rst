@@ -54,7 +54,7 @@ This is a Dex of dicts, but the objects can be any type.
 
 Dex supports ==, !=, in, not in, <, <=, >, >=.
 
-The indexes can be dict keys, object attributes, and custom functions.
+The indexes can be dict keys, object attributes, or custom functions.
 
 Is Dex fast?
 ============
@@ -62,6 +62,8 @@ Is Dex fast?
 Yes. Here's how Dex compares to other object-finders on an example task.
 
 .. image:: https://github.com/manimino/ducks/blob/main/docs/img/perf_bench.png
+    :target: https://github.com/manimino/ducks/blob/main/docs/img/perf_bench.png
+    :scale: 50 %
 
 `Benchmark source <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
 
