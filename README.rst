@@ -63,7 +63,7 @@ Yes. Here's how Dex compares to other object-finders on an example task.
 
 .. image:: https://github.com/manimino/ducks/blob/main/docs/img/perf_bench.png
     :target: https://github.com/manimino/ducks/blob/main/docs/img/perf_bench.png
-    :scale: 50 %
+    :width: 500
 
 `Benchmark source <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
 
