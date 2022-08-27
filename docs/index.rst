@@ -3,12 +3,6 @@
 
 .. include:: ../README.rst
 
-Is Dex a database?
-==================
-
-No. But like a database, Dex uses B-tree indexes and uses them to find results very quickly. It does
-not any do other database things like SQL, tables, etc. This keeps Dex simple, light, and performant.
-
 Contents
 ========
 
