@@ -36,6 +36,10 @@ dex[{
 # result: [{'x': 6, 'y': 3}]
 ```
 
+ - The objects can be any Python type.
+ - Supports ==, !=, in, not in, <, <=, >, >=.
+ - Indexes can be on dict keys, object attributes, or defined by custom functions.
+
 ### It's fast
 
 <img src="https://github.com/manimino/ducks/blob/tweaks/docs/img/perf_bench.png" width="500" />
