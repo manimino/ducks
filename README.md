@@ -7,13 +7,13 @@
 
 Provides Dex, a Python container for indexing objects of any type.
 
-#### Install
+### Install
 
 ```
 pip install ducks
 ```
 
-#### Usage
+### Usage
 
 ```
 from ducks import Dex
@@ -36,13 +36,13 @@ dex[{
 # result: [{'x': 6, 'y': 3}]
 ```
 
-#### It's fast
+### It's fast
 
 ![ducks outperforms comparable data structures](docs/img/perf_bench.png)
 
 Ducks outperforms the other data structures for finding Python objects.
 
-#### Docs
+### Docs
 
 There's more to ducks than making a Dex of dicts. 
 
