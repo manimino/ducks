@@ -19,9 +19,9 @@ pip install ducks
 from ducks import Dex
 
 objects = [
-    {'x': 4, 'y': 1}, 
-    {'x': 6, 'y': 3}, 
-    {'x': 8, 'y': 5}
+    {'x': 3, 'y': 'a'}, 
+    {'x': 6, 'y': 'b'}, 
+    {'x': 9, 'y': 'c'}
 ]
 
 # Create a Dex containing the objects. 
@@ -30,15 +30,15 @@ dex = Dex(objects, ['x', 'y'])
 
 # get objects
 dex[{                        
-    'x': {'>': 5, '<': 10},  # where 5 < x < 10
-    'y': {'in': [1, 2, 3]}   # and y is 1, 2, or 3
+    'x': {'>': 4, '<': 8},   # where 4 < x < 8
+    'y': {'in': ['a', 'b']}  # and y is 'a' or 'b'
 }]
-# result: [{'x': 6, 'y': 3}]
+# result: [{'x': 6, 'y': 'b'}]
 ```
 
  - The objects can be any Python type.
  - Supports ==, !=, in, not in, <, <=, >, >=.
- - Indexes can be on dict keys, object attributes, or defined by custom functions.
+ - Index using dict keys, object attributes, and custom functions.
 
 ### It's fast
 
