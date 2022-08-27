@@ -17,15 +17,17 @@ Index your Python objects for fast lookup by their attributes.
     :target: https://github.com/manimino/ducks/
     :alt: python - 3.7+
 
+-------
 Install
-=======
+-------
 
 .. code-block::
 
     pip install ducks
 
+-----
 Usage
-=====
+-----
 
 The main container in ducks is called Dex.
 
@@ -56,8 +58,9 @@ Dex supports ==, !=, in, not in, <, <=, >, >=.
 
 The indexes can be dict keys, object attributes, or custom functions.
 
+------------
 Is Dex fast?
-============
+------------
 
 Yes. Here's how Dex compares to other object-finders on an example task.
 
@@ -70,14 +73,16 @@ Yes. Here's how Dex compares to other object-finders on an example task.
 The closest thing to a Dex is an in-memory SQLite. While SQLite is a fantastic database, it requires
 more overhead. As such, Dex is generally faster.
 
+------------------
 Is Dex a database?
-==================
+------------------
 
 No. But like a database, Dex uses B-tree indexes and uses them to find results very quickly. It does
 not any do other database things like SQL, tables, etc. This keeps Dex simple, light, and performant.
 
+----
 Docs
-====
+----
 
 There's more to ducks than making a Dex of dicts.
 
