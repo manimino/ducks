@@ -35,6 +35,7 @@ The main container in ducks is called Dex.
 
     from ducks import Dex
 
+    # make some objects
     objects = [
         {'x': 3, 'y': 'a'},
         {'x': 6, 'y': 'b'},
@@ -45,7 +46,7 @@ The main container in ducks is called Dex.
     # Index on x and y.
     dex = Dex(objects, ['x', 'y'])
 
-    # get objects
+    # match objects
     dex[{
         'x': {'>': 4, '<': 8},   # where 4 < x < 8
         'y': {'in': ['a', 'b']}  # and y is 'a' or 'b'
@@ -64,26 +65,16 @@ Is Dex fast?
 
 Yes. Here's how Dex compares to other object-finders on an example task.
 
-.. image:: https://github.com/manimino/ducks/blob/main/docs/img/perf_bench.png
-    :target: https://github.com/manimino/ducks/blob/main/docs/img/perf_bench.png
-    :width: 500
+.. image:: https://raw.githubusercontent.com/manimino/ducks/main/docs/img/perf_bench.png
+    :width: 600
 
 `Benchmark source <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
 
 The closest thing to a Dex is an in-memory SQLite. While SQLite is a fantastic database, it requires
 more overhead. As such, Dex is generally faster.
 
-------------------
-Is Dex a database?
-------------------
-
-No. But like a database, Dex uses B-tree indexes and uses them to find results very quickly. It does
-not any do other database things like SQL, tables, etc. This keeps Dex simple, light, and performant.
-
 ----
 Docs
 ----
 
-There's more to ducks than making a Dex of dicts.
-
-`See the docs. <https://ducks.readthedocs.io/en/latest/quick_start.html>`_
+There's more to ducks than making a Dex of dicts. `Continue in the docs. <https://ducks.readthedocs.io/en/latest/quick_start.html>`_

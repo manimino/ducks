@@ -6,12 +6,13 @@ Quick Start
 Basic Usage
 -----------
 
-The main container in ducks is called a Dex.
+The main container in ducks is called Dex.
 
 .. code-block::
 
     from ducks import Dex
 
+    # make some objects
     objects = [
         {'x': 3, 'y': 'a'},
         {'x': 6, 'y': 'b'},
@@ -22,16 +23,18 @@ The main container in ducks is called a Dex.
     # Index on x and y.
     dex = Dex(objects, ['x', 'y'])
 
-    # get objects
+    # match objects
     dex[{
         'x': {'>': 4, '<': 8},   # where 4 < x < 8
         'y': {'in': ['a', 'b']}  # and y is 'a' or 'b'
     }]
     # result: [{'x': 6, 'y': 'b'}]
 
-* The objects can be any Python type.
-* Supports ==, !=, in, not in, <, <=, >, >=.
-* Index using dict keys, object attributes, and custom functions.
+This is a Dex of dicts, but the objects can be any type.
+
+Dex supports ==, !=, in, not in, <, <=, >, >=.
+
+The indexes can be dict keys, object attributes, or custom functions.
 
 -------------------
 Add, remove, update
@@ -173,21 +176,6 @@ Example:
 
 Note that ``None`` is treated as a normal attribute value and is stored.
 
-
--------
-Classes
--------
-
-There are three container classes:
-
-* **Dex**: Can ``add``, ``remove``, and ``update`` objects after creation.
-  `[API] <https://ducks.readthedocs.io/en/latest/ducks.mutable.html#ducks.mutable.main.Dex>`_
-* **ConcurrentDex**: Same as Dex, but thread-safe.
-  `[API] <https://ducks.readthedocs.io/en/latest/ducks.concurrent.html#ducks.concurrent.main.ConcurrentDex>`_
-* **FrozenDex**: Cannot be changed after creation, it's read-only. But it's super fast, and of course thread-safe.
-  `[API] <https://ducks.readthedocs.io/en/latest/ducks.frozen.html#ducks.frozen.main.FrozenDex>`_
-
-
 --------
 Pickling
 --------
@@ -205,3 +193,16 @@ Dex, ConcurrentDex, and FrozenDex can be pickled using the special functions
     # result: 1.8
 
 Objects inside the dex will be saved along with it.
+
+-------
+Classes
+-------
+
+There are three container classes:
+
+* **Dex**: Can add, remove, and update objects after creation.
+  `[API] <https://ducks.readthedocs.io/en/latest/ducks.mutable.html#ducks.mutable.main.Dex>`_
+* **ConcurrentDex**: Same as Dex, but thread-safe.
+  `[API] <https://ducks.readthedocs.io/en/latest/ducks.concurrent.html#ducks.concurrent.main.ConcurrentDex>`_
+* **FrozenDex**: Cannot be changed after creation, it's read-only. But it's super fast. And it's thread-safe because
+  it's read-only. `[API] <https://ducks.readthedocs.io/en/latest/ducks.frozen.html#ducks.frozen.main.FrozenDex>`_
