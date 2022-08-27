@@ -50,9 +50,11 @@ The main container in ducks is called Dex.
     }]
     # result: [{'x': 6, 'y': 'b'}]
 
-* This is a Dex of dicts, but the objects can be any type.
-* Dex supports ==, !=, in, not in, <, <=, >, >=.
-* The indexes can be dict keys, object attributes, and custom functions.
+This is a Dex of dicts, but the objects can be any type.
+
+Dex supports ==, !=, in, not in, <, <=, >, >=.
+
+The indexes can be dict keys, object attributes, and custom functions.
 
 Is Dex fast?
 ============
