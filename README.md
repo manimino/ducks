@@ -15,6 +15,8 @@ pip install ducks
 
 ### Usage
 
+The main container in ducks is called a Dex.
+
 ```
 from ducks import Dex
 
