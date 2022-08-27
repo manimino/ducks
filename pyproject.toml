@@ -6,7 +6,7 @@ authors = ["Theo Walker <theo.ca.walker@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/manimino/ducks/"
 documentation = "https://pypi.org/project/ducks/"
-readme = "README.md"
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = "^3.7"

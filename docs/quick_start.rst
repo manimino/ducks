@@ -34,6 +34,58 @@ The main container in ducks is called a Dex.
 * Index using dict keys, object attributes, and custom functions.
 
 -------------------
+Add, remove, update
+-------------------
+
+Dex supports add, remove, and update of objects.
+
+.. code-block::
+
+    from ducks import Dex
+
+    class Thing:
+        def __init__(self):
+            self.x = 1
+            self.y = 1
+
+        def __repr__(self):
+            return f"Thing(x: {self.x}, y: {self.y})"
+
+    # make an empty Dex
+    dex = Dex([], ['x', 'y'])
+
+    # add an object
+    obj = Thing()
+    dex.add(obj)
+    print(dex[{'x': 1}]) # find it
+
+    # update it
+    obj.x = 2
+    dex.update(obj)
+    print(dex[{'x': 2}])  # find updated obj
+
+    # remove it
+    dex.remove(obj)
+    print(list(dex))  # dex now contains no objects
+
+Update notifies Dex that an object's attributes have changed, so the index can be updated accordingly.
+There's an example in :ref:`demos` of how to automatically update Dex when objects change.
+
+---------
+FrozenDex
+---------
+
+If you don't need add, remove, or update, use a FrozenDex instead.
+It is used just like a Dex, but it's faster and more memory-efficient.
+
+.. code-block::
+
+    from ducks import FrozenDex
+
+    dex = FrozenDex([{'a': 1, 'b': 2}], ['a'])
+    dex[{'a': 1}]  # result: [{'a': 1, 'b': 2}]
+
+-------------------
 Function attributes
 -------------------
 
@@ -115,9 +167,9 @@ Example:
 
     dex = Dex(objs, ['a', get_a])
 
-    dex[{'a': ANY}]          # result: [{'a': 1}, {'a': 2}]
-    dex[{get_a: ANY}]        # result: [{'a': 1}, {'a': 2}]
-    dex[{'a': {'!=': ANY}}]  # result: [{}]
+    print(dex[{'a': ANY}])          # [{'a': 1}, {'a': 2}]
+    print(dex[{get_a: ANY}])        # [{'a': 1}, {'a': 2}]
+    print(dex[{'a': {'!=': ANY}}])  # [{}]
 
 Note that ``None`` is treated as a normal attribute value and is stored.
 
