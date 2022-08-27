@@ -5,7 +5,7 @@
 
 # ducks 🦆
 
-Provides Dex, a Python container for indexing objects of any type.
+Index your Python objects for fast lookup by their attributes.
 
 ### Install
 
@@ -46,4 +46,4 @@ Ducks outperforms other data structures for finding Python objects.
 
 There's more to ducks than making a Dex of dicts. 
 
-[See the docs.](https://ducks.readthedocs.io)
+[Read the docs.](https://ducks.readthedocs.io)
