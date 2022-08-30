@@ -21,7 +21,8 @@ During a lookup, the object ID sets matching each query value are retrieved. The
 to objects and returned.
 
 In practice, Dex and FrozenDex have a bit more to them, as they are optimized to have much better
-memory usage and speed than a naive implementation. For example, FrozenDex uses an array-based tree structure.
+memory usage and speed than a naive implementation. For example, FrozenDex uses sorted Numpy arrays instead
+of BTrees.
 
 -------------
 Dex internals
@@ -60,8 +61,8 @@ Memory efficiency
 =================
 
 There are a few more implementation details worth noting. But first, let's look at the driving force
-behind those details. We need to store lots of collections of integer object IDs - what's the most RAM-efficient way to
-do that?
+behind those details. We need to store lots of collections of integer object IDs - what's the most RAM-efficient
+way to do that?
 
 Memory usage of different collections
 =====================================
@@ -103,8 +104,9 @@ FrozenDex. So the single best one for Dex is cykhash Int64Set. By why pick just 
 Blending collection types
 =========================
 
-For smaller collections, below ~10 numbers, cykhash is a bit inefficient, so we use arrays there instead.
-While they are immutable, it's fast to discard a small array and make another one.
+For smaller collections, below ~10 numbers, cykhash is a bit inefficient, so we use Python
+int64 arrays there instead. The arrays are immutable, but it's fast to discard a small array and make another one when
+changes occur.
 
 And for collections of size 1, we just store the number, no container needed! That takes 28 bytes.
 
@@ -132,13 +134,9 @@ Int64Set operations are about as fast as Python sets.
 FrozenDex Internals
 -------------------
 
-In FrozenDex, we know that:
-
-* The data will never change
-* The values are always integers
-
-This means we can use an array-based implementation rather than a tree. This design is much faster and far more
-memory-efficient. Bisecting a sorted array allows O(log(n)) lookup, just like a tree.
+In FrozenDex, we know that the data will never change. This means we can use an array-based implementation rather
+than a tree. This design is much faster and far more memory-efficient. Bisecting a sorted array allows O(log(n))
+value lookup, just like a tree.
 
 Pseudocode:
 
@@ -154,22 +152,25 @@ Pseudocode:
     }
 
     class FrozenAttrIndex:
-        # maps the values for an attribute to object array indexes
+        # maps the values for a single attribute to object array indexes
 
-        val_arr = np.array(attribute value for each object)  # sorted by value
+        # parallel arrays store attribute values and object indices
+        val_arr = np.array(attribute value for each object)         # sorted by value
         obj_idx_arr = np.array(index in obj array for each object)  # sorted by value
 
-        # tree stores values for which there are many matching objects
+        # but if a value has lots of objects, store it in this tree instead
         tree = BTree({
-            val1: np.array(some_sorted_obj_arr_indexes),
-            val2: np.array(more_sorted_obj_arr_indexes)
+            value: np.array(sorted_obj_arr_indexes)
         })
 
+Just as Dex uses different containers depending on cardinality, so too does FrozenDex.
+If a value is associated with only a few objects, allocating a numpy array to store the object indices is a waste.
+But if a value is associated with many objects, storing the value repeatedly in the parallel numpy arrays is wasteful,
+so it is stored in a BTree.
 
-Rather than having a dict lookup for object id -> object, we just store the objects in an array. Instead of
-object IDs, we can use indexes into that array. Handily, the indexes can be `int32` if there are less than a few
-billion objects, which is usually the case. `int32` operations are a little faster than `int64`, in addition to being
-more RAM-efficient.
+And there's one last optimization. The indexes can be stored in `uint32` arrays if there are less than a few
+billion objects, which is usually the case. `uint32` operations are a little faster than `uint64`, in addition to being
+more RAM-efficient. FrozenDex will automatically select `uint64` when there are too many objects for 32-bit addressing.
 
 
 Set operations on numpy arrays
@@ -223,12 +224,15 @@ This allows patterns like:
 
 which are faster than calling ``cdex.add()`` many times.
 
+By default, ConcurrentDex favors readers, allowing multiple readers to share a lock. Writers wait for all
+readers to release the lock. This behavior is customizable on init via the ``priority`` kwarg.
+
 Reasons to trust it
 ===================
 
 Concurrency bugs are notoriously tricky to find. ConcurrentDex is unlikely to have them because:
 
-* It uses a very simple, coarse-grained concurrency that locks the whole object for every read and write
+* It uses a very simple, coarse-grained concurrency that locks the whole object at once
 * It's built on a widely-used lock library
 * There are concurrent operation tests that succeed on ConcurrentDex and fail on Dex, proving the
   locks are working properly (see ``tests/concurrent``).

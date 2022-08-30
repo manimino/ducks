@@ -29,7 +29,7 @@ class FrozenAttrIndex:
         self.dtype = dtype
         self.attr = attr
 
-        # Nones get stored in their own special spot so they don't break sortability.
+        # Nones get stored in their own special spot so they don't break sortability. A little convent for the Nones.
         self.none_ids = make_empty_array(self.dtype)
 
         # We will pull repeated attributes out into a BTree and pre-sort their indexes.
@@ -103,6 +103,7 @@ class FrozenAttrIndex:
         return vals
 
     def _get_val_arr_matches(self, lo, hi, include_lo=False, include_hi=False):
+        """Get the matches for this range query from the parallel arrays"""
         if len(self.val_arr) == 0:
             return make_empty_array(self.dtype)
 
@@ -147,6 +148,7 @@ class FrozenAttrIndex:
             self.val_to_obj_ids.get_range(lo, hi, include_lo, include_hi)
         )
 
+        # Get matches from the parallel arrays
         small_matches = self._get_val_arr_matches(lo, hi, include_lo, include_hi)
 
         # do return
