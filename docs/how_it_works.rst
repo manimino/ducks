@@ -134,7 +134,7 @@ Int64Set operations are about as fast as Python sets.
 FrozenDex Internals
 -------------------
 
-The FrozenDex implementation is very different from Dex. It is able to achieve much better speed and lower memory usage
+The FrozenDex implementation is very different from Dex. It is able to achieve better speed and lower memory usage
 by using data structures that don't support changes.
 
 FrozenDex pseudocode:
@@ -184,8 +184,8 @@ What is their intersection? Do you need to convert them to sets to figure it out
 
 Of course not -- sorted array intersection is easy. It can be solved by iterating over both lists, advancing
 the pointer of the smaller value each time, and outputting the matches.
-`Galloping search <https://en.wikipedia.org/wiki/Exponential_search>`_ can make this even faster. The efficiency
-is much better than computing the intersection of hashsets.
+`Galloping search <https://en.wikipedia.org/wiki/Exponential_search>`_ can make this even faster. It is faster than
+computing the intersection of hashsets.
 
 FrozenDex uses a great package called
 `sortednp <https://pypi.org/project/sortednp/>`_ that implements fast set operations on sorted numpy arrays.
@@ -202,7 +202,7 @@ So, a FrozenAttrIndex has a pair of arrays, one containing values in sorted orde
 the object indexes for those values. Looking up the object indexes for a value or range of values is straightforward.
 
 That's not the only way FrozenDex maps values to objects, though. Just as Dex uses different containers depending on
-cardinality, so too does FrozenDex.
+length, so too does FrozenDex.
 
 When a value has many associated objects, storing the value repeatedly in an array is clearly inefficient.
 So values that have many objects are stored in a BTree lookup instead. The BTree maps values to arrays of object
@@ -212,14 +212,13 @@ We can't use the BTree for everything -- if a value is associated with only a fe
 store the object indexes would incur lots of overhead. So having both data structures is the right way to go.
 
 Integer types
-===============
+=============
 
 And there's one last optimization. The indexes are stored in `uint32` arrays if there are less than a few
 billion objects, which is usually the case. `uint32` operations are a little faster than `uint64`, in addition to being
 more RAM-efficient. FrozenDex will automatically select `uint64` when there are too many objects for 32-bit addressing.
 
-Thanks to these optimizations, FrozenDex is a fantastic tool. It's great for interactive
-data analysis, and for creating services that serve infrequently-updated data.
+Thanks to these optimizations, FrozenDex is a very efficient tool.
 
 -----------------------
 ConcurrentDex Internals
