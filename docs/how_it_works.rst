@@ -218,6 +218,9 @@ And there's one last optimization. The indexes are stored in `uint32` arrays if 
 billion objects, which is usually the case. `uint32` operations are a little faster than `uint64`, in addition to being
 more RAM-efficient. FrozenDex will automatically select `uint64` when there are too many objects for 32-bit addressing.
 
+Thanks to these optimizations, FrozenDex is a fantastic tool. It's great for interactive
+data analysis, and for creating services that serve infrequently-updated data.
+
 -----------------------
 ConcurrentDex Internals
 -----------------------
