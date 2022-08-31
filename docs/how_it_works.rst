@@ -134,11 +134,10 @@ Int64Set operations are about as fast as Python sets.
 FrozenDex Internals
 -------------------
 
-In FrozenDex, we know that the data will never change. This means we can use an array-based implementation rather
-than a tree. This design is much faster and far more memory-efficient. Bisecting a sorted array allows O(log(n))
-value lookup, just like a tree.
+The FrozenDex implementation is very different from Dex. It is able to achieve much better speed and lower memory usage
+by using data structures that don't support changes.
 
-Pseudocode:
+FrozenDex pseudocode:
 
 .. code-block::
 
@@ -152,47 +151,72 @@ Pseudocode:
     }
 
     class FrozenAttrIndex:
-        # maps the values for a single attribute to object array indexes
+        # maps the values for a single attribute to indexes in the 'objects' array
 
         # parallel arrays store attribute values and object indices
-        val_arr = np.array(attribute value for each object)         # sorted by value
-        obj_idx_arr = np.array(index in obj array for each object)  # sorted by value
+        val_arr = np.array(attribute value for each object)             # sorted by val_arr
+        obj_idx_arr = np.array(index in objects array for each object)  # sorted by val_arr
 
         # but if a value has lots of objects, store it in this tree instead
         tree = BTree({
             value: np.array(sorted_obj_arr_indexes)
         })
 
-Just as Dex uses different containers depending on cardinality, so too does FrozenDex.
-If a value is associated with only a few objects, allocating a numpy array to store the object indices is a waste.
-But if a value is associated with many objects, storing the value repeatedly in the parallel numpy arrays is wasteful,
-so it is stored in a BTree.
+Key points:
 
-And there's one last optimization. The indexes can be stored in `uint32` arrays if there are less than a few
-billion objects, which is usually the case. `uint32` operations are a little faster than `uint64`, in addition to being
-more RAM-efficient. FrozenDex will automatically select `uint64` when there are too many objects for 32-bit addressing.
+* The objects are stored in a Numpy array in FrozenDex
+* Each FrozenAttrIndex maps values to object array indexes
+* FrozenAttrIndex has two different ways to do that mapping - parallel arrays and BTree
 
+Note that there are no "set" types anywhere here - so how do set operations like intersect work?
 
-Set operations on numpy arrays
-==============================
+Sorted arrays are sets
+======================
 
 If you have the arrays:
 
 .. code-block::
 
-    [1, 3, 5, 7]
+    [1, 3, 5, 7, 9]
     [1, 2, 3, 4, 5, 6, 7]
 
-What is their intersection? Do you need to convert them to ``set`` to figure it out?
+What is their intersection? Do you need to convert them to sets to figure it out?
 
-Of course not -- sorted array intersection is easy. There's a great package called
+Of course not -- sorted array intersection is easy. It can be solved by iterating over both lists, advancing
+the pointer of the smaller value each time, and outputting the matches.
+`Galloping search <https://en.wikipedia.org/wiki/Exponential_search>`_ can make this even faster. The efficiency
+is much better than computing the intersection of hashsets.
+
+FrozenDex uses a great package called
 `sortednp <https://pypi.org/project/sortednp/>`_ that implements fast set operations on sorted numpy arrays.
-
 So once we have the object indexes for each part of a query, ``sortednp.intersect`` and friends will get us the final
 object indexes.
 
-Using low-level array operations is wonderful when you can do it. The FrozenDex performance and efficiency
-are very good.
+Sorted arrays are trees
+=======================
+
+FrozenDex uses sorted arrays in another way - to store values. Bisecting an array to find a value is similar to
+traversing a tree. Range queries are easy on sorted value arrays as well.
+
+So, a FrozenAttrIndex has a pair of arrays, one containing values in sorted order, and the other containing
+the object indexes for those values. Looking up the object indexes for a value or range of values is straightforward.
+
+That's not the only way FrozenDex maps values to objects, though. Just as Dex uses different containers depending on
+cardinality, so too does FrozenDex.
+
+When a value has many associated objects, storing the value repeatedly in an array is clearly inefficient.
+So values that have many objects are stored in a BTree lookup instead. The BTree maps values to arrays of object
+indexes.
+
+We can't use the BTree for everything -- if a value is associated with only a few objects, allocating a numpy array to
+store the object indexes would incur lots of overhead. So having both data structures is the right way to go.
+
+Integer types
+===============
+
+And there's one last optimization. The indexes are stored in `uint32` arrays if there are less than a few
+billion objects, which is usually the case. `uint32` operations are a little faster than `uint64`, in addition to being
+more RAM-efficient. FrozenDex will automatically select `uint64` when there are too many objects for 32-bit addressing.
 
 -----------------------
 ConcurrentDex Internals
