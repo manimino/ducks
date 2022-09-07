@@ -71,12 +71,11 @@ Yes. Here's how ducks compares to other object-finders on an example task.
 `Notebook for this chart <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
 
 The Dex and `FrozenDex <https://ducks.readthedocs.io/en/latest/quick_start.html#frozendex>`_ containers in ducks
-are well optimized. See the `How It Works <https://ducks.readthedocs.io/en/latest/how_it_works.html>`_ doc for
-details.
+are well optimized. Details are in the `How It Works <https://ducks.readthedocs.io/en/latest/how_it_works.html>`_ doc.
 
 ----
 Docs
 ----
 
-The `Quick Start <https://ducks.readthedocs.io/en/latest/quick_start.html>`_ doc covers a few more things, like
+`Quick Start <https://ducks.readthedocs.io/en/latest/quick_start.html>`_ covers a few more things, like
 pickling, nested attribute handling, and concurrency.
