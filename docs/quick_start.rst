@@ -88,6 +88,26 @@ It is used just like a Dex, but it's faster and more memory-efficient.
     dex = FrozenDex([{'a': 1, 'b': 2}], ['a'])
     dex[{'a': 1}]  # result: [{'a': 1, 'b': 2}]
 
+FrozenDex is thread-safe because it does not allow writes.
+
+-------------
+ConcurrentDex
+-------------
+
+For multithreaded cases where writes are needed, use ConcurrentDex. It is a thin wrapper around a Dex
+that uses a lock to provide thread-safety.
+
+.. code-block::
+
+    from ducks import ConcurrentDex, FAIR, READERS, WRITERS
+
+    objects = [{'a': 1, 'b': 2}]
+    dex = ConcurrentDex(objects, ['a'], priority=READERS)
+    dex[{'a': 1}]  # result: [{'a': 1, 'b': 2}]
+
+The ConcurrentDex API is the same as Dex. An optional kwarg 'priority' allows prioritization of readers,
+writers, or neither; the default is to prioritize reads.
+
 -------------------
 Function attributes
 -------------------
@@ -195,9 +215,9 @@ Dex, ConcurrentDex, and FrozenDex can be pickled using the special functions
 
 Objects inside the dex will be saved along with it.
 
--------
-Classes
--------
+----------
+Class APIs
+----------
 
 There are three container classes:
 
@@ -205,5 +225,5 @@ There are three container classes:
   `[API] <https://ducks.readthedocs.io/en/latest/ducks.mutable.html#ducks.mutable.main.Dex>`_
 * **ConcurrentDex**: Same as Dex, but thread-safe.
   `[API] <https://ducks.readthedocs.io/en/latest/ducks.concurrent.html#ducks.concurrent.main.ConcurrentDex>`_
-* **FrozenDex**: Cannot be changed after creation, it's read-only. But it's super fast. And it's thread-safe because
-  it's read-only. `[API] <https://ducks.readthedocs.io/en/latest/ducks.frozen.html#ducks.frozen.main.FrozenDex>`_
+* **FrozenDex**: Cannot be changed after creation, it's read-only. But it's super fast.
+  `[API] <https://ducks.readthedocs.io/en/latest/ducks.frozen.html#ducks.frozen.main.FrozenDex>`_
