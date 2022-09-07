@@ -53,28 +53,29 @@ The main container in ducks is called Dex.
     }]
     # result: [{'x': 6, 'y': 'b'}]
 
-This is a Dex of dicts, but the objects can be any type.
+This is a Dex of dicts, but the objects can be any type, `even primitives like strings. <https://ducks.readthedocs.io/en/latest/quick_start.html#function-attributes>`_
 
 Dex supports ==, !=, in, not in, <, <=, >, >=.
 
 The indexes can be dict keys, object attributes, or custom functions.
 
-------------
-Is Dex fast?
-------------
+--------------
+Is ducks fast?
+--------------
 
-Yes. Here's how Dex compares to other object-finders on an example task.
+Yes. Here's how ducks compares to other object-finders on an example task.
 
 .. image:: https://raw.githubusercontent.com/manimino/ducks/main/docs/img/perf_bench.png
     :width: 600
 
-`Benchmark source <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
+`Notebook for this chart <https://github.com/manimino/ducks/blob/main/examples/perf_demo.ipynb>`_
 
-The closest thing to a Dex is an in-memory SQLite. While SQLite is a fantastic database, it requires
-more overhead. As such, Dex is generally faster.
+The Dex and `FrozenDex <https://ducks.readthedocs.io/en/latest/quick_start.html#frozendex>`_ containers in ducks
+are well optimized. Details are in the `How It Works <https://ducks.readthedocs.io/en/latest/how_it_works.html>`_ doc.
 
 ----
 Docs
 ----
 
-There's more to ducks than making a Dex of dicts. `Continue in the docs. <https://ducks.readthedocs.io/en/latest/quick_start.html>`_
+`Quick Start <https://ducks.readthedocs.io/en/latest/quick_start.html>`_ covers a few more things, like
+pickling, nested attribute handling, and concurrency.
