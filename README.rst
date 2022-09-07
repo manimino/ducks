@@ -60,10 +60,10 @@ Dex supports ==, !=, in, not in, <, <=, >, >=.
 The indexes can be dict keys, object attributes, or custom functions.
 
 --------------
-Is Ducks fast?
+Is ducks fast?
 --------------
 
-Yes. Here's how Dex compares to other object-finders on an example task.
+Yes. Here's how ducks compares to other object-finders on an example task.
 
 .. image:: https://raw.githubusercontent.com/manimino/ducks/main/docs/img/perf_bench.png
     :width: 600
