@@ -112,10 +112,9 @@ writers, or neither; the default is to prioritize reads.
 Function attributes
 -------------------
 
-Objects such as strings will not have attributes.
-That's OK. Dex can also index using functions evaluated on the object.
+Ducks can also index using functions evaluated on the objects. This allows indexing of object types such as strings.
 
-Let's find all the strings that are palindromes of length 3:
+Let's find strings that are palindromes of length 3:
 
 .. code-block::
 
