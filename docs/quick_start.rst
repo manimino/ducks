@@ -92,9 +92,10 @@ It is used just like a Dex, but it's faster and more memory-efficient.
 Function attributes
 -------------------
 
-You can index on functions evaluated on the object.
+Objects such as strings will not have attributes.
+That's OK. Dex can also index using functions evaluated on the object.
 
-Find palindromes of length 3:
+Let's find all the strings that are palindromes of length 3:
 
 .. code-block::
 
