@@ -36,6 +36,11 @@ Dex supports ==, !=, in, not in, <, <=, >, >=.
 
 The indexes can be dict keys, object attributes, or custom functions.
 
+Alternative forms:
+* ``{'a': 1}`` may be used in place of ``{'a': {'==': 1}}``
+* ``{'a': [1, 2, 3]}`` may be used in place of ``{'a': {'in': [1, 2, 3]}}``
+* ``eq``, ``ge``, ``gt``, and so on can be used in place of ``==``, ``>=``, ``>``
+
 -------------------
 Add, remove, update
 -------------------
@@ -200,15 +205,14 @@ Note that ``None`` is treated as a normal attribute value and is stored.
 Pickling
 --------
 
-Dex, ConcurrentDex, and FrozenDex can be pickled using the special functions
-``save`` and ``load``.
+Dex, ConcurrentDex, and FrozenDex can be pickled using the special functions ``save`` and ``load``.
 
 .. code-block::
 
     from ducks import Dex, save, load
     dex = Dex([1.2, 1.8, 2.7], [round])
-    save(dex, 'dex.pkl')
-    loaded_dex = load('dex.pkl')
+    save(dex, 'numbers.dex')
+    loaded_dex = load('numbers.dex')
     loaded_dex[{round: 2}]
     # result: 1.8
 

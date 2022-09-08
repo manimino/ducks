@@ -21,8 +21,7 @@ During a lookup, the object ID sets matching each query value are retrieved. The
 to objects and returned.
 
 In practice, Dex and FrozenDex have a bit more to them, as they are optimized to have much better
-memory usage and speed than a naive implementation. For example, FrozenDex uses sorted Numpy arrays instead
-of BTrees.
+memory usage and speed than a naive implementation. For example, FrozenDex makes heavy use of sorted Numpy arrays.
 
 -------------
 Dex internals
@@ -45,8 +44,8 @@ Here's more detailed pseudocode of a Dex:
     class MutableAttrIndex:
         # maps the values for one attribute to object IDs
         tree = BTree({
-            val1: set(some_obj_ids),
-            val2: set(other_obj_ids)
+            val1: set_like(some_obj_ids),
+            val2: set_like(other_obj_ids)
         })
     ```
 
@@ -54,26 +53,28 @@ To run a query:
 
 #. Dex breaks the query down into individual attribute value lookups.
 #. The object IDs associated with the query attribute values are retrieved from MutableAttrIndex.
-#. Set operations like `intersect` are performed on the object IDs to get a final set.
+#. The set-like containers are converted to sets if needed.
+#. Operations like `intersect` are performed on the sets to get the final object IDs.
 #. The object IDs are mapped to objects, which are then returned.
 
 Memory efficiency
 =================
 
-There are a few more implementation details worth noting. But first, let's look at the driving force
-behind those details. We need to store lots of collections of integer object IDs - what's the most RAM-efficient
-way to do that?
+That "set-like container" is there for memory efficiency reasons. Imagine building an index on a million distinct
+values. If actual sets were used, we'd get a million sets of size 1. Collections have a lot of overhead, so that would
+be a poor choice. We can do better.
 
 Memory usage of different collections
 =====================================
 
-Let's do some measuring of collection overhead. We'll store 10 million distinct int64s in collections of each
-type, and vary the size of the collections.
+First, let's do some measuring of collection overhead. We'll store a large number of distinct int64s in collections of
+each type, vary the size of the collections, and check the memory usage per object.
 
 We expect bigger collections to be more efficient (fewer bytes per object). Ten million sets of size 1 should
 take up more RAM than ten sets of size 1 million.
 
 Bytes per entry for each collection type and size:
+
 
 +-----------------------+---------+---------+---------+---------+---------+--------+---------+
 |                       | 1       | 2       | 5       | 10      | 25      | 50     | 100     |
@@ -88,7 +89,6 @@ Bytes per entry for each collection type and size:
 +-----------------------+---------+---------+---------+---------+---------+--------+---------+
 | array (int64)         | 106.0   | 53.2    | 28.0    | 21.0    | 11.6    | 10.6   | 9.1     |
 +-----------------------+---------+---------+---------+---------+---------+--------+---------+
-
 
 That table tells us a story.
 
