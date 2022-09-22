@@ -25,3 +25,8 @@ Update works intuitively, you've got add / remove, EZPZ.
 
 I think you can define __gt__ in such a way as it allows prefix queries. Not sure if that's a good design choice.
  
+But then what is __lt__? I think there's too many constraints on __gt__ here, it doesn't quite work as written.
+
+Yeah, this seems like a bad idea. Leaving it here for now as it might be the beginnings of a good idea.
+
+TODO: Look at the Pandas multicolumn index implementation, that should be a much better starting point.
