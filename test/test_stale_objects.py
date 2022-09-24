@@ -1,8 +1,9 @@
 import pytest
-
-from ducks.constants import SIZE_THRESH
 from ducks import Dex
-from .conftest import Attr, AssertRaises
+from ducks.constants import SIZE_THRESH
+
+from .conftest import AssertRaises
+from .conftest import Attr
 
 
 @pytest.mark.parametrize("n_items", [5, SIZE_THRESH + 1])

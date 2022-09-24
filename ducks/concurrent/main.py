@@ -1,10 +1,18 @@
-import pickle
-from typing import Any, List, Union, Iterable, Callable, Iterator, Optional, Dict
-
-from readerwriterlock.rwlock import RWLockRead, RWLockWrite, RWLockFair
+import pickle  # nosec
+from contextlib import contextmanager
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Iterable
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import Union
 
 from ducks.mutable.main import Dex
-from contextlib import contextmanager
+from readerwriterlock.rwlock import RWLockFair
+from readerwriterlock.rwlock import RWLockRead
+from readerwriterlock.rwlock import RWLockWrite
 
 
 """Lock priority options"""
@@ -14,7 +22,6 @@ FAIR = "fair"
 
 
 class ConcurrentDex:
-
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,

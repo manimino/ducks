@@ -14,7 +14,7 @@ ANY allows lookups like find({'attr': ANY}), which gives all objects that have a
 
 Why is this a set()?
 We need a value that we can do "is" comparisons on, that will only be True
-when it's literally this object. set() is a simple object that satisfies this property. 
+when it's literally this object. set() is a simple object that satisfies this property.
 "ANY is ANY" evaluates to True, but "set() is ANY" evaluates to False.
 """
 ANY = MatchAnything()

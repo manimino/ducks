@@ -1,0 +1,47 @@
+settings:
+  # See https://docs.github.com/en/rest/reference/repos#update-a-repository for all available settings.
+  # any of these settings can be ommitted to just leave the repo's current setting
+  # If a setting has a value in settings.yml, it will always overwrite what exists in the repo.
+
+  # The tf module api
+  homepage: http://tfmoduleapi.auto-internal.dev-use1-pg-1.us-east-1.rnd.planfront.net/latest/ui
+
+  # A list of strings to apply as topics on the repo. This is our tags for a terraform module
+  topics:
+    - python
+    - object
+    - finder
+    - attribute
+    - index
+    - btree
+    - ducks
+  # Either `true` to enable the wiki for this repository, `false` to disable it. We dont use wiki, we use confluence
+  has_wiki: false
+  # Either `true` to enable downloads for this repository, `false` to disable them. We don't use downloads
+  has_downloads: false
+
+  # Set the default branch for this repository.
+  default_branch: main
+
+  # Cleanup branches on merge
+  delete_branch_on_merge: true
+
+branch_protections:
+  # branch protection can only be created for branches that exist.
+  - name: main
+    # https://docs.github.com/en/rest/reference/repos#update-branch-protection
+    # Branch Protection settings. Leave a value out to leave set at current repo settings
+    protection:
+      # Require at least one approving review on a pull request, before merging. Set to null to disable.
+      pr_options:
+        # The number of approvals required. (1-6)
+        required_approving_review_count: 1
+        # Blocks merge until code owners have reviewed.
+        require_code_owner_reviews: true
+        # strict requires a branch to be up to date before a merge
+        strict: true
+        # The list of status checks to require in order to merge into this branch
+        # Terraform Checks is our standard lint
+        # Terraform Integration Tests is integration tests for modules that require it
+        checks:
+          - tests

@@ -3,10 +3,10 @@ None is a value that cannot be compared with <, > etc. But we definitely need
 to support it as it's a common attribute value.
 These tests check that None is handled properly.
 """
-
 import pytest
 from ducks import Dex
-from ducks.constants import SET_SIZE_MIN, ARRAY_SIZE_MAX
+from ducks.constants import ARRAY_SIZE_MAX
+from ducks.constants import SET_SIZE_MIN
 
 
 def test_none(box_class):

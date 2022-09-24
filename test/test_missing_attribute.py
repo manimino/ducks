@@ -1,9 +1,8 @@
 import pytest
-
-
-from ducks import ANY, Dex
-from ducks.exceptions import MissingAttribute
+from ducks import ANY
+from ducks import Dex
 from ducks.constants import SIZE_THRESH
+from ducks.exceptions import MissingAttribute
 
 
 @pytest.mark.parametrize("n_items", [1, 5, SIZE_THRESH + 1])

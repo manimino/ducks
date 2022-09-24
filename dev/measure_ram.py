@@ -2,18 +2,16 @@
 This script was used to measure RAM usage of different collection sizes.
 This was used during design; it's not relevant to users of Dex.
 """
-
 import os
 import subprocess
 import sys
+from array import array
 
 import numpy as np
-
-from array import array
 from cykhash import Int64Set
 
 
-TOT_ITEMS = 10 ** 6
+TOT_ITEMS = 10**6
 
 print_names = {
     "pytup": "tuple",

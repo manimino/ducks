@@ -1,6 +1,8 @@
 import threading
 
-from ducks import ConcurrentDex, Dex
+from ducks import ConcurrentDex
+from ducks import Dex
+
 from .concurrent_utils import priority
 
 

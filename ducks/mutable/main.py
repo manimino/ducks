@@ -1,21 +1,24 @@
-import pickle
+import pickle  # nosec
 from operator import itemgetter
-from typing import Optional, List, Any, Dict, Callable, Union, Iterable, Set
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Union
 
 from cykhash import Int64Set
-
-from ducks.utils import (
-    cyk_intersect,
-    cyk_union,
-    split_query,
-    standardize_expr,
-    validate_query,
-)
 from ducks.mutable.mutable_attr import MutableAttrIndex
+from ducks.utils import cyk_intersect
+from ducks.utils import cyk_union
+from ducks.utils import split_query
+from ducks.utils import standardize_expr
+from ducks.utils import validate_query
 
 
 class Dex:
-
     def __init__(
         self,
         objs: Optional[Iterable[Any]] = None,
@@ -230,26 +233,26 @@ class Dex:
     def __getitem__(self, query: Dict) -> List[Any]:
         """Find objects in the Dex that satisfy the constraints.
 
-                Args:
-                    query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
-                        If ``{}``, all objects will match.
+        Args:
+            query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
+                If ``{}``, all objects will match.
 
-                        Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
-                        The expression can be any of the following:
-                         - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
-                         - A single value, which is a shorthand for `{'==': value}`.
-                         - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
+                The expression can be any of the following:
+                 - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
+                 - A single value, which is a shorthand for `{'==': value}`.
+                 - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
 
-                         The expression ``{'==': ducks.ANY}`` will match all objects having the attribute.
-                         The expression ``{'!=': ducks.ANY}`` will match all objects without the attribute.
+                 The expression ``{'==': ducks.ANY}`` will match all objects having the attribute.
+                 The expression ``{'!=': ducks.ANY}`` will match all objects without the attribute.
 
-                         Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
-                         The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
-                         To match a None value, use ``{'==': None}``. There is no separate operator for None values.
+                 Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
+                 The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
+                 To match a None value, use ``{'==': None}``. There is no separate operator for None values.
 
-                Returns:
-                    List of objects matching the constraints. List will be unordered.
+        Returns:
+            List of objects matching the constraints. List will be unordered.
         """
         if not isinstance(query, dict):
             raise TypeError(f"Got {type(query)}; expected a dict.")

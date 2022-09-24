@@ -1,5 +1,4 @@
 import pytest
-
 from ducks.constants import SIZE_THRESH
 
 

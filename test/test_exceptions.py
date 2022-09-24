@@ -1,10 +1,12 @@
 import pytest
-
-from ducks import Dex, FrozenDex, ConcurrentDex
-from ducks.exceptions import AttributeNotFoundError
+from ducks import ConcurrentDex
+from ducks import Dex
+from ducks import FrozenDex
 from ducks.constants import SIZE_THRESH
+from ducks.exceptions import AttributeNotFoundError
 
-from .conftest import AssertRaises, Attr
+from .conftest import AssertRaises
+from .conftest import Attr
 
 
 def test_remove_empty():

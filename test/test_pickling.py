@@ -1,4 +1,5 @@
-from ducks import load, save
+from ducks import load
+from ducks import save
 
 
 def test_save_and_load(box_class, tmp_path):

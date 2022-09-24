@@ -4,12 +4,11 @@ Look up objects by the percentile rank of an attribute.
 In this example, we find requests with latency > p99 (99th percentile)
 and requests with median latency (50th percentile).
 """
-
 import functools
 from bisect import bisect_left
-import numpy as np
 from typing import Any
 
+import numpy as np
 from ducks import Dex
 
 

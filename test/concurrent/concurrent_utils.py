@@ -1,7 +1,9 @@
-import pytest
 import time
 
-from ducks.concurrent.main import READERS, WRITERS, FAIR
+import pytest
+from ducks.concurrent.main import FAIR
+from ducks.concurrent.main import READERS
+from ducks.concurrent.main import WRITERS
 
 
 def slow_wrapper(method):

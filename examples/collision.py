@@ -3,7 +3,6 @@ Are any mice in range of a cat? Let's find out.
 We don't want to do all n_cats * n_mice comparisons, so we'll use Dex to find ones in the same or adjacent
 grid squares.
 """
-
 from ducks import Dex
 
 
