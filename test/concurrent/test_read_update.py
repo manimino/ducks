@@ -2,6 +2,8 @@ import threading
 
 from ducks import ConcurrentDex
 
+from .concurrent_utils import priority
+
 
 def worker_read_update(cfb: ConcurrentDex):
     # this is one concurrency mode -- using the cfb's lock while
