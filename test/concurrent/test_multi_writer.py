@@ -6,7 +6,6 @@ from typing import List
 import pytest
 from ducks import ConcurrentDex
 
-from .concurrent_utils import priority
 from .concurrent_utils import slow_wrapper
 
 

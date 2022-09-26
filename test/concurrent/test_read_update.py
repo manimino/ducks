@@ -1,9 +1,6 @@
 import threading
 
 from ducks import ConcurrentDex
-from ducks import Dex
-
-from .concurrent_utils import priority
 
 
 def worker_read_update(cfb: ConcurrentDex):

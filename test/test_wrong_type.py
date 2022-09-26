@@ -4,7 +4,6 @@ Try doing various bad things with types.
 """
 import pytest
 from ducks import Dex
-from ducks.btree import BTree
 
 from .conftest import AssertRaises
 
