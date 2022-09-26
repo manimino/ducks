@@ -39,7 +39,7 @@ class FrozenAttrIndex:
         self.val_to_obj_ids = BTree()
 
         obj_id_arr = np.arange(len(objs), dtype=self.dtype)
-        for i, obj in enumerate(objs):
+        for i in range(len(objs)):
             obj_id_arr[i] = i
         obj_id_arr, val_arr = get_vals(objs, obj_id_arr, self.attr)
 
