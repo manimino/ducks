@@ -3,9 +3,7 @@
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-
 # -- Path setup --------------------------------------------------------------
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -55,10 +53,11 @@ html_theme = "sphinx_rtd_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-html_favicon = 'favicon.ico'
+html_favicon = "favicon.ico"
+
 
 def skip(app, what, name, obj, would_skip, options):
-    if name in ["__getitem__", '__init__']:
+    if name in ["__getitem__", "__init__"]:
         return False
     return would_skip
 

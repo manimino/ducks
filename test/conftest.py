@@ -1,5 +1,7 @@
 import pytest
-from ducks import Dex, FrozenDex, ConcurrentDex
+from ducks import ConcurrentDex
+from ducks import Dex
+from ducks import FrozenDex
 
 
 @pytest.fixture(params=[Dex, FrozenDex, ConcurrentDex])

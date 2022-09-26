@@ -1,6 +1,6 @@
 import pytest
-
 from ducks.btree import BTree
+
 from .conftest import AssertRaises
 
 
@@ -58,7 +58,7 @@ def test_get():
     assert bt.get(1) == "a"
     assert bt[1] == "a"
     assert bt.get(2) is None
-    assert bt.get(3, 4) is 4
+    assert bt.get(3, 4) == 4
 
 
 def test_get_empty():

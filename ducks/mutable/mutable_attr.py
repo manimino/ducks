@@ -1,18 +1,29 @@
 from array import array
-from typing import Callable, Union, Dict, Any, Iterable, Optional, Hashable, Set
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Hashable
+from typing import Iterable
+from typing import Optional
+from typing import Set
+from typing import Union
 
 from cykhash import Int64Set
-
-from ducks.constants import ANY, ARR_TYPE, ARRAY_SIZE_MAX, SET_SIZE_MIN
-from ducks.utils import get_attribute
 from ducks.btree import BTree
+from ducks.constants import ANY
+from ducks.constants import ARR_TYPE
+from ducks.constants import ARRAY_SIZE_MAX
+from ducks.constants import SET_SIZE_MIN
+from ducks.utils import get_attribute
 
 
 class MutableAttrIndex:
     """Stores data and handles requests that are relevant to a single attribute of a Dex."""
 
     def __init__(
-        self, attr: Union[Callable, str], objs: Optional[Iterable[Any]] = None,
+        self,
+        attr: Union[Callable, str],
+        objs: Optional[Iterable[Any]] = None,
     ):
         self.attr = attr
         self.none_ids = Int64Set()  # Stores object IDs for the attribute value None

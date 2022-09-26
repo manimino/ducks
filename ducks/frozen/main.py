@@ -1,24 +1,26 @@
+import pickle  # nosec
 from bisect import bisect_left
-from typing import Optional, Any, Dict, Union, Callable, Iterable, Set
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Iterable
+from typing import Optional
+from typing import Set
+from typing import Union
 
-import pickle
 import numpy as np
 import sortednp as snp
-
 from ducks.btree import range_expr_to_args
 from ducks.frozen.frozen_attr import FrozenAttrIndex
 from ducks.frozen.utils import snp_difference
-from ducks.utils import (
-    make_empty_array,
-    split_query,
-    standardize_expr,
-    validate_query,
-    validate_and_standardize_operators,
-)
+from ducks.utils import make_empty_array
+from ducks.utils import split_query
+from ducks.utils import standardize_expr
+from ducks.utils import validate_and_standardize_operators
+from ducks.utils import validate_query
 
 
 class FrozenDex:
-
     def __init__(self, objs: Iterable[Any], on: Iterable[Union[str, Callable]]):
         """Create a FrozenDex containing the ``objs``, queryable by the ``on`` attributes.
 
@@ -40,7 +42,7 @@ class FrozenDex:
             on = [on]
 
         self.obj_arr = np.empty(len(objs), dtype="O")
-        self.dtype = "uint32" if len(objs) < 2 ** 32 else "uint64"
+        self.dtype = "uint32" if len(objs) < 2**32 else "uint64"
         for i, obj in enumerate(objs):
             self.obj_arr[i] = obj
 
@@ -51,7 +53,7 @@ class FrozenDex:
         # only used during contains() checks
         self.sorted_obj_ids = np.sort([id(obj) for obj in self.obj_arr])
 
-    def _find(
+    def _find(  # noqa: C901
         self,
         match: Optional[Dict[Union[str, Callable], Any]] = None,
         exclude: Optional[Dict[Union[str, Callable], Any]] = None,
@@ -168,7 +170,7 @@ class FrozenDex:
     def _match_any_value_in(
         self, attr: Union[str, Callable], values: Iterable[Any]
     ) -> np.ndarray:
-        """"Get the union of object ID matches for the values."""
+        """ "Get the union of object ID matches for the values."""
         matches = [self._indexes[attr].get(v) for v in values]
         if matches:
             return np.sort(np.concatenate(matches))
@@ -191,26 +193,26 @@ class FrozenDex:
     def __getitem__(self, query: Dict) -> np.ndarray:
         """Find objects in the FrozenDex that satisfy the constraints.
 
-                Args:
-                    query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
-                        If ``{}``, all objects will match.
+        Args:
+            query: Dict of ``{attribute: expression}`` defining the subset of objects that match.
+                If ``{}``, all objects will match.
 
-                        Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
+                Each attribute is a string or Callable. Must be one of the attributes specified in the constructor.
 
-                        The expression can be any of the following:
-                         - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
-                         - A single value, which is a shorthand for `{'==': value}`.
-                         - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
+                The expression can be any of the following:
+                 - A dict of ``{operator: value}``, such as ``{'==': 1}`` ``{'>': 5}``, or ``{'in': [1, 2, 3]}``.
+                 - A single value, which is a shorthand for `{'==': value}`.
+                 - A list of values, which is a shorthand for ``{'in': [list_of_values]}``.
 
-                         The expression ``{'==': ducks.ANY}`` will match all objects having the attribute.
-                         The expression ``{'!=': ducks.ANY}`` will match all objects without the attribute.
+                 The expression ``{'==': ducks.ANY}`` will match all objects having the attribute.
+                 The expression ``{'!=': ducks.ANY}`` will match all objects without the attribute.
 
-                         Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
-                         The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
-                         To match a None value, use ``{'==': None}``. There is no separate operator for None values.
+                 Valid operators are '==', '!=', 'in', 'not in', '<', '<=', '>', '>='.
+                 The aliases 'eq', 'ne', 'lt', 'le', 'lte', 'gt', 'ge', and 'gte' work too.
+                 To match a None value, use ``{'==': None}``. There is no separate operator for None values.
 
-                Returns:
-                    Numpy array of objects matching the constraints. Array will be in the same order as the original objects.
+        Returns:
+            Numpy array of objects matching the constraints. Array will be in the same order as the original objects.
         """
         if not isinstance(query, dict):
             raise TypeError(f"Got {type(query)}; expected a dict.")

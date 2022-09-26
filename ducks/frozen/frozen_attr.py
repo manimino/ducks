@@ -1,17 +1,19 @@
 """
 Performs object lookup for a single attribute in a FrozenDex.
 """
-
+from bisect import bisect_left
+from bisect import bisect_right
+from typing import Callable
+from typing import Set
+from typing import Union
 
 import numpy as np
-
-from bisect import bisect_left, bisect_right
-from typing import Union, Callable, Set
-
 from ducks.btree import BTree
-from ducks.constants import ANY, SIZE_THRESH
+from ducks.constants import ANY
+from ducks.constants import SIZE_THRESH
+from ducks.frozen.init_helpers import get_vals
+from ducks.frozen.init_helpers import run_length_encode
 from ducks.utils import make_empty_array
-from ducks.frozen.init_helpers import get_vals, run_length_encode
 
 
 class FrozenAttrIndex:

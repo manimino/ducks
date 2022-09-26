@@ -1,6 +1,7 @@
 import pytest
-
-from ducks.constants import SIZE_THRESH, ARRAY_SIZE_MAX, SET_SIZE_MIN
+from ducks.constants import ARRAY_SIZE_MAX
+from ducks.constants import SET_SIZE_MIN
+from ducks.constants import SIZE_THRESH
 
 
 @pytest.mark.parametrize(
@@ -29,7 +30,12 @@ def test_many_gets(box_class, n_items):
         )
         assert (
             len(
-                f[{"n": {"in": [-1000, 3, 4, 5], "!=": -1000}, f5: {"not in": [3, 4]},}]
+                f[
+                    {
+                        "n": {"in": [-1000, 3, 4, 5], "!=": -1000},
+                        f5: {"not in": [3, 4]},
+                    }
+                ]
             )
             == 1
         )

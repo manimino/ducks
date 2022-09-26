@@ -1,11 +1,13 @@
 import threading
 import time
+from typing import Any
+from typing import List
+
 import pytest
-
-from typing import List, Any
-
 from ducks import ConcurrentDex
-from .concurrent_utils import priority, slow_wrapper
+
+from .concurrent_utils import priority
+from .concurrent_utils import slow_wrapper
 
 
 def worker_add_remove(objs: List[Any], box: ConcurrentDex, end_full=True):
@@ -24,7 +26,13 @@ def worker_add_remove(objs: List[Any], box: ConcurrentDex, end_full=True):
             box.add(obj)
 
 
-@pytest.mark.parametrize("end_full, expected_len", [(True, 10), (False, 0),])
+@pytest.mark.parametrize(
+    "end_full, expected_len",
+    [
+        (True, 10),
+        (False, 0),
+    ],
+)
 def test_add_remove(priority, end_full, expected_len):
     objs = [{"x": i % 2} for i in range(10)]
 

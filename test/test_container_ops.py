@@ -1,5 +1,6 @@
 import pytest
-from ducks import Dex, FrozenDex
+from ducks import Dex
+from ducks import FrozenDex
 from ducks.constants import SIZE_THRESH
 
 
@@ -14,7 +15,13 @@ def test_iter_small(box_class):
     assert len(f_ls) == len(ls)
 
 
-@pytest.mark.parametrize("idx_order", [["i", "j"], ["j", "i"],])
+@pytest.mark.parametrize(
+    "idx_order",
+    [
+        ["i", "j"],
+        ["j", "i"],
+    ],
+)
 def test_iter_large(box_class, idx_order):
     ls = [{"i": i, "j": -(i % 3)} for i in range(SIZE_THRESH * 3 + 3)]
     ls += [{"j": 16}]  # make sure there's at least one hasfbucket
@@ -27,7 +34,13 @@ def test_iter_large(box_class, idx_order):
     assert len(f_ls) == len(ls)
 
 
-@pytest.mark.parametrize("idx_order", [["i", "j"], ["j", "i"],])
+@pytest.mark.parametrize(
+    "idx_order",
+    [
+        ["i", "j"],
+        ["j", "i"],
+    ],
+)
 def test_make_from(box_class, idx_order):
     """See if we can make one index type from the other type."""
     make_type = Dex if box_class == FrozenDex else FrozenDex

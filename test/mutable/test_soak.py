@@ -2,10 +2,10 @@
 Dex (mutable form) is pretty complex.
 Let's run a lengthy test to make sure all the pieces work as expected across many add / remove operations.
 """
-
 import random
 import time
 from datetime import datetime
+
 from ducks import Dex
 from ducks.utils import get_attribute
 
@@ -77,14 +77,12 @@ class SoakTest:
 
     def __init__(self):
         self.t0 = time.time()
-        self.t_report = set([5 * i for i in range(1000)])
+        self.t_report = {5 * i for i in range(1000)}
         random.seed(time.time())
-        self.seed = random.choice(range(10 ** 6))
+        self.seed = random.choice(range(10**6))
         print("running soak test with seed:", self.seed)
         random.seed(self.seed)
-        self.f = Dex(
-            on=["ts_sec", "ts", "planet", "collider", "sometimes", planet_len]
-        )
+        self.f = Dex(on=["ts_sec", "ts", "planet", "collider", "sometimes", planet_len])
         #  self.f = Dex(on=[planet_len])
         self.objs = dict()
         self.max_id_num = 0

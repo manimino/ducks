@@ -3,4 +3,3 @@
 pushd docs/
 sphinx-apidoc ../ducks -o .; make html
 popd
-

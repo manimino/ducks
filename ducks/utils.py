@@ -1,11 +1,19 @@
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
+
 import numpy as np
-
-from typing import List, Union, Callable, Optional, Any, Dict, Tuple
-
 from cykhash import Int64Set
-
-from ducks.constants import ANY, VALID_OPERATORS, OPERATOR_MAP, EXCLUDE_OPERATORS
-from ducks.exceptions import AttributeNotFoundError, MissingAttribute
+from ducks.constants import ANY
+from ducks.constants import EXCLUDE_OPERATORS
+from ducks.constants import OPERATOR_MAP
+from ducks.constants import VALID_OPERATORS
+from ducks.exceptions import AttributeNotFoundError
+from ducks.exceptions import MissingAttribute
 
 
 def get_attribute(obj: Any, attr: Union[Callable, str]) -> Tuple[Any, bool]:

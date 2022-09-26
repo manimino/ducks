@@ -3,10 +3,9 @@ Now that we're using trees, all objects have to be comparable, including the que
 Try doing various bad things with types.
 """
 import pytest
-
+from ducks import Dex
 from ducks.btree import BTree
 
-from ducks import Dex
 from .conftest import AssertRaises
 
 

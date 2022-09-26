@@ -1,6 +1,9 @@
-from BTrees.OOBTree import OOBTree
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
 
-from typing import List, Dict, Any, Tuple
+from BTrees.OOBTree import OOBTree
 
 
 class BTree:
@@ -49,7 +52,9 @@ class BTree:
             return []
         excludemin = not include_min
         excludemax = not include_max
-        return self.tree.values(min_key, max_key, excludemin=excludemin, excludemax=excludemax)
+        return self.tree.values(
+            min_key, max_key, excludemin=excludemin, excludemax=excludemax
+        )
 
     def get(self, key, default=None):
         return self.tree.get(key, default)
