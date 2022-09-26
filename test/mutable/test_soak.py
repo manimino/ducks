@@ -153,7 +153,7 @@ class SoakTest:
         assert len(self.objs) == len(self.f._indexes[planet_len])
         # check a null-ish key
         ls = [
-            o for o in self.objs.values() if get_attribute(o, "sometimes")[1] == False
+            o for o in self.objs.values() if get_attribute(o, "sometimes")[1] is False
         ]
         f_ls = self.f[{"sometimes": {"!=": True}}]
         assert len(ls) == len(f_ls)

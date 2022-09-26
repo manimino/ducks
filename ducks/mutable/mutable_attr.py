@@ -73,7 +73,7 @@ class MutableAttrIndex:
         """Get the ID of every object that has this attribute.
         Called when matching or excluding ``{attr: hashindex.ANY}``."""
         obj_ids = Int64Set(self.none_ids)
-        for key, val in self.tree.items():
+        for val in self.tree.values():
             self._add_val_to_set(val, obj_ids)
         return obj_ids
 

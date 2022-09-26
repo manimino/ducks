@@ -96,6 +96,7 @@ def test_keys_values():
     bt = BTree({"a": 1, "b": 2})
     assert list(bt.keys()) == ["a", "b"]
     assert list(bt.values()) == [1, 2]
+    assert list(bt.items()) == [("a", 1), ("b", 2)]
 
 
 def test_bad_expr():
