@@ -25,12 +25,6 @@ When that release pr is merged, it will build and upload to pypi.
 
 A workflow that runs on the creation of releases to upload the package to pypi
 
-### repo-manager.yml
-
-Works with .github/settings.yml and the [repo-manager Github Action](https://github.com/marketplace/actions/yaml-repo-manager) to configure settings for the repo.
-
-Runs as a cron everyday at 00:02 and on demand with workflow dispatch.
-
 ### Required Secrets
 
 * THIS_PAT - a personal access token that has access to create releases on this repo and edit the repo's settings. Used with release-please and repo-manager
@@ -43,7 +37,3 @@ Configures dependabot updates and alerts for this repo
 ## release-drafter.yml
 
 Configures how release notes are written by release-please
-
-## settings.yaml
-
-repo-manager settings that are configured on the repo
