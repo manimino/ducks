@@ -17,7 +17,7 @@ sortednp = "^0.4.0"
 BTrees = "^4.10.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.0"
+pytest = "^7.1"
 coverage = "^6.4.4"
 safety = "^2.1.1"
 pre-commit = "^2.20.0"
