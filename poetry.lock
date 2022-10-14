@@ -569,7 +569,7 @@ typing-extensions = "*"
 
 [[package]]
 name = "reorder-python-imports"
-version = "3.8.4"
+version = "3.8.5"
 description = "Tool for reordering python imports"
 category = "dev"
 optional = false
@@ -785,7 +785,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "7aad67c0163ed89cd949e62bc00d1ed8f9858cae49616210925c8e212f80a149"
+content-hash = "0eb7500ef801dfe69b57e247bc98f137dd82f5a7a7d61647a52cec357cf26d71"
 
 [metadata.files]
 attrs = [
@@ -1246,8 +1246,8 @@ readerwriterlock = [
     {file = "readerwriterlock-1.0.9.tar.gz", hash = "sha256:b7c4cc003435d7a8ff15b312b0a62a88d9800ba6164af88991f87f8b748f9bea"},
 ]
 reorder-python-imports = [
-    {file = "reorder_python_imports-3.8.4-py2.py3-none-any.whl", hash = "sha256:7f68b8528dd483554d71769ef5eb6f53cfcacc641ec479cb3a9d4debf0cab0bc"},
-    {file = "reorder_python_imports-3.8.4.tar.gz", hash = "sha256:65d35e6df8ab083998d88b08c4e44b70dadfc75e53e0ac9ad5f8c797e97a26f5"},
+    {file = "reorder_python_imports-3.8.5-py2.py3-none-any.whl", hash = "sha256:6c36b84add1a8125479e1de97a21b7797ee6df51530b5340857d65c79d6882ac"},
+    {file = "reorder_python_imports-3.8.5.tar.gz", hash = "sha256:5e018dceb889688eafd41a1b217420f810e0400f5a26c679a08f7f9de956ca3b"},
 ]
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
