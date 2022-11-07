@@ -128,8 +128,5 @@ jobs:
         with:
           name: coverage-data
 
-      - name: Run tests and collect coverage
-        run: pytest --cov .
-
       - name: Upload coverage report
         uses: codecov/codecov-action@v3.1.1
