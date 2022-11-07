@@ -1,4 +1,4 @@
-.. image:: https://github.com/manimino/ducks/workflows/tests/ducks-main.png
+.. image:: https://raw.githubusercontent.com/manimino/ducks/main/docs/img/ducks-main.png
     :alt: Ducks, the Python object indexer
 
 =========
@@ -106,7 +106,7 @@ It is wonderfully convenient to have logic and data live in the same place.
 
 There are many situations to use a database over ducks. If your data is shared by multiple processes, or you
 want to write data to disk every time it is changed, or your data can't fit in memory, a database will work better.
-But if all you need is to index objects by their attributes, ducks is the right choice.
+But if all you need is to index objects by their attributes, ducks is great.
 
 ----
 Docs
