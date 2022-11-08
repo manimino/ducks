@@ -169,8 +169,7 @@ def tests(session: Session) -> None:
     """Run the test suite."""
     session.install(".")
     session.install(*test_requirements)
-    args = session.posargs or ["--cov"]
-    session.run("poetry", "run", "pytest", args)
+    session.run("poetry", "run", "pytest", *session.posargs)
 
 
 @session(name="docs-build", python=python_versions[0])
