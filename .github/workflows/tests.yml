@@ -128,5 +128,15 @@ jobs:
         with:
           name: coverage-data
 
+      - name: Run tests and collect coverage
+        run: |
+          poetry run pytest --cov-report xml
+
       - name: Upload coverage report
         uses: codecov/codecov-action@v3.1.1
+
+      - name: Upload coverage reports to Codecov
+        run: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov -t ${CODECOV_TOKEN}
