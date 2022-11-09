@@ -19,7 +19,11 @@ def test_dicts(box_class):
     dicts = make_dict_data()
     f = box_class(dicts, ["t0", "t1", "s"])
     result = f[
-        {"t0": {"in": [0.1, 0.3]}, "s": {"in": ["ABC", "DEF"]}, "t1": {"!=": 0.4},}
+        {
+            "t0": {"in": [0.1, 0.3]},
+            "s": {"in": ["ABC", "DEF"]},
+            "t1": {"!=": 0.4},
+        }
     ]
     assert result == [dicts[0]]
 

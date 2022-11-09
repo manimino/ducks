@@ -119,7 +119,11 @@ def test_two_attrs(box_class):
 def test_three_attrs(box_class):
     f = make_test_ducks(box_class)
     result = f[
-        {"name": {"in": ["Pikachu", "Zapdos"]}, "type1": "Electric", "type2": "Flying",}
+        {
+            "name": {"in": ["Pikachu", "Zapdos"]},
+            "type1": "Electric",
+            "type2": "Flying",
+        }
     ]
     assert len(result) == 1
     assert result[0].name == "Zapdos"

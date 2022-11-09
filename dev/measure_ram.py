@@ -11,7 +11,7 @@ import numpy as np
 from cykhash import Int64Set
 
 
-TOT_ITEMS = 10 ** 6
+TOT_ITEMS = 10**6
 
 print_names = {
     "pytup": "tuple",

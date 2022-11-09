@@ -42,7 +42,7 @@ class FrozenDex:
             on = [on]
 
         self.obj_arr = np.empty(len(objs), dtype="O")
-        self.dtype = "uint32" if len(objs) < 2 ** 32 else "uint64"
+        self.dtype = "uint32" if len(objs) < 2**32 else "uint64"
         for i, obj in enumerate(objs):
             self.obj_arr[i] = obj
 
