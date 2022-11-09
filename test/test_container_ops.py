@@ -16,11 +16,7 @@ def test_iter_small(box_class):
 
 
 @pytest.mark.parametrize(
-    "idx_order",
-    [
-        ["i", "j"],
-        ["j", "i"],
-    ],
+    "idx_order", [["i", "j"], ["j", "i"],],
 )
 def test_iter_large(box_class, idx_order):
     ls = [{"i": i, "j": -(i % 3)} for i in range(SIZE_THRESH * 3 + 3)]
@@ -35,11 +31,7 @@ def test_iter_large(box_class, idx_order):
 
 
 @pytest.mark.parametrize(
-    "idx_order",
-    [
-        ["i", "j"],
-        ["j", "i"],
-    ],
+    "idx_order", [["i", "j"], ["j", "i"],],
 )
 def test_make_from(box_class, idx_order):
     """See if we can make one index type from the other type."""

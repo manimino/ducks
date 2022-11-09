@@ -21,9 +21,7 @@ class MutableAttrIndex:
     """Stores data and handles requests that are relevant to a single attribute of a Dex."""
 
     def __init__(
-        self,
-        attr: Union[Callable, str],
-        objs: Optional[Iterable[Any]] = None,
+        self, attr: Union[Callable, str], objs: Optional[Iterable[Any]] = None,
     ):
         self.attr = attr
         self.none_ids = Int64Set()  # Stores object IDs for the attribute value None

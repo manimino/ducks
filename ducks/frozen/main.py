@@ -42,7 +42,7 @@ class FrozenDex:
             on = [on]
 
         self.obj_arr = np.empty(len(objs), dtype="O")
-        self.dtype = "uint32" if len(objs) < 2**32 else "uint64"
+        self.dtype = "uint32" if len(objs) < 2 ** 32 else "uint64"
         for i, obj in enumerate(objs):
             self.obj_arr[i] = obj
 
@@ -180,7 +180,11 @@ class FrozenDex:
     def __contains__(self, obj):
         obj_id = id(obj)
         idx = bisect_left(self.sorted_obj_ids, obj_id)
-        if idx < 0 or idx >= len(self.sorted_obj_ids) or self.sorted_obj_ids[idx] != obj_id:
+        if (
+            idx < 0
+            or idx >= len(self.sorted_obj_ids)
+            or self.sorted_obj_ids[idx] != obj_id
+        ):
             return False
         return True
 

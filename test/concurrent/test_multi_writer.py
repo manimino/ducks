@@ -27,11 +27,7 @@ def worker_add_remove(objs: List[Any], box: ConcurrentDex, end_full=True):
 
 
 @pytest.mark.parametrize(
-    "end_full, expected_len",
-    [
-        (True, 10),
-        (False, 0),
-    ],
+    "end_full, expected_len", [(True, 10), (False, 0),],
 )
 def test_add_remove(priority, end_full, expected_len):
     objs = [{"x": i % 2} for i in range(10)]

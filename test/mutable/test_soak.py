@@ -79,7 +79,7 @@ class SoakTest:
         self.t0 = time.time()
         self.t_report = {5 * i for i in range(1000)}
         random.seed(time.time())
-        self.seed = random.choice(range(10**6))
+        self.seed = random.choice(range(10 ** 6))
         print("running soak test with seed:", self.seed)
         random.seed(self.seed)
         self.f = Dex(on=["ts_sec", "ts", "planet", "collider", "sometimes", planet_len])
