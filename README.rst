@@ -13,8 +13,9 @@ Index your Python objects for fast lookup by their attributes.
 .. image:: https://github.com/manimino/ducks/workflows/tests/badge.svg
     :target: https://github.com/manimino/ducks/actions
     :alt: tests Actions Status
-.. image:: https://img.shields.io/static/v1?label=Coverage&message=100%&color=2ea44f
-    :alt: Coverage - 100%
+.. image:: https://codecov.io/github/manimino/ducks/coverage.svg?branch=main
+    :target: https://codecov.io/gh/manimino/ducks
+    :alt: Coverage
 .. image:: https://img.shields.io/static/v1?label=license&message=MIT&color=2ea44f
     :target: https://github.com/manimino/ducks/blob/main/LICENSE
     :alt: license - MIT
