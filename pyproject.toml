@@ -19,7 +19,7 @@ BTrees = "^4.10.0"
 [tool.poetry.dev-dependencies]
 pytest = "^7.2"
 coverage = "^6.5.0"
-safety = "^2.3.1"
+safety = "^2.3.2"
 pre-commit = "^2.20.0"
 black = "^22.10.0"
 darglint = "^1.8.1"
