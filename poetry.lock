@@ -529,7 +529,7 @@ testing = ["filelock"]
 
 [[package]]
 name = "pyupgrade"
-version = "3.2.2"
+version = "3.2.3"
 description = "A tool to automatically upgrade syntax for newer versions."
 category = "dev"
 optional = false
@@ -775,7 +775,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "7248cf51a5239f04d06933dbb72635b9bc827ff4ec1156f92e7c332eff62567b"
+content-hash = "229fee98ff159d2acc9074b196c30b2e12dfec77286b072b58903ee08c804d2a"
 
 [metadata.files]
 attrs = [
@@ -812,34 +812,32 @@ black = [
 btrees = [
     {file = "BTrees-4.11.2-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:1b30bccff235d20df0cb372eeb8b4a3e170e0b3459b268435722e6762a6fff25"},
     {file = "BTrees-4.11.2-cp27-cp27m-win_amd64.whl", hash = "sha256:c335d878aec59687c784f219a592ff063aa85822af9cee83ba958b83e65176de"},
-    {file = "BTrees-4.11.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:71333d8d2cc2bbd44427097c547e73e76b7ef462273f50344bb6f1ce1434f675"},
-    {file = "BTrees-4.11.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:8203d64473bd3e53e85667b3d4410b603c701f46006bf587b99b2b61b5060742"},
-    {file = "BTrees-4.11.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:d4f9f441ac760900dbce8d283032eb3100306dd7c6054787148dbc629cf98c58"},
+    {file = "BTrees-4.11.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5ec1cbd4783a4f4278daf81f451caaba0f78e7799c7fd391547dad69bd4b8f52"},
     {file = "BTrees-4.11.2-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:868d3b4b400b73b5d73b3d43d985cbdf46e0f29974e23397af3c8da7fefab367"},
     {file = "BTrees-4.11.2-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:270f415b0b855b1db755e10b255806416f2939ad12a26d372cbb0e998a75c7af"},
     {file = "BTrees-4.11.2-cp310-cp310-win_amd64.whl", hash = "sha256:b5e58919d42e241a0e8adf8bd824f940065a67e0f20a96121a5fedfa82012741"},
-    {file = "BTrees-4.11.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:c7b3be2a1d1e2b07d287f722ee6d36fa187dca23101ddc381da5a98df8d45ef3"},
-    {file = "BTrees-4.11.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:b98781011bd6083e644a14224b124d58ed0cbb2bf54993b884d474b5bae81288"},
-    {file = "BTrees-4.11.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:c87b2d0b4325bf80ee97e8902ddc12e9d9d0ae9d545f38a0381fae96b64517aa"},
+    {file = "BTrees-4.11.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:77ed2a3452cde25dc6570f8303ac2aaeef4c5e222e8c9350157d509ebdd8389e"},
     {file = "BTrees-4.11.2-cp311-cp311-win_amd64.whl", hash = "sha256:c0b39672fb88279e2b96cf4cfe367c77523c6ff3c14dfaa7367d6254dee38646"},
     {file = "BTrees-4.11.2-cp35-cp35m-win_amd64.whl", hash = "sha256:f309d63d45210ad99c1621fca7add421e7af6d3eaff23077c982ed972d2dfd44"},
     {file = "BTrees-4.11.2-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:4468daa02a90f34587af6c1406f80499eaff27c676792c74a639b906b646ed2c"},
+    {file = "BTrees-4.11.2-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0c233910f27c39f657710666335df365474f24151499b17893ce66f4cc1a103a"},
     {file = "BTrees-4.11.2-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:45dc3cd2a5a306aaa10e9d36c8fbd325609e17a178dc2a90d0fa1d4a928a2a33"},
     {file = "BTrees-4.11.2-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:922435d9ead556f83e8c4ca511e41d71c26e82c2aa002c5cd021777affaa9445"},
     {file = "BTrees-4.11.2-cp36-cp36m-win_amd64.whl", hash = "sha256:56c67adc3a4b212b8fe90e235d40d20753301f353047392b82beb94fa5049f2b"},
     {file = "BTrees-4.11.2-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:676738009d6a73786a551e61fa0f9ba6a77b0c0bd52fa4765622e33685279c41"},
+    {file = "BTrees-4.11.2-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:615ff0f307e4579cd763fbb6c1fd74e8f566bd6b641102ae2cf075598bdf50bb"},
     {file = "BTrees-4.11.2-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:bde2c575e5ee8e48deaa95852fefa3f761e84ddb84eca1fe629ebf879f5a2a4f"},
     {file = "BTrees-4.11.2-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:27499c79ae08e001b2b460049ebf024ca0f081d41e33dae0294b00ee780e1240"},
     {file = "BTrees-4.11.2-cp37-cp37m-win_amd64.whl", hash = "sha256:cd1607c3dd2f49fa910b3fbfa1b0ceff9183c24f9f0154054344b79b1628322c"},
-    {file = "BTrees-4.11.2-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:3c0da28c3c5e8732ff9334e03ed6585adfbf1fd917ff26cd98e4a342009dee3c"},
     {file = "BTrees-4.11.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:f06fec8d916ae2ea0bf27ace3f8256b5480e88c5a6c9a95c51b7155cb6890cd0"},
     {file = "BTrees-4.11.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:ce527b775e82d4733e81cfc87da49ea33734747d70cb5f54de4ca355b6ddc145"},
+    {file = "BTrees-4.11.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:dc941ae94ee52a2599a1852b2916dabad1af67be0826778cd4c2a04058f991df"},
     {file = "BTrees-4.11.2-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:c45fe1331dbddd247060ad8fedcca6d7459e8a2d85f2faddefa44fbaaf11fe73"},
     {file = "BTrees-4.11.2-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:ced1704f7c5831d0813d1bc562e902efa6fd5102019d92b084c4df8095a760e1"},
     {file = "BTrees-4.11.2-cp38-cp38-win_amd64.whl", hash = "sha256:8591397fca9668b2218d1fc86ec8f048260c8ee2cd323abb36b7d31ed6091b88"},
-    {file = "BTrees-4.11.2-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:7d5fe3e78999889a7a2248190d19225388546565bc532fcc51e777bf56afb0ef"},
     {file = "BTrees-4.11.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:0fdc80d9444e47166d7f01690da2c6655748d130363ddf9f1a486b9006d49324"},
     {file = "BTrees-4.11.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9c4c01029370a35c77e128c64ac1e1247fb158dead4ed3c6e468a617fe98f02e"},
+    {file = "BTrees-4.11.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cbeeac92276300c63e4acf594a87481c2b8b9f6e6b476386d4ca84f5865edaed"},
     {file = "BTrees-4.11.2-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:7f2798fbb2e5818ea828b61c83d471555d6690cbfe57275bb08b43642683b2b2"},
     {file = "BTrees-4.11.2-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:6f69789a9fac4f9e7594c04f80b1c93a52b2cb64a2c3ccd9ec3a4f0e59ef32d3"},
     {file = "BTrees-4.11.2-cp39-cp39-win_amd64.whl", hash = "sha256:1300980e04fda75e1634a30746396a56a09a1defaa7231bbfc2a32e8023c03aa"},
@@ -1180,8 +1178,8 @@ pytest-xdist = [
     {file = "pytest_xdist-3.0.2-py3-none-any.whl", hash = "sha256:9feb9a18e1790696ea23e1434fa73b325ed4998b0e9fcb221f16fd1945e6df1b"},
 ]
 pyupgrade = [
-    {file = "pyupgrade-3.2.2-py2.py3-none-any.whl", hash = "sha256:16c0e3a6ac2d83cd0fd30c138af5504918c59d584344f60a15d5f8009b11a0ed"},
-    {file = "pyupgrade-3.2.2.tar.gz", hash = "sha256:6bfa246fb9d94e490fad37980bcfc05b9494183ff29d9100ef4f7f22a952ce67"},
+    {file = "pyupgrade-3.2.3-py2.py3-none-any.whl", hash = "sha256:f831c56b44c3fe70273303fe5a28f89e9c23d5e91b0fabb34153c11cdddd0ee1"},
+    {file = "pyupgrade-3.2.3.tar.gz", hash = "sha256:bfded7b81c478dcabb356fe6a1877dd8729ec9b70669c5d2d669f81d0e076cac"},
 ]
 pyyaml = [
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},
