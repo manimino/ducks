@@ -126,8 +126,9 @@ jobs:
 
       - name: Run tests and collect coverage
         run: |
+          poetry add "numpy=1.21"  # try this next
           poetry install || echo "--- retrying install ---"
-          poetry install
+          poetry install -vvv
           poetry run pytest --cov-report xml
 
       - name: Upload coverage report

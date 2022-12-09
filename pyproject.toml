@@ -32,10 +32,7 @@ bandit = "^1.7.4"
 flake8 = "^5.0.4"
 
 [build-system]
-requires = [
-  "poetry-core>=1.0.0",
-  "numpy>=1.14"
-]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
