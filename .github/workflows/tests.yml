@@ -125,7 +125,7 @@ jobs:
 
       - name: Run tests and collect coverage
         run: |
-          poetry install --pip-args=--constraint=.github/workflows/constraints.txt poetry
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
           poetry run pytest --cov-report xml
 
       - name: Upload coverage report
