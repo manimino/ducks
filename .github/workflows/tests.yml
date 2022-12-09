@@ -30,13 +30,9 @@ jobs:
           with open(os.environ["GITHUB_ENV"], mode="a") as io:
               print(f"VIRTUALENV_PIP={pip.__version__}", file=io)
 
-      - name: Install Poetry and Pytest
-        run: |
-          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry pytest
-          poetry --version
-
       - name: Run tests and collect coverage
         run: |
+          pip install pytest
           pip install .
           pytest --cov-report xml
 
