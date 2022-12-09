@@ -30,16 +30,15 @@ jobs:
           with open(os.environ["GITHUB_ENV"], mode="a") as io:
               print(f"VIRTUALENV_PIP={pip.__version__}", file=io)
 
-      - name: Install Poetry
+      - name: Install Poetry and Pytest
         run: |
-          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
+          pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry pytest
           poetry --version
 
       - name: Run tests and collect coverage
         run: |
           pip install .
-          poetry install
-          poetry run pytest --cov-report xml
+          pytest --cov-report xml
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v3.1.1
