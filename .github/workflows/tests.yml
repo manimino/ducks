@@ -126,8 +126,7 @@ jobs:
 
       - name: Run tests and collect coverage
         run: |
-          pip install numpy
-          pip install sortednp
+          poetry install || echo "--- retrying install ---"
           poetry install
           poetry run pytest --cov-report xml
 
