@@ -35,6 +35,7 @@ jobs:
 
       - name: Run tests and collect coverage
         run: |
+          pip install numpy
           poetry install
           poetry run pytest --cov-report xml
 
