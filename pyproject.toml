@@ -27,7 +27,7 @@ reorder-python-imports = "^3.9.0"
 pre-commit-hooks = "^4.3.0"
 pyupgrade = "^3.2.2"
 pytest-cov = "^4.0.0"
-pytest-xdist = "^3.2.0"
+pytest-xdist = "^3.2.1"
 bandit = "^1.7.5"
 flake8 = "^5.0.4"
 
