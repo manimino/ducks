@@ -1166,32 +1166,28 @@ files = [
 
 [[package]]
 name = "sortednp"
-version = "0.4.0"
+version = "0.4.1"
 description = "Merge and intersect sorted numpy arrays."
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "sortednp-0.4.0-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:af83cb46c4fa35288d16f1550a6ec40bd865a909640e92b4d3d16c0a7d7d8529"},
-    {file = "sortednp-0.4.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:dada9f29b7dfd589e9a3f12cdc8484898a49e9c6e4d182d46798a9e8eabfddea"},
-    {file = "sortednp-0.4.0-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:f9fd982771f9a053d4e89160219b9a9622eb90690b89233000702bab32a605a3"},
-    {file = "sortednp-0.4.0-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:43b50e77a0f5ddbce3e0864507ec6b8fb94b6eddc481a2846609499d6b022ba7"},
-    {file = "sortednp-0.4.0-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:b916e97dec8fc2f1032c24505e5f6dd3ab3798d2a21c0c40a65f47c6157b0374"},
-    {file = "sortednp-0.4.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:8cccf8f54de06cc21036ab530da0e4b1e3c749504ac33bb8c1f984820f708b97"},
-    {file = "sortednp-0.4.0-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:fe3cf250ff32bb4eb7b79351c6e9309655c41f885e3af0ceb0edf5811d265908"},
-    {file = "sortednp-0.4.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:7e9591b3b237b10ad8c7dc85b49c6c9dfa1a316ebd79a6994f6b1e09f6517566"},
-    {file = "sortednp-0.4.0-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:595ccf3b96c8788ff230db7e730a8530eaa41e3db5f7ecc5a8e125724dafb6df"},
-    {file = "sortednp-0.4.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:418a4db80f494c7d1b5ed45da266306a930b789fbb5b81e2f451e68bdb4ea060"},
-    {file = "sortednp-0.4.0-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:8d396c4b9b34b672ee15988891520c95463fd6a062784f1fff06739c2dad3bdd"},
-    {file = "sortednp-0.4.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:64c3df93e0323b8b26f07c4b1514da74f59a9cbd93b1725eb66217a21043bbaa"},
-    {file = "sortednp-0.4.0-cp38-cp38-manylinux1_i686.whl", hash = "sha256:ba2e5c76fd6fbb75176edf16bf88aa483fe58bfa7a33ff0bfca3c52074504bbc"},
-    {file = "sortednp-0.4.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:1d6d7be8161845962f18890cfb7ad6c3c15a2e7ae2b26d0bdafe1f17b5cc9b8a"},
-    {file = "sortednp-0.4.0-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:6366d6aad08052122dafc371d7f9b9b4524998a83fc6e850a0d7470e5ae64339"},
-    {file = "sortednp-0.4.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:28b499fafc5f14a74924c0e8b78038d46d58824308b27437a277434c79efa4de"},
-    {file = "sortednp-0.4.0-cp39-cp39-manylinux1_i686.whl", hash = "sha256:e99c74f40319072089b19ce668d2737334ff5a3bcd06a8551eecfe6ee9b68d28"},
-    {file = "sortednp-0.4.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:e53d90de98ea8cc72b319797197ae11a798a5d4ed59c238fa4eb8b83cb387748"},
-    {file = "sortednp-0.4.0-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:e469c372e3ec4a8fcd2811734b5e9939a7fcefdf698584b36078b9df45d7228a"},
-    {file = "sortednp-0.4.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:0f8a4c4c140de4c0375c6525d993fcfececc59e805b0c17057dd0c27900cdf19"},
-    {file = "sortednp-0.4.0.tar.gz", hash = "sha256:96dc648030e00d3ff2626ea9fdd6a958caa2bcd0418124a8d2c984ce925df8a5"},
+    {file = "sortednp-0.4.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:55b0586a816d42631879aea121e3a1e2d64db8ba5d38c497ecdb895dc46aab2b"},
+    {file = "sortednp-0.4.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:09a289e2cc26df026048596a024954fb9cfd35b01398d11bd7ded1fad4f113a7"},
+    {file = "sortednp-0.4.1-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:f5e923121a8b91f8f58efae795fa0c2fcdae7d214555e3c4724bbacf8cafca0c"},
+    {file = "sortednp-0.4.1-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:cc30d5e857f50206c33768e233476d4a634fbbfa68d059ac9943499dc3b5e5c5"},
+    {file = "sortednp-0.4.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:3b86c09addbb96cc39539c12f371e864f1c9d11ce8d0ebe97527c363e1878832"},
+    {file = "sortednp-0.4.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:d35550629c33358b627da744892d50b758b0bfbff2aeaf9c6e332b6dbe395d80"},
+    {file = "sortednp-0.4.1-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:cbc2518eed5123226a44d3f77237c6f79b09039082be879f56a6adb316b439fd"},
+    {file = "sortednp-0.4.1-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:d034e4200a0cc72cfbf31f911228a02250feb4e9c3be8b0387f0b52179a3e03c"},
+    {file = "sortednp-0.4.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:75da8f95da2d51b98fe3428b03acec279fbfda47c355b499f1e2359cc8af8930"},
+    {file = "sortednp-0.4.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:cc8fff82362f160556ad041aa00ee840f537635bc0037047a44d348135b92f09"},
+    {file = "sortednp-0.4.1-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:5c8d9b495505e5fb14a8b91918b23a16ca0ef45824a0f1a306c04ad377a0924c"},
+    {file = "sortednp-0.4.1-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:5157805e2cd7fd44530aceda9728aaadb2241c69e767e76ff604f3d70f25d7bd"},
+    {file = "sortednp-0.4.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:81904bf01ca3391ede329b88e6dc59245a572f2be58cc2020bfb8f14602672aa"},
+    {file = "sortednp-0.4.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:e9fc48474dbcc10062fd54d29af17c744acfbff3fc95374ba238503780ece6e4"},
+    {file = "sortednp-0.4.1-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:588f2715a4c3ef9f639ae05b47971bd6d43815dff10ec1d3045ae8f7bbcacd72"},
+    {file = "sortednp-0.4.1-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:e7654f981ae4f2e9526a68de290ced852245c91dcd9d5c6648ee208fa7aa318c"},
+    {file = "sortednp-0.4.1.tar.gz", hash = "sha256:945878b3b5418897cd6b6f1445bfe447f6c4cbc2353e91f19e35157fec6a3fd9"},
 ]
 
 [package.dependencies]
